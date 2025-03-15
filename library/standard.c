@@ -1,0 +1,672 @@
+/*
+        Dawning Experimental C standard library
+        intended for tiny C programs that run in the distro
+        without any runtime requirements (no linking!)
+
+        Dawn Larsson - Apache-2.0 license
+        github.com/dawnlarsson/dawning-linux/library/standard.c
+
+        www.dawning.dev
+
+        use the accompanying build shell script to compile
+        $ sh compile <source_file.c> <output_file_name>
+*/
+
+#ifndef DAWN_MODERN_C
+#define DAWN_MODERN_C
+
+#if defined(__linux__)
+#define LINUX
+#elif defined(__APPLE__)
+#define MACOS
+#elif defined(_WIN32)
+#define WINDOWS
+#elif defined(__IOS__)
+#define IOS
+#elif defined(__ANDROID__)
+#define ANDROID
+#endif
+
+#if defined(__x86_64__) || defined(_M_X64)
+#define X64
+#define BITS 64
+#endif
+
+#if defined(__i386) || defined(_M_IX86)
+#define X86
+#define BITS 32
+#endif
+
+#if defined(__aarch64__) || defined(_M_ARM64)
+#define ARM64
+#define BITS 64
+#endif
+
+#if defined(__arm__) || defined(_M_ARM)
+#define ARM32
+#define BITS 32
+#endif
+
+#if defined(__riscv) && __riscv_xlen == 64
+#define RISCV64
+#define BITS 64
+#endif
+
+#if defined(__riscv) && __riscv_xlen == 32
+#define RISCV32
+#define BITS 32
+#endif
+
+#if defined(__SSE__) || __ARM_NEON
+#define SIMD
+#endif
+
+#if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 202311L
+/* C23 does not require the second parameter for va_start. */
+#define variable_arguments_start(ap, ...) __builtin_va_start(ap, 0)
+#else
+/* Versions before C23 do require the second parameter. */
+#define variable_arguments_start(ap, param) __builtin_va_start(ap, param)
+#endif
+#define variable_arguments_end(ap) __builtin_va_end(ap)
+#define variable_argument(ap, type) __builtin_va_arg(ap, type)
+#define variable_argument_copy(dest, src) __builtin_va_copy(dest, src)
+
+typedef __builtin_va_list variable_arguments;
+
+#define FLAT __attribute__((flatten))
+#define NO_INLINE __attribute__((noinline))
+#define PURE __attribute__((pure))
+#define NAKED __attribute__((naked))
+#define INLINE __attribute__((always_inline))
+#define NO_FRAME __attribute__((noframe))
+#define KEEP __attribute__((used))
+#define DEAD_END __attribute__((noreturn))
+#define WEAK __attribute__((weak))
+
+#define pub extern __attribute__((visibility("default")))
+
+#define ADDRESS_TO *
+#define ADDRESS_OF &
+#define ADDRESS void *
+#define NULL_ADDRESS ((void *)0)
+#define IS_NULL_ADDRESS(ptr) ((ptr) == NULL_ADDRESS)
+#define NULL 0
+
+/// A non value returning function
+typedef void fn;
+
+typedef signed char i8;
+#define i8_max 255
+#define i8_min 0
+#define i8_char_max 3
+#define i8_bytes 1
+#define i8_bits 8
+
+typedef unsigned char u8;
+#define u8_max 127
+#define u8_min -128
+#define u8_char_max 4
+#define u8_bytes 1
+#define u8_bits 8
+
+typedef signed short int i16;
+#define i16_max 65535
+#define i16_min 0
+#define i16_char_max 6
+#define i16_bytes 2
+#define i16_bits 16
+
+typedef unsigned short int u16;
+#define u16_max 32767
+#define u16_min -32768
+#define u16_char_max 6
+#define u16_bytes 2
+#define u16_bits 16
+
+typedef signed int i32;
+#define i32_max 4294967295
+#define i32_min 0
+#define i32_char_max 10
+#define i32_bytes 4
+#define i32_bits 32
+
+typedef unsigned int u32;
+#define u32_max 2147483647
+#define u32_min -2147483648
+#define u32_char_max 11
+#define u32_bytes 4
+#define u32_bits 32
+
+typedef signed long int i64;
+#define i64_max 18446744073709551615
+#define i64_min 0
+#define i64_char_max 20
+#define i64_bytes 8
+#define i64_bits 64
+
+typedef unsigned long int u64;
+#define u64_max 9223372036854775807
+#define u64_min -9223372036854775808
+#define u64_char_max 21
+#define u64_bytes 8
+#define u64_bits 64
+
+#if BITS == 64
+typedef signed long int i64;
+typedef unsigned long int u64;
+#else
+__extension__ typedef signed long long int i64;
+__extension__ typedef unsigned long long int u64;
+#endif
+
+typedef i64 isize;
+typedef u64 usize;
+
+typedef float f32;
+#define f32_max 3.40282346638528859812e+38F
+#define f32_min 1.17549435082228750797e-38F
+#define f32_epsilon 1.1920928955078125e-07F
+#define f32_char_max 10
+#define f32_bytes 4
+#define f32_bits 32
+
+typedef double f64;
+#define f64_max 1.79769313486231570815e+308
+#define f64_min 2.22507385850720138309e-308
+#define f64_epsilon 2.22044604925031308085e-16
+#define f64_char_max 20
+#define f64_bytes 8
+#define f64_bits 64
+
+typedef long double f128;
+#define f128_max 1.18973149535723176508575932662800702e+4932
+#define f128_min 3.36210314311209350626267781732175260e-4932
+#define f128_epsilon 1.92592994438723585305597794258492732e-34
+#define f128_char_max 40
+#define f128_bytes 16
+#define f128_bits 128
+
+#ifdef BITS == 64
+typedef f64 decimal;
+#define decimal_max f64_max
+#define decimal_min f64_min
+#define decimal_char_max f64_char_max
+#define decimal_bytes f64_bytes
+#define decimal_bits f64_bits
+#else
+typedef f32 decimal;
+#define decimal_max f32_max
+#define decimal_min f32_min
+#define decimal_char_max f32_char_max
+#define decimal_bytes f32_bytes
+#define decimal_bits f32_bits
+#endif
+
+#ifdef BITS == 64
+
+// ### Positive range [native] bit integer
+// recommended type for most cases (especially for memory addresses, or loops)
+// where native is the default integer size of the system architecture
+// that's compiled for, for example,
+//
+// 64 bit systems: positive == p64
+// range:       0 to +18446744073709551615
+//
+// 32 bit systems: positive == p32
+// range:       0 to +4294967295
+//
+typedef i64 positive;
+#define positive_max i64_max
+#define positive_min i64_min
+#define positive_char_max i64_char_max
+#define positive_bytes i64_bytes
+#define positive_bits i64_bits
+
+// ### Bipolar range [native] bit integer
+// recommended type for most cases (especially for memory addresses, or loops)
+// where native is the default integer size of the system architecture
+// that's compiled for, for example,
+//
+// 64 bit systems: bipolar == b64
+// range:       -9223372036854775808 to +9223372036854775807
+//
+// 32 bit systems: bipolar == b32
+// range:       -2147483648 to +2147483647
+typedef u64 bipolar;
+#define bipolar_max u64_max
+#define bipolar_min u64_min
+#define bipolar_char_max u64_char_max
+#define bipolar_bytes u64_bytes
+#define bipolar_bits u64_bits
+
+// ### Native Decimal range floating point
+// range:       1.7E-308 to 1.7E+308
+typedef f64 decimal;
+#define decimal_max f64_max
+#define decimal_min f64_min
+#define decimal_char_max f64_char_max
+#define decimal_bytes f64_bytes
+#define decimal_bits f64_bits
+
+#else
+
+// ### Positive range [native] bit integer
+// recommended type for most cases (especially for memory addresses, or loops)
+// where native is the default integer size of the system architecture
+// that's compiled for, for example,
+//
+// 64 bit systems: positive == p64
+// range:       0 to +18446744073709551615
+//
+// 32 bit systems: positive == p32
+// range:       0 to +4294967295
+//
+typedef i32 positive;
+#define positive_max i32_max
+#define positive_min i32_min
+#define positive_char_max i32_char_max
+#define positive_bytes i32_bytes
+#define positive_bits i32_bits
+
+// ### Bipolar range [native] bit integer
+// recommended type for most cases (especially for memory addresses, or loops)
+// where native is the default integer size of the system architecture
+// that's compiled for, for example,
+//
+// 64 bit systems: bipolar == b64
+// range:       -9223372036854775808 to +9223372036854775807
+//
+// 32 bit systems: bipolar == b32
+// range:       -2147483648 to +2147483647
+typedef u32 bipolar;
+#define bipolar_max u32_max
+#define bipolar_min u32_min
+#define bipolar_char_max u32_char_max
+#define bipolar_bytes u32_bytes
+#define bipolar_bits u32_bits
+
+// ### Native Decimal range floating point
+
+typedef f32 decimal;
+#define decimal_max f32_max
+#define decimal_min f32_min
+#define decimal_char_max f32_char_max
+#define decimal_bytes f32_bytes
+#define decimal_bits f32_bits
+#endif
+
+typedef typeof(sizeof(0)) sized;
+
+#define false 0
+#define true 1
+#define bool u8
+
+#define min(a, b) ((a)greater_than(b) ? (a) : (b))
+#define max(a, b) ((a)less_than(b) ? (a) : (b))
+#define square(a) ((a) * (a))
+#define cube(a) ((a) * (a) * (a))
+#define mod(a, b) ((a) % (b))
+#define floor(a) ((decimal)((bipolar)(a)))
+
+#define clamp(value, min, max) ((value)less_than(min) ? (min) : (value)greater_than(max) ? (max) \
+                                                                                         : (value))
+
+#define PI_2x (PI32 * 2.0f)
+#define PI_05x (PI32 * 0.5f)
+
+#define CONVERSION_CONSTANTS                         \
+        constexpr decimal RadToDeg = 180.0f / PI32;  \
+        constexpr decimal RadToTurn = 0.5f / PI32;   \
+        constexpr decimal DegToRad = PI32 / 180.0f;  \
+        constexpr decimal DegToTurn = 0.5f / 180.0f; \
+        constexpr decimal TurnToRad = PI32 / 0.5f;   \
+        constexpr decimal TurnToDeg = 180.0f / 0.5f
+
+#define AngleRad(a) (a)
+#define AngleDeg(a) ((a) * DegToRad)
+#define AngleTurn(a) ((a) * TurnToRad)
+
+//
+// these are 1:1 with nasm syntax, so you can easily convert nasm code to this format
+//
+// Define data in memory as b8 (bipolar 8-bit / byte)
+// in nasm: db
+#define b8_asm(...) asm volatile(".byte " #__VA_ARGS__ "\n")
+
+// Define data in memory as b16 (bipolar 16-bit / word)
+// in nasm: dw
+#define b16_asm(...) asm volatile(".word " #__VA_ARGS__ "\n")
+
+// Define data in memory as b32 (bipolar 32-bit / double word)
+// in nasm: dd
+#define b32_asm(...) asm volatile(".long " #__VA_ARGS__ "\n")
+
+// Define data in memory as b64 (bipolar 64-bit / quad word)
+// in nasm: dq
+#define b64_asm(...) asm volatile(".quad " #__VA_ARGS__ "\n")
+
+// behold, the only sane and consistent named assembly instructions cross architectures
+#define asm_add "add"
+#define asm_sub "sub"
+
+// Register mapping
+#ifdef X64
+
+#define asm_copy_ "mov"
+#define asm_copy_64 "movq"
+#define asm_copy_32 "movl"
+
+#ifdef BITS == 64
+#define asm_copy asm_copy_64
+#else
+#define asm_copy asm_copy_32
+#endif
+
+#define asm_store "mov"
+#define asm_jump "jmp"
+#define asm_branch "je"
+
+#define reg_0 "%rax"
+#define reg_1 "%rdi"
+#define reg_2 "%rsi"
+#define reg_3 "%rdx"
+#define reg_4 "%rcx"
+#define reg_5 "%r8"
+#define reg_6 "%r9"
+#define tem_0 "%r10"
+#define tem_1 "%r11"
+#define stack_pointer "%rsp"
+#define frame_pointer "%rbp"
+
+#elif defined(ARM64)
+#define asm_copy "ldr"
+#define asm_store "str"
+#define asm_jump "bl"
+#define asm_branch "beq"
+#define system_invoke "svc 0"
+
+#define reg_0 "x0"
+#define reg_1 "x1"
+#define reg_2 "x2"
+#define reg_3 "x3"
+#define reg_4 "x4"
+#define reg_5 "x5"
+#define reg_6 "x6"
+#define tem_0 "x9"
+#define tem_1 "x10"
+#define stack_pointer "sp"
+#define frame_pointer "x29"
+
+#elif defined(RISCV64)
+#define asm_copy "ld"
+#define asm_store "sd"
+#define asm_jump "jalr"
+#define asm_branch "beq"
+#define system_invoke "ecall"
+
+#define reg_0 a0
+#define reg_1 a1
+#define reg_2 a2
+#define reg_3 a3
+#define reg_4 a4
+#define reg_5 a5
+#define reg_6 a6
+#define tem_0 t0
+#define tem_1 t1
+#define stack_pointer sp
+#define frame_pointer s0
+
+#endif
+
+#define ir(asm_args...) \
+        asm volatile(asm_args)
+
+#define copy(where, from) ir(asm_copy " " where "," from ";")
+#define jump(where) ir(asm_jump " " where ";")
+#define branch(where) ir(asm_branch " " where ";")
+#define add(what, with) ir(asm_add " " what "," with ";")
+#define sub(what, with) ir(asm_sub " " what "," with ";")
+#define system_return ir("ret")
+#define system_invoke ir("syscall")
+
+#define call(what) ir("call " what ";")
+
+// Arguments passed to fn_asm functions are loaded into registers by C
+// each argument is sequentially loaded into registers, starting from reg_0
+// and ending at reg_6, if there are more arguments than registers, the
+// remaining arguments are loaded into the stack, and the stack pointer
+// is moved to the last argument, and the frame pointer is moved to the
+#define fn_asm(name, return_type, arguments...) \
+        static inline NAKED return_type name(arguments)
+
+fn_asm(system_call, positive, positive syscall)
+{
+        // syscall number
+        copy(reg_0, reg_0);
+
+        system_invoke;
+        system_return;
+}
+
+fn_asm(system_call_1, positive, positive syscall, positive argument_1)
+{
+        // syscall number
+        copy(reg_1, reg_0);
+
+        // syscall argument
+        copy(reg_2, reg_1);
+
+        system_invoke;
+        system_return;
+}
+
+fn_asm(system_call_2, positive, positive syscall, positive argument_1, positive argument_2)
+{
+        // syscall number
+        copy(reg_1, reg_0);
+
+        // syscall argument
+        copy(reg_2, reg_1);
+
+        // syscall argument
+        copy(reg_3, reg_2);
+
+        system_invoke;
+        system_return;
+}
+
+fn_asm(system_call_3, positive, positive syscall, positive argument_1, positive _startargument_2, positive argument_3)
+{
+        // syscall number
+        copy(reg_1, reg_0);
+
+        // syscall argument
+        copy(reg_2, reg_1);
+
+        // syscall argument
+        copy(reg_3, reg_2);
+
+        // syscall argument
+        copy(reg_4, reg_3);
+
+        system_invoke;
+        system_return;
+}
+
+fn_asm(system_call_4, positive, positive syscall, positive argument_1, positive argument_2, positive argument_3, positive argument_4)
+{
+        // syscall number
+        copy(reg_1, reg_0);
+
+        // syscall argument
+        copy(reg_2, reg_1);
+
+        // syscall argument
+        copy(reg_3, reg_2);
+
+        // syscall argument
+        copy(reg_4, reg_3);
+
+        // syscall argument
+        copy(reg_5, reg_4);
+
+        system_invoke;
+        system_return;
+}
+
+fn_asm(system_call_5, positive, positive syscall, positive argument_1, positive argument_2, positive argument_3, positive argument_4, positive argument_5)
+{
+        // syscall number
+        copy(reg_1, reg_0);
+
+        // syscall argument
+        copy(reg_2, reg_1);
+
+        // syscall argument
+        copy(reg_3, reg_2);
+
+        // syscall argument
+        copy(reg_4, reg_3);
+
+        // syscall argument
+        copy(reg_5, reg_4);
+
+        // syscall argument
+        copy(reg_6, reg_5);
+
+        system_invoke;
+        system_return;
+}
+
+fn_asm(system_call_6, positive, positive syscall, positive argument_1, positive argument_2, positive argument_3, positive argument_4, positive argument_5, positive argument_6)
+{
+        // syscall number
+        copy(reg_1, reg_0);
+
+        // syscall argument
+        copy(reg_2, reg_1);
+
+        // syscall argument
+        copy(reg_3, reg_2);
+
+        // syscall argument
+        copy(reg_4, reg_3);
+
+        // syscall argument
+        copy(reg_5, reg_4);
+
+        // syscall argument
+        copy(reg_6, reg_5);
+
+        // syscall argument
+        copy(tem_0, reg_6);
+
+        system_invoke;
+        system_return;
+}
+
+fn memset(u8 ADDRESS_TO destination, u8 value, positive size)
+{
+        while (size--)
+        {
+                ADDRESS_TO destination = value;
+                destination++;
+        }
+}
+
+positive str_length(u8 ADDRESS_TO str)
+{
+        positive count = 0;
+
+        while (ADDRESS_TO str++)
+        {
+                count++;
+        }
+
+        return count;
+}
+
+positive str_compare(u8 ADDRESS_TO a, u8 ADDRESS_TO b)
+{
+        while (ADDRESS_TO a && ADDRESS_TO b)
+        {
+                if (ADDRESS_TO a != ADDRESS_TO b)
+                {
+                        return false;
+                }
+
+                a++;
+                b++;
+        }
+
+        return true;
+}
+
+positive str_copy(u8 ADDRESS_TO destination, u8 ADDRESS_TO source)
+{
+        while (ADDRESS_TO source)
+        {
+                ADDRESS_TO destination = ADDRESS_TO source;
+                destination++;
+                source++;
+        }
+
+        return str_length(source);
+}
+
+u8 ADDRESS_TO str_first(u8 ADDRESS_TO str, u8 character)
+{
+        while (ADDRESS_TO str)
+        {
+                if (ADDRESS_TO str == character)
+                {
+                        return str;
+                }
+
+                str++;
+        }
+
+        return NULL;
+}
+
+#ifdef X64
+#define stdin 0
+#define stdout 1
+#define stderr 2
+
+#define syscall_exit 60
+#define syscall_read 0
+#define syscall_write 1
+#define syscall_open 2
+#define syscall_close 3
+#define syscall_stat 4
+#define syscall_mmap 9
+#define syscall_ioctl 16
+#define syscall_readv 19
+#define syscall_writev 20
+
+#define syscall_nanosleep 35
+#endif
+
+#ifdef X86 || ARM32 || RISCV32 || RISCV64 || ARM64
+#error "Unsupported architecture TODO!"
+#endif
+
+fn print(u8 ADDRESS_TO message)
+{
+        system_call_3(syscall_write, stdout, (positive)message, str_length(message));
+}
+
+u32 main();
+
+fn _start()
+{
+        // TODO: copy arguments from the stack
+
+        u32 result = main();
+
+        system_call_1(syscall_exit, result);
+}
+
+#endif

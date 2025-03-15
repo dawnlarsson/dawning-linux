@@ -21,6 +21,10 @@ echo "CONFIG_DEFAULT_HOSTNAME=\"$info_name-box\"" >> config/info
 
 sudo sh script/build.fs
 
+# Compile runtime programs
+sh library/compile programs/init fs/init
+
+# Download kernel
 sudo sh script/get.kernel
 
 # Config gen / setup
@@ -32,4 +36,5 @@ sh scripts/kconfig/merge_config.sh -m .config ../artifacts/.config
 sudo make olddefconfig
 cd ..
 
+# Compile kernel
 sudo sh script/build.kernel

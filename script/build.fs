@@ -1,9 +1,5 @@
 #!/bin/sh
 
-if [ -d fs ]; then
-    exit 1
-fi
-
 echo "Creating fs/ system directories"
 
 mkdir -p fs/sys

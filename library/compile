@@ -1,0 +1,16 @@
+compiler="clang"
+suppress=" -Wno-main-return-type -Wno-extra-tokens -Wno-invalid-pp-token -Wno-pointer-sign"
+
+flags_base=" -static -s -flto -nostdlib -nostartfiles -ffreestanding -fno-builtin"
+flags_base+=" -Qn -Wl,--build-id=none -Wl,--gc-sections -Wl,--strip-all -Wl,--strip-debug -Wl,-x -Wl,-s"
+flags_base+=" -Wl,-nmagic"
+
+flags_base+=" -O2"
+
+# more agrresive flags
+flags_base+=" -fno-asynchronous-unwind-tables -fomit-frame-pointer -fno-stack-protector"
+
+$compiler $1.c -o $2 $flags_base $suppress
+
+echo "Compiled $1.c to $2"
+sh script/size $2

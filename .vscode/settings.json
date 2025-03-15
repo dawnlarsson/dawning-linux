@@ -1,0 +1,12 @@
+{
+        "editor.tabSize": 8,
+        "files.associations": {
+                "unistd.h": "c",
+                "*.ipp": "cpp",
+                "cstdlib": "cpp",
+                "future": "cpp",
+                "coroutine": "c",
+                "random": "c",
+                "sstream": "c"
+        },
+}
