@@ -1,0 +1,11 @@
+#!/bin/sh
+cpu_cores=$(nproc)
+shared_flags=""
+linker_flags=""
+rust_flags=""
+
+make -C linux -j$cpu_cores CFLAGS="$shared_flags" KCPPFLAGS="${CFLAGS}" KAFLAGS="${CFLAGS}" LDFLAGS="$linker_flags" RUSTFLAGS="$rust_flags"
+
+sudo cp linux/arch/x86/boot/bzImage dist/bzImage
+
+script/size dist/bzImage

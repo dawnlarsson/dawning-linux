@@ -23,4 +23,13 @@ sudo sh script/build.fs
 
 sudo sh script/get.kernel
 
+# Config gen / setup
 sudo sh script/build.config $target_profile
+
+cd linux
+sudo make allnoconfig
+sh scripts/kconfig/merge_config.sh -m .config ../artifacts/.config
+sudo make olddefconfig
+cd ..
+
+sudo sh script/build.kernel
