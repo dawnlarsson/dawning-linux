@@ -1,0 +1,6 @@
+#!/bin/sh
+
+mkdir -p artifacts
+mkdir -p config
+mkdir -p fs
+mkdir -p dist
