@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 # Simply prints arg 1 file size in bytes, KB and MB
 # usage: /standard/scripts/size <file>

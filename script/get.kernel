@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 echo "Downloading kernel"
 
 kernel_extract_dir="linux/" 
