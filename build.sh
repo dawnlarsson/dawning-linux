@@ -8,7 +8,9 @@
 # day granularity is used for patch/fix/minor releases
 info_version="25"
 info_name="dawning-linux"
+
 target_platform="x86_64"
+target_profile="desktop"
 
 info_full_name="$info_name-$info_version"
 
@@ -20,3 +22,5 @@ echo "CONFIG_DEFAULT_HOSTNAME=\"$info_name-box\"" >> config/info
 sudo sh script/build.fs
 
 sudo sh script/get.kernel
+
+sudo sh script/build.config $target_profile
