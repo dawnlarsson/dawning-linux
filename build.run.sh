@@ -10,4 +10,6 @@
 
 # qemu-system-x86_64 -smp 16 -m 12G -kernel dist/bzImage
 
-qemu-system-x86_64 -enable-kvm -cpu host -smp 16 -m 12G -kernel dist/bzImage
+# qemu-system-x86_64 -enable-kvm -cpu host -smp 16 -m 12G -kernel dist/bzImage
+
+qemu-system-x86_64 -kernel dist/bzImage -smp 8 -m 4G -enable-kvm -device virtio-gpu

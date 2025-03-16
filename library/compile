@@ -14,3 +14,5 @@ $compiler $1.c -o $2 $flags_base $suppress
 
 echo "Compiled $1.c to $2"
 sh script/size $2
+
+chmod +x $2

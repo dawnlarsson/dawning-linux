@@ -3,7 +3,7 @@
 u32 main()
 {
         print("Hello, World!\n");
-        print("TODO: Actually made a distro now... lmao...\n");
+        print("TODO: Actually make a distro now... lmao...\n");
 
         while (1)
         {
