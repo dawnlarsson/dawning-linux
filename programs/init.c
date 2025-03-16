@@ -12,10 +12,10 @@ i32 main()
 
         if (process_id != 0)
         {
-                u8 address argv[] = {init_program};
+                u8 ADDRESS_TO argv[] = {init_program};
 
                 system_call_3(syscall_execve, (bipolar)init_program, (bipolar)argv, 0);
-                log("Failed to execute init program");
+                print("Failed to execute init program");
                 goto force_recovery;
         }
 

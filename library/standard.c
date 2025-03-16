@@ -521,7 +521,7 @@ typedef typeof(sizeof(0)) sized;
 #define fn_asm(name, return_type, arguments...) \
         static inline NAKED return_type name(arguments)
 
-fn_asm(system_call, positive, positive syscall)
+fn_asm(system_call, bipolar, positive syscall)
 {
         // syscall number
         copy(reg_0, reg_0);
@@ -530,7 +530,7 @@ fn_asm(system_call, positive, positive syscall)
         system_return;
 }
 
-fn_asm(system_call_1, positive, positive syscall, positive argument_1)
+fn_asm(system_call_1, bipolar, positive syscall, positive argument_1)
 {
         // syscall number
         copy(reg_1, reg_0);
@@ -542,7 +542,7 @@ fn_asm(system_call_1, positive, positive syscall, positive argument_1)
         system_return;
 }
 
-fn_asm(system_call_2, positive, positive syscall, positive argument_1, positive argument_2)
+fn_asm(system_call_2, bipolar, positive syscall, positive argument_1, positive argument_2)
 {
         // syscall number
         copy(reg_1, reg_0);
@@ -557,7 +557,7 @@ fn_asm(system_call_2, positive, positive syscall, positive argument_1, positive 
         system_return;
 }
 
-fn_asm(system_call_3, positive, positive syscall, positive argument_1, positive _startargument_2, positive argument_3)
+fn_asm(system_call_3, bipolar, positive syscall, positive argument_1, positive _startargument_2, positive argument_3)
 {
         // syscall number
         copy(reg_1, reg_0);
@@ -575,7 +575,7 @@ fn_asm(system_call_3, positive, positive syscall, positive argument_1, positive 
         system_return;
 }
 
-fn_asm(system_call_4, positive, positive syscall, positive argument_1, positive argument_2, positive argument_3, positive argument_4)
+fn_asm(system_call_4, bipolar, positive syscall, positive argument_1, positive argument_2, positive argument_3, positive argument_4)
 {
         // syscall number
         copy(reg_1, reg_0);
@@ -596,7 +596,7 @@ fn_asm(system_call_4, positive, positive syscall, positive argument_1, positive 
         system_return;
 }
 
-fn_asm(system_call_5, positive, positive syscall, positive argument_1, positive argument_2, positive argument_3, positive argument_4, positive argument_5)
+fn_asm(system_call_5, bipolar, positive syscall, positive argument_1, positive argument_2, positive argument_3, positive argument_4, positive argument_5)
 {
         // syscall number
         copy(reg_1, reg_0);
@@ -620,7 +620,7 @@ fn_asm(system_call_5, positive, positive syscall, positive argument_1, positive 
         system_return;
 }
 
-fn_asm(system_call_6, positive, positive syscall, positive argument_1, positive argument_2, positive argument_3, positive argument_4, positive argument_5, positive argument_6)
+fn_asm(system_call_6, bipolar, positive syscall, positive argument_1, positive argument_2, positive argument_3, positive argument_4, positive argument_5, positive argument_6)
 {
         // syscall number
         copy(reg_1, reg_0);

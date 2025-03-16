@@ -111,6 +111,8 @@ bipolar process_command()
 
 i32 main()
 {
+        memset(command_buffer, 0, MAX_INPUT);
+
         system_call_2(2, (positive) "/dev/console", O_RDWR | O_NOCTTY);
 
         while (1)
@@ -120,5 +122,7 @@ i32 main()
                 system_call_3(syscall_read, 0, (positive)command_buffer, MAX_INPUT);
 
                 process_command();
+
+                memset(command_buffer, 0, MAX_INPUT);
         }
 }
