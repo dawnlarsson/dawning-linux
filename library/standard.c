@@ -647,68 +647,65 @@ fn_asm(system_call_6, positive, positive syscall, positive argument_1, positive 
         system_return;
 }
 
-fn memset(u8 ADDRESS_TO destination, u8 value, positive size)
+ADDRESS memset(ADDRESS destination, u8 value, positive size)
 {
+        u8 ADDRESS_TO dest = (u8 ADDRESS_TO)destination;
+
         while (size--)
         {
-                ADDRESS_TO destination = value;
-                destination++;
+                ADDRESS_TO dest++ = (u8)value;
         }
+
+        return destination;
 }
 
-positive str_length(u8 ADDRESS_TO str)
+positive strlen(u8 ADDRESS_TO source)
 {
-        positive count = 0;
+        u8 ADDRESS_TO s = source;
 
-        while (ADDRESS_TO str++)
-        {
-                count++;
-        }
+        while (ADDRESS_TO s)
+                s++;
 
-        return count;
+        return s - source;
 }
 
-positive str_compare(u8 ADDRESS_TO a, u8 ADDRESS_TO b)
+u32 strcmp(u8 ADDRESS_TO source, u8 ADDRESS_TO input)
 {
-        while (ADDRESS_TO a && ADDRESS_TO b)
+        while (ADDRESS_TO source && ADDRESS_TO input)
         {
-                if (ADDRESS_TO a != ADDRESS_TO b)
-                {
-                        return false;
-                }
-
-                a++;
-                b++;
+                if (ADDRESS_TO source != ADDRESS_TO input)
+                        break;
+                source++;
+                input++;
         }
 
-        return true;
+        return (u8)ADDRESS_TO source - (u8)ADDRESS_TO input;
 }
 
-positive str_copy(u8 ADDRESS_TO destination, u8 ADDRESS_TO source)
+u8 ADDRESS_TO strcpy(u8 ADDRESS_TO destination, u8 ADDRESS_TO source)
+{
+        u8 ADDRESS_TO dest_start = destination;
+
+        while (ADDRESS_TO source)
+        {
+                ADDRESS_TO destination++ = ADDRESS_TO source++;
+        }
+
+        ADDRESS_TO destination = '\0';
+
+        return dest_start;
+}
+
+u8 ADDRESS_TO strchr(u8 ADDRESS_TO source, u32 character)
 {
         while (ADDRESS_TO source)
         {
-                ADDRESS_TO destination = ADDRESS_TO source;
-                destination++;
+                if (ADDRESS_TO source == (u8)character)
+                        return (u8 ADDRESS_TO)source;
                 source++;
         }
 
-        return str_length(source);
-}
-
-u8 ADDRESS_TO str_first(u8 ADDRESS_TO str, u8 character)
-{
-        while (ADDRESS_TO str)
-        {
-                if (ADDRESS_TO str == character)
-                {
-                        return str;
-                }
-
-                str++;
-        }
-
-        return NULL;
+        return (ADDRESS_TO source == (u8)character) ? (u8 ADDRESS_TO)source : NULL;
 }
 
 #ifdef X64
@@ -742,7 +739,7 @@ u8 ADDRESS_TO str_first(u8 ADDRESS_TO str, u8 character)
 
 fn print(u8 ADDRESS_TO message)
 {
-        system_call_3(syscall_write, stdout, (positive)message, str_length(message));
+        system_call_3(syscall_write, stdout, (positive)message, strlen(message));
 }
 
 i32 main();

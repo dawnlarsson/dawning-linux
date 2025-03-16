@@ -18,8 +18,17 @@
 #define HIDE_CURSOR "\033[?25l"
 #define SHOW_CURSOR "\033[?25h"
 #define RESET "\033[0m"
-
 #define PROMPT " $ "
+
+typedef fn(ADDRESS_TO CommandFunc)();
+
+typedef struct
+{
+        u8 ADDRESS_TO name;
+        CommandFunc func;
+} Command;
+
+u8 ADDRESS_TO command_buffer[MAX_INPUT] = {0};
 
 fn exec_command(u8 ADDRESS_TO args)
 {
@@ -28,110 +37,88 @@ fn exec_command(u8 ADDRESS_TO args)
         if (pid == 0)
                 return;
 
+        u32 argc = 0;
+        u8 ADDRESS_TO arg = args;
+
+        while (arg)
+        {
+                if (arg == ' ')
+                        argc++;
+                arg++;
+        }
+
         system_call_2(syscall_execve, (positive)args[0], (positive)args);
         system_call_1(syscall_exit, 0);
 }
 
-bipolar parse_input(u8 ADDRESS_TO input, u8 ADDRESS_TO args)
+fn cmd_echo()
 {
-        u8 ADDRESS_TO curr = input;
-
-        positive count = 0;
-        positive in_token = 0;
-
-        args[0] = ADDRESS_TO curr;
-
-        while (ADDRESS_TO curr)
-        {
-                if (ADDRESS_TO curr == ' ' || ADDRESS_TO curr == '\n')
-                {
-                        ADDRESS_TO curr = '\0';
-                        in_token = 0;
-                }
-                else if (!in_token)
-                {
-                        args[count++] = ADDRESS_TO curr;
-                        in_token = 1;
-                        if (count >= 32 - 1)
-                                break;
-                }
-                curr++;
-        }
-
-        args[count] = NULL;
-
-        return count;
+        print("echo\n");
 }
 
-// Builtin command handlers - avoid process spawning for common operations
-bipolar handle_builtin(u8 ADDRESS_TO args, positive arg_count)
+fn cmd_exit()
 {
-        // Compare first char for quick rejection
-        if (!args[0])
-                return 0;
+        system_call_1(syscall_exit, 0);
+}
 
-        if (str_compare(ADDRESS_OF args[0], "exit"))
+fn cmd_clear()
+{
+        print(CLEAR_SCREEN);
+}
+
+Command commands[] = {
+    {"echo", cmd_echo},
+    {"exit", cmd_exit},
+    {"clear", cmd_clear},
+    {NULL, NULL}};
+
+fn extract_command_name(u8 ADDRESS_TO dest, u8 ADDRESS_TO src)
+{
+        while (ADDRESS_TO src && ADDRESS_TO src != ' ')
         {
-                system_call_1(syscall_exit, 0);
+                ADDRESS_TO dest++ = ADDRESS_TO src++;
+        }
+        ADDRESS_TO dest = '\0';
+}
+
+bipolar process_command()
+{
+        u8 command_name[MAX_INPUT] = {0};
+        extract_command_name(command_name, command_buffer);
+
+        Command ADDRESS_TO cmd = commands;
+        while (cmd->name)
+        {
+                if (strcmp(cmd->name, command_name) == 0)
+                {
+                        cmd->func();
+                        return 0;
+                }
+                cmd++;
         }
 
-        u8 ADDRESS_TO path = "/bin/";
-        u8 ADDRESS_TO software = "/software/";
+        if (command_buffer[0] == '.' || command_buffer[0] == '/')
+        {
+                exec_command(command_buffer);
+                return 0;
+        }
 
-        u8 command_buffer[256] = {0};
-        command_buffer[256] = '\0';
-
-        str_copy(command_buffer, path);
-        str_copy(command_buffer + str_length(path), ADDRESS_OF args[0]);
-
-        u8 ADDRESS_TO argv[] = {"/bin/top"};
-        system_call_3(syscall_execve, (bipolar) "/bin/top", (bipolar)argv, 0);
-
-        print("Error not found");
-        print(command_buffer);
+        print("Command not found: ");
+        print(command_name);
 
         return 0;
-}
-
-fn input_clear(char ADDRESS_TO input_buffer)
-{
-        for (u32 i = 0; i < MAX_INPUT; i++)
-        {
-                input_buffer[i] = '\0';
-        }
 }
 
 i32 main()
 {
         system_call_2(2, (positive) "/dev/console", O_RDWR | O_NOCTTY);
 
-        u8 input_buffer[MAX_INPUT];
-        u8 ADDRESS_TO args[MAX_ARGS];
-
-        // input_clear(input_buffer);
-
         while (1)
         {
-                system_call_3(syscall_write, 1, (positive)PROMPT, sizeof(PROMPT) - 1);
+                print(RESET PROMPT);
 
-                u32 bytes = system_call_3(syscall_read, 0, (positive)input_buffer, MAX_INPUT);
+                system_call_3(syscall_read, 0, (positive)command_buffer, MAX_INPUT);
 
-                if (bytes <= 0)
-                        continue;
-
-                print(RESET);
-
-                // Parse and execute
-                u32 arg_count = parse_input(input_buffer, args);
-
-                if (arg_count > 0)
-                {
-                        if (!handle_builtin(args, arg_count))
-                        {
-                                exec_command(args);
-                        }
-                }
-
-                // input_clear(input_buffer);
+                process_command();
         }
 }
