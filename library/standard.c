@@ -745,13 +745,13 @@ fn print(u8 ADDRESS_TO message)
         system_call_3(syscall_write, stdout, (positive)message, str_length(message));
 }
 
-u32 main();
+i32 main();
 
 fn _start()
 {
         // TODO: copy arguments from the stack
 
-        u32 result = main();
+        i32 result = main();
 
         system_call_1(syscall_exit, result);
 }

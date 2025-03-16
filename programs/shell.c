@@ -23,7 +23,7 @@
 
 fn exec_command(u8 ADDRESS_TO args)
 {
-        int pid = system_call(syscall_fork);
+        u32 pid = system_call(syscall_fork);
 
         if (pid == 0)
                 return;
@@ -95,18 +95,18 @@ bipolar handle_builtin(u8 ADDRESS_TO args, positive arg_count)
 
 fn input_clear(char ADDRESS_TO input_buffer)
 {
-        for (int i = 0; i < MAX_INPUT; i++)
+        for (u32 i = 0; i < MAX_INPUT; i++)
         {
                 input_buffer[i] = '\0';
         }
 }
 
-u32 main()
+i32 main()
 {
         system_call_2(2, (positive) "/dev/console", O_RDWR | O_NOCTTY);
 
-        char input_buffer[MAX_INPUT];
-        char ADDRESS_TO args[MAX_ARGS];
+        u8 input_buffer[MAX_INPUT];
+        u8 ADDRESS_TO args[MAX_ARGS];
 
         // input_clear(input_buffer);
 
@@ -114,15 +114,15 @@ u32 main()
         {
                 system_call_3(syscall_write, 1, (positive)PROMPT, sizeof(PROMPT) - 1);
 
-                // Read input
-                int bytes = system_call_3(syscall_read, 0, (positive)input_buffer, MAX_INPUT);
+                u32 bytes = system_call_3(syscall_read, 0, (positive)input_buffer, MAX_INPUT);
+
                 if (bytes <= 0)
                         continue;
 
                 print(RESET);
 
                 // Parse and execute
-                int arg_count = parse_input(input_buffer, args);
+                u32 arg_count = parse_input(input_buffer, args);
 
                 if (arg_count > 0)
                 {
