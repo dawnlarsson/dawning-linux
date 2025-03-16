@@ -4,7 +4,10 @@ shared_flags=""
 linker_flags=""
 rust_flags=""
 
-make -C linux -j$cpu_cores CFLAGS="$shared_flags" KCPPFLAGS="${CFLAGS}" KAFLAGS="${CFLAGS}" LDFLAGS="$linker_flags" RUSTFLAGS="$rust_flags"
+cd linux
+make -j$cpu_cores KCPPFLAGS="${CFLAGS}" KAFLAGS="${CFLAGS}" LDFLAGS="$linker_flags" RUSTFLAGS="$rust_flags"
+
+cd ..
 
 sudo cp linux/arch/x86/boot/bzImage dist/bzImage
 
