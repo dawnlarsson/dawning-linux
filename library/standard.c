@@ -95,71 +95,152 @@ typedef __builtin_va_list variable_arguments;
 
 /// A non value returning function
 typedef void fn;
-
-typedef signed char i8;
-#define i8_max 255
-#define i8_min 0
-#define i8_char_max 3
-#define i8_bytes 1
-#define i8_bits 8
-
+// ### Positive range 8 bit integer
+// range:       0 to +255
+// memory:      [ 00000000 ]
+// hex:         [ 0x00 ]
+// linguistic:  (zero) to (plus) two hundred fifty-five
+// traditional: unsigned char
+// alt:         array of 8 bits
 typedef unsigned char u8;
-#define u8_max 127
-#define u8_min -128
-#define u8_char_max 4
+#define u8_max 255
+#define u8_min 0
+#define u8_char_max 3
 #define u8_bytes 1
 #define u8_bits 8
 
-typedef signed short int i16;
-#define i16_max 65535
-#define i16_min 0
-#define i16_char_max 6
-#define i16_bytes 2
-#define i16_bits 16
+// ### Bipolar range 8 bit integer
+// range:       -128 to +127
+// memory:      [ 00000000 ]
+// hex:         [ 0x00 ]
+// linguistic:  (minus) one hundred twenty-eight to (plus) one hundred twenty-seven
+// traditional: signed char
+// alt:         array of 8 bits
+typedef signed char i8;
+#define i8_max 127
+#define i8_min -128
+#define i8_char_max 4
+#define i8_bytes 1
+#define i8_bits 8
 
+// ### Positive range 16 bit integer
+// range:       0 to +65535
+// memory:      [ 00000000 | 00000000 ]
+// hex:         [ 0x00 | 0x00 ]
+// linguistic:  (zero) to (plus) sixty-five thousand...
+// traditional: unsigned short
+// alt:         array of 16 bits
 typedef unsigned short int u16;
-#define u16_max 32767
-#define u16_min -32768
+#define u16_max 65535
+#define u16_min 0
 #define u16_char_max 6
 #define u16_bytes 2
 #define u16_bits 16
 
-typedef signed int i32;
-#define i32_max 4294967295
-#define i32_min 0
-#define i32_char_max 10
-#define i32_bytes 4
-#define i32_bits 32
+// ### Bipolar range 16 bit integer
+// range:       -32768 to +32767
+// memory:      [ 00000000 | 00000000 ]
+// hex:         [ 0x00 | 0x00 ]
+// linguistic:  (minus) thirty-two thousand... to (plus) thirty-two thousand...
+// traditional: signed short
+// alt:         array of 16 bits
+typedef signed short int i16;
+#define i16_max 32767
+#define i16_min -32768
+#define i16_char_max 6
+#define i16_bytes 2
+#define i16_bits 16
 
+// ### Positive range 32 bit integer
+// range:       0 to +4294967295
+// memory:      [ 00000000 | 00000000 | 00000000 | 00000000 ]
+// hex:         [ 0x00 | 0x00 | 0x00 | 0x00 ]
+// linguistic:  (zero) to (plus) four billion...
+// traditional: unsigned int
+// alt:         array of 32 bits
 typedef unsigned int u32;
-#define u32_max 2147483647
-#define u32_min -2147483648
-#define u32_char_max 11
+#define u32_max 4294967295
+#define u32_min 0
+#define u32_char_max 10
 #define u32_bytes 4
 #define u32_bits 32
 
-typedef signed long int i64;
-#define i64_max 18446744073709551615
-#define i64_min 0
-#define i64_char_max 20
-#define i64_bytes 8
-#define i64_bits 64
+// ### Bipolar range 32 bit integer
+// range:       -2147483648 to +2147483647
+// memory:      [ 00000000 | 00000000 | 00000000 | 00000000 ]
+// hex:         [ 0x00 | 0x00 | 0x00 | 0x00 ]
+// linguistic:  (minus) two billion... to (plus) two billion...
+// traditional: signed int
+// alt:         array of 32 bits
+typedef signed int i32;
+#define i32_max 2147483647
+#define i32_min -2147483648
+#define i32_char_max 11
+#define i32_bytes 4
+#define i32_bits 32
 
+// ### Positive range 64 bit integer
+// range:       0 to +18446744073709551615
+// memory:      [ 00000000 | 00000000 | 00000000 | 00000000 | 00000000 | 00000000 | 00000000 | 00000000 ]
+// hex:         [ 0x00 | 0x00 | 0x00 | 0x00 | 0x00 | 0x00 | 0x00 | 0x00 ]
+// linguistic:  (zero) to (plus) eighteen quintillion...
+// traditional: unsigned long int
+// alt:         array of 64 bits
 typedef unsigned long int u64;
-#define u64_max 9223372036854775807
-#define u64_min -9223372036854775808
-#define u64_char_max 21
+#define u64_max 18446744073709551615
+#define u64_min 0
+#define u64_char_max 20
 #define u64_bytes 8
 #define u64_bits 64
 
-#if BITS == 64
+// ### Bipolar range 64 bit integer
+// range:       -9223372036854775808 to +9223372036854775807
+// memory:      [ 00000000 | 00000000 | 00000000 | 00000000 | 00000000 | 00000000 | 00000000 | 00000000 ]
+// hex:         [ 0x00 | 0x00 | 0x00 | 0x00 | 0x00 | 0x00 | 0x00 | 0x00 ]
+// linguistic:  (minus) nine quintillion... to (plus) nine quintillion...
+// traditional: signed long int
+// alt:         array of 64 bits
 typedef signed long int i64;
-typedef unsigned long int u64;
-#else
+#define i64_max 9223372036854775807
+#define i64_min -9223372036854775808
+#define i64_char_max 21
+#define i64_bytes 8
+#define i64_bits 64
+
+// ### Positive range 128 bit integer
+// range:       0 to +340282366920938463463374607431768211455
+// memory:      2x [ 00000000 | 00000000 | 00000000 | 00000000 | 00000000 | 00000000 | 00000000 | 00000000 ]
+// hex:         2x [ 0x00 | 0x00 | 0x00 | 0x00 | 0x00 | 0x00 | 0x00 | 0x00 ]
+// linguistic:  (zero) to (plus) three hundred forty undecillion...
+// traditional: unsigned long long int
+// alt:         array of 128 bits
+typedef unsigned long long int u128;
+#define u128_max 340282366920938463463374607431768211455
+#define u128_min 0
+#define u128_char_max 39
+#define u128_bytes 16
+#define u128_bits 128
+
+// ### Bipolar range 128 bit integer
+// range:       -170141183460469231731687303715884105727 to +170141183460469231731687303715884105727
+// memory:      2x [ 00000000 | 00000000 | 00000000 | 00000000 | 00000000 | 00000000 | 00000000 | 00000000 ]
+// hex:         2x [ 0x00 | 0x00 | 0x00 | 0x00 | 0x00 | 0x00 | 0x00 | 0x00 ]
+// linguistic:  (minus) one hundred seventy undecillion... to (plus) one hundred seventy undecillion...
+// traditional: signed long long int
+// alt:         array of 128 bits
+typedef signed long long int i128;
+#define i128_max 170141183460469231731687303715884105727
+#define i128_min -170141183460469231731687303715884105728
+#define i128_char_max 40
+#define i128_bytes 16
+#define i128_bits 128
+
+#if BITS != 64
 __extension__ typedef signed long long int i64;
 __extension__ typedef unsigned long long int u64;
 #endif
 
+// Use i64 for signed size type and u64 for unsigned size type
 typedef i64 isize;
 typedef u64 usize;
 
