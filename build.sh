@@ -23,6 +23,7 @@ sudo sh script/build.fs
 
 # Compile runtime programs
 sh library/compile programs/init fs/init
+sh library/compile programs/shell fs/shell
 
 # Download kernel
 sudo sh script/get.kernel

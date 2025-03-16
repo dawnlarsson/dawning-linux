@@ -646,6 +646,12 @@ u8 ADDRESS_TO str_first(u8 ADDRESS_TO str, u8 character)
 #define syscall_readv 19
 #define syscall_writev 20
 
+#define syscall_mount 40
+#define syscall_umount2 39
+#define syscall_chdir 80
+#define syscall_fork 57
+#define syscall_execve 59
+
 #define syscall_nanosleep 35
 #endif
 

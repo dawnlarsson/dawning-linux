@@ -7,6 +7,12 @@
                 "future": "cpp",
                 "coroutine": "c",
                 "random": "c",
-                "sstream": "c"
+                "sstream": "c",
+                "*.tcc": "c",
+                "chrono": "c",
+                "functional": "c",
+                "array": "c",
+                "string_view": "c",
+                "span": "c"
         },
 }
