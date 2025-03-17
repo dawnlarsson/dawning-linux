@@ -70,9 +70,7 @@ Command commands[] = {
 fn extract_command_name(string_address dest, string_address source)
 {
         while (string_get(source) && string_is(source, ' '))
-        {
                 source++;
-        }
 
         while (string_get(source) && !string_is(source, ' ') && !string_is(source, '\n'))
         {
@@ -89,27 +87,19 @@ fn trim_newline(string_address soruce)
         string_address step = soruce;
 
         while (string_get(step))
-        {
                 step++;
-        }
 
         if (step > soruce)
-        {
                 step--;
-        }
 
         if (string_is(step, '\n'))
-        {
                 string_set(step, '\0');
-        }
 }
 
 bipolar process_command()
 {
         if (!string_get(command_buffer) || string_is(command_buffer, '\n'))
-        {
                 return 0;
-        }
 
         trim_newline(command_buffer);
 
@@ -117,9 +107,7 @@ bipolar process_command()
         extract_command_name(name, command_buffer);
 
         if (!string_get(name))
-        {
                 return 0;
-        }
 
         Command ADDRESS_TO cmd = commands;
         while (cmd->name)

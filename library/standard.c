@@ -109,6 +109,9 @@ typedef unsigned char u8;
 #define u8_bytes 1
 #define u8_bits 8
 
+// ### Positive range 8 bit integer
+typedef u8 p8;
+
 // ### Bipolar range 8 bit integer
 // range:       -128 to +127
 // memory:      [ 00000000 ]
@@ -122,6 +125,9 @@ typedef signed char i8;
 #define i8_char_max 4
 #define i8_bytes 1
 #define i8_bits 8
+
+// ### Bipolar range 8 bit integer
+typedef i8 b8;
 
 // ### Positive range 16 bit integer
 // range:       0 to +65535
@@ -137,6 +143,9 @@ typedef unsigned short int u16;
 #define u16_bytes 2
 #define u16_bits 16
 
+// ### Positive range 16 bit integer
+typedef u16 p16;
+
 // ### Bipolar range 16 bit integer
 // range:       -32768 to +32767
 // memory:      [ 00000000 | 00000000 ]
@@ -150,6 +159,9 @@ typedef signed short int i16;
 #define i16_char_max 6
 #define i16_bytes 2
 #define i16_bits 16
+
+// ### Bipolar range 16 bit integer
+typedef i16 b16;
 
 // ### Positive range 32 bit integer
 // range:       0 to +4294967295
@@ -165,6 +177,9 @@ typedef unsigned int u32;
 #define u32_bytes 4
 #define u32_bits 32
 
+// ### Positive range 32 bit integer
+typedef u32 p32;
+
 // ### Bipolar range 32 bit integer
 // range:       -2147483648 to +2147483647
 // memory:      [ 00000000 | 00000000 | 00000000 | 00000000 ]
@@ -178,6 +193,9 @@ typedef signed int i32;
 #define i32_char_max 11
 #define i32_bytes 4
 #define i32_bits 32
+
+// ### Bipolar range 32 bit integer
+typedef i32 b32;
 
 // ### Positive range 64 bit integer
 // range:       0 to +18446744073709551615
@@ -193,6 +211,9 @@ typedef unsigned long int u64;
 #define u64_bytes 8
 #define u64_bits 64
 
+// ### Positive range 64 bit integer
+typedef u64 p64;
+
 // ### Bipolar range 64 bit integer
 // range:       -9223372036854775808 to +9223372036854775807
 // memory:      [ 00000000 | 00000000 | 00000000 | 00000000 | 00000000 | 00000000 | 00000000 | 00000000 ]
@@ -206,6 +227,9 @@ typedef signed long int i64;
 #define i64_char_max 21
 #define i64_bytes 8
 #define i64_bits 64
+
+// ### Bipolar range 64 bit integer
+typedef i64 b64;
 
 // ### Positive range 128 bit integer
 // range:       0 to +340282366920938463463374607431768211455
@@ -221,6 +245,9 @@ typedef unsigned long long int u128;
 #define u128_bytes 16
 #define u128_bits 128
 
+// ### Positive range 128 bit integer
+typedef u128 p128;
+
 // ### Bipolar range 128 bit integer
 // range:       -170141183460469231731687303715884105727 to +170141183460469231731687303715884105727
 // memory:      2x [ 00000000 | 00000000 | 00000000 | 00000000 | 00000000 | 00000000 | 00000000 | 00000000 ]
@@ -234,6 +261,9 @@ typedef signed long long int i128;
 #define i128_char_max 40
 #define i128_bytes 16
 #define i128_bits 128
+
+// ### Bipolar range 128 bit integer
+typedef i128 b128;
 
 #if BITS != 64
 __extension__ typedef signed long long int i64;
@@ -697,9 +727,7 @@ string_address strcpy(string_address destination, string_address source)
         string_address start = destination;
 
         while (string_get(source))
-        {
                 string_set(destination++, string_get(source++));
-        }
 
         string_set(destination, '\0');
 

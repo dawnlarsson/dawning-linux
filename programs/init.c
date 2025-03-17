@@ -54,14 +54,8 @@ i32 main()
 
                 system_call_3(syscall_execve, (bipolar)init_program, (bipolar)argv, 0);
                 print("Failed to execute init program");
-                goto force_recovery;
         }
 
-force_recovery:
         while (1)
-        {
                 system_call_1(syscall_nanosleep, (bipolar){1, 0});
-        }
-
-        goto force_recovery;
 }
