@@ -1,5 +1,6 @@
 # Dawning Linux
-**Experimental** Micro Linux Distro
+**Experimental** Micro Linux Distro,
+co-developed together with a modern experimental micro runtime C standard library (dawning-standard c)
 
 build:
 ```

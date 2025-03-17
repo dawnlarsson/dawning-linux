@@ -742,6 +742,7 @@ string_address strchr(string_address source, u8 character)
 #define syscall_execve 59
 
 #define syscall_nanosleep 35
+#define syscall_setsid 112
 
 #define syscall_wait4 61
 #endif
