@@ -84,23 +84,23 @@ fn extract_command_name(string_address dest, string_address source)
         string_set(dest, '\0');
 }
 
-fn trim_newline(string_address str)
+fn trim_newline(string_address soruce)
 {
-        string_address ptr = str;
+        string_address step = soruce;
 
-        while (string_get(ptr))
+        while (string_get(step))
         {
-                ptr++;
+                step++;
         }
 
-        if (ptr > str)
+        if (step > soruce)
         {
-                ptr--;
+                step--;
         }
 
-        if (string_is(ptr, '\n'))
+        if (string_is(step, '\n'))
         {
-                string_set(ptr, '\0');
+                string_set(step, '\0');
         }
 }
 
@@ -121,7 +121,7 @@ bipolar process_command()
                 return 0;
         }
 
-        Command *cmd = commands;
+        Command ADDRESS_TO cmd = commands;
         while (cmd->name)
         {
                 if (strcmp(cmd->name, name) == 0)
