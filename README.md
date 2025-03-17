@@ -1,5 +1,5 @@
-# dawning-linux
-experimenting with Linux stuff, porting previous configs/tests into a mono repo
+# Dawning Linux
+**Experimental** Micro Linux Distro
 
 build:
 ```
