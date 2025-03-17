@@ -486,17 +486,17 @@ typedef typeof(sizeof(0)) sized;
 #define asm_branch "beq"
 #define system_invoke "ecall"
 
-#define reg_0 a0
-#define reg_1 a1
-#define reg_2 a2
-#define reg_3 a3
-#define reg_4 a4
-#define reg_5 a5
-#define reg_6 a6
-#define tem_0 t0
-#define tem_1 t1
-#define stack_pointer sp
-#define frame_pointer s0
+#define reg_0 "a0"
+#define reg_1 "a1"
+#define reg_2 "a2"
+#define reg_3 "a3"
+#define reg_4 "a4"
+#define reg_5 "a5"
+#define reg_6 "a6"
+#define tem_0 "t0"
+#define tem_1 "t1"
+#define stack_pointer "sp"
+#define frame_pointer "s0"
 
 #endif
 
