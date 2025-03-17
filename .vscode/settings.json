@@ -13,6 +13,17 @@
                 "functional": "c",
                 "array": "c",
                 "string_view": "c",
-                "span": "c"
+                "span": "c",
+                "string": "c",
+                "format": "c",
+                "ranges": "c",
+                "variant": "c",
+                "charconv": "c",
+                "optional": "c",
+                "ratio": "c",
+                "system_error": "c",
+                "tuple": "c",
+                "type_traits": "c",
+                "utility": "c"
         },
 }

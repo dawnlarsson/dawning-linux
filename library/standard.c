@@ -659,53 +659,64 @@ ADDRESS memset(ADDRESS destination, u8 value, positive size)
         return destination;
 }
 
-positive strlen(u8 ADDRESS_TO source)
+typedef u8 ADDRESS_TO string_address;
+typedef u8 string[];
+
+#define string_index(source, index) (ADDRESS_TO((source) + (index)))
+#define string_get(source) (ADDRESS_TO(source))
+#define string_set(source, value) (ADDRESS_TO(source) = (value))
+#define string_is(source, value) (ADDRESS_TO(source) == (value))
+#define string_equals(source, input) (strcmp(source, input) == 0)
+
+positive strlen(string_address source)
 {
-        u8 ADDRESS_TO s = source;
+        string_address step = source;
 
-        while (ADDRESS_TO s)
-                s++;
+        while (string_get(step))
+                step++;
 
-        return s - source;
+        return step - source;
 }
 
-u32 strcmp(u8 ADDRESS_TO source, u8 ADDRESS_TO input)
+u32 strcmp(string_address source, string_address input)
 {
-        while (ADDRESS_TO source && ADDRESS_TO input)
+        while (string_get(source) && string_get(input))
         {
-                if (ADDRESS_TO source != ADDRESS_TO input)
+                if (string_get(source) != string_get(input))
                         break;
+
                 source++;
                 input++;
         }
 
-        return (u8)ADDRESS_TO source - (u8)ADDRESS_TO input;
+        return (u8)string_get(source) - (u8)string_get(input);
 }
 
-u8 ADDRESS_TO strcpy(u8 ADDRESS_TO destination, u8 ADDRESS_TO source)
+string_address strcpy(string_address destination, string_address source)
 {
-        u8 ADDRESS_TO dest_start = destination;
+        string_address start = destination;
 
-        while (ADDRESS_TO source)
+        while (string_get(source))
         {
-                ADDRESS_TO destination++ = ADDRESS_TO source++;
+                string_set(destination++, string_get(source++));
         }
 
-        ADDRESS_TO destination = '\0';
+        string_set(destination, '\0');
 
-        return dest_start;
+        return start;
 }
 
-u8 ADDRESS_TO strchr(u8 ADDRESS_TO source, u32 character)
+string_address strchr(string_address source, u8 character)
 {
-        while (ADDRESS_TO source)
+        while (string_get(source))
         {
-                if (ADDRESS_TO source == (u8)character)
-                        return (u8 ADDRESS_TO)source;
+                if (string_get(source) == character)
+                        return source;
+
                 source++;
         }
 
-        return (ADDRESS_TO source == (u8)character) ? (u8 ADDRESS_TO)source : NULL;
+        return (string_get(source) == character) ? source : NULL;
 }
 
 #ifdef X64

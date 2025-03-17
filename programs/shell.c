@@ -24,13 +24,13 @@ typedef fn(ADDRESS_TO CommandFunc)();
 
 typedef struct
 {
-        u8 ADDRESS_TO name;
+        string_address name;
         CommandFunc func;
 } Command;
 
-u8 ADDRESS_TO command_buffer[MAX_INPUT] = {0};
+u8 command_buffer[MAX_INPUT] = {0};
 
-fn exec_command(u8 ADDRESS_TO args)
+fn exec_command(string_address args)
 {
         u32 pid = system_call(syscall_fork);
 
@@ -38,11 +38,11 @@ fn exec_command(u8 ADDRESS_TO args)
                 return;
 
         u32 argc = 0;
-        u8 ADDRESS_TO arg = args;
+        string_address arg = args;
 
         while (arg)
         {
-                if (arg == ' ')
+                if (string_is(arg, ' '))
                         argc++;
                 arg++;
         }
@@ -72,24 +72,26 @@ Command commands[] = {
     {"clear", cmd_clear},
     {NULL, NULL}};
 
-fn extract_command_name(u8 ADDRESS_TO dest, u8 ADDRESS_TO src)
+fn extract_command_name(string_address dest, string_address src)
 {
         while (ADDRESS_TO src && ADDRESS_TO src != ' ')
         {
                 ADDRESS_TO dest++ = ADDRESS_TO src++;
         }
+
         ADDRESS_TO dest = '\0';
 }
 
 bipolar process_command()
 {
-        u8 command_name[MAX_INPUT] = {0};
-        extract_command_name(command_name, command_buffer);
+        u8 name[MAX_INPUT] = {0};
+        extract_command_name(name, command_buffer);
 
         Command ADDRESS_TO cmd = commands;
+
         while (cmd->name)
         {
-                if (strcmp(cmd->name, command_name) == 0)
+                if (string_equals(cmd->name, name))
                 {
                         cmd->func();
                         return 0;
@@ -97,14 +99,14 @@ bipolar process_command()
                 cmd++;
         }
 
-        if (command_buffer[0] == '.' || command_buffer[0] == '/')
+        if (string_is(command_buffer, '.') || string_is(command_buffer, '/'))
         {
-                exec_command(command_buffer);
+                exec_command(ADDRESS_OF command_buffer);
                 return 0;
         }
 
         print("Command not found: ");
-        print(command_name);
+        print(name);
 
         return 0;
 }
