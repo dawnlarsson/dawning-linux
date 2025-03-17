@@ -701,6 +701,35 @@ fn_asm(system_call_6, bipolar, positive syscall, positive argument_1, positive a
         system_return;
 }
 
+#ifdef X64
+// ### Get CPU time (Time Stamp Counter)
+// returns: the current CPU time
+p64 get_cpu_time()
+{
+        p32 hi, lo;
+        ir("rdtsc" : "=a"(lo), "=d"(hi));
+        return ((p64)hi << 32) | lo;
+}
+#elif defined(ARM64)
+// ### Get CPU time (Time Stamp Counter)
+// returns: the current CPU time
+p64 get_cpu_time()
+{
+        p64 result;
+        ir("mrs %0, cntvct_el0" : "=r"(result));
+        return result;
+}
+#elif defined(RISCV64)
+// ### Get CPU time (Time Stamp Counter)
+// returns: the current CPU time
+p64 get_cpu_time()
+{
+        p64 result;
+        ir("rdtime %0" : "=r"(result));
+        return result;
+}
+#endif
+
 // ### Fill a memory block with the same value
 // fills a memory block with the same value
 // returns: destination address
