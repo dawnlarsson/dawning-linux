@@ -4,6 +4,8 @@
 #define MAX_INPUT 1024
 #define MAX_ARGS 64
 
+u8 command_buffer[MAX_INPUT];
+
 #define O_RDONLY 00
 #define O_WRONLY 01
 #define O_RDWR 02
@@ -28,32 +30,24 @@ typedef struct
         CommandFunc func;
 } Command;
 
-u8 command_buffer[MAX_INPUT] = {0};
-
 fn exec_command(string_address args)
 {
         u32 pid = system_call(syscall_fork);
 
         if (pid == 0)
-                return;
-
-        u32 argc = 0;
-        string_address arg = args;
-
-        while (arg)
         {
-                if (string_is(arg, ' '))
-                        argc++;
-                arg++;
+                system_call_2(syscall_execve, (positive)args, (positive)args);
+                system_call_1(syscall_exit, 0);
         }
 
-        system_call_2(syscall_execve, (positive)args[0], (positive)args);
-        system_call_1(syscall_exit, 0);
+        system_call_1(syscall_wait4, pid);
 }
 
 fn cmd_echo()
 {
-        print("echo\n");
+        string_address args = strchr(command_buffer, ' ');
+        print(args ? args + 1 : "");
+        print("\n");
 }
 
 fn cmd_exit()
@@ -70,28 +64,67 @@ Command commands[] = {
     {"echo", cmd_echo},
     {"exit", cmd_exit},
     {"clear", cmd_clear},
-    {NULL, NULL}};
+    {NULL, NULL},
+};
 
-fn extract_command_name(string_address dest, string_address src)
+fn extract_command_name(string_address dest, string_address source)
 {
-        while (ADDRESS_TO src && ADDRESS_TO src != ' ')
+        while (string_get(source) && string_is(source, ' '))
         {
-                ADDRESS_TO dest++ = ADDRESS_TO src++;
+                source++;
         }
 
-        ADDRESS_TO dest = '\0';
+        while (string_get(source) && !string_is(source, ' ') && !string_is(source, '\n'))
+        {
+                string_set(dest, string_get(source));
+                dest++;
+                source++;
+        }
+
+        string_set(dest, '\0');
+}
+
+fn trim_newline(string_address str)
+{
+        string_address ptr = str;
+
+        while (string_get(ptr))
+        {
+                ptr++;
+        }
+
+        if (ptr > str)
+        {
+                ptr--;
+        }
+
+        if (string_is(ptr, '\n'))
+        {
+                string_set(ptr, '\0');
+        }
 }
 
 bipolar process_command()
 {
+        if (!string_get(command_buffer) || string_is(command_buffer, '\n'))
+        {
+                return 0;
+        }
+
+        trim_newline(command_buffer);
+
         u8 name[MAX_INPUT] = {0};
         extract_command_name(name, command_buffer);
 
-        Command ADDRESS_TO cmd = commands;
+        if (!string_get(name))
+        {
+                return 0;
+        }
 
+        Command *cmd = commands;
         while (cmd->name)
         {
-                if (string_equals(cmd->name, name))
+                if (strcmp(cmd->name, name) == 0)
                 {
                         cmd->func();
                         return 0;
@@ -99,14 +132,15 @@ bipolar process_command()
                 cmd++;
         }
 
-        if (string_is(command_buffer, '.') || string_is(command_buffer, '/'))
+        if (string_index(command_buffer, 0) == '.' || string_index(command_buffer, 0) == '/')
         {
-                exec_command(ADDRESS_OF command_buffer);
+                exec_command(command_buffer);
                 return 0;
         }
 
         print("Command not found: ");
         print(name);
+        print("\n");
 
         return 0;
 }
@@ -121,7 +155,12 @@ i32 main()
         {
                 print(RESET PROMPT);
 
-                system_call_3(syscall_read, 0, (positive)command_buffer, MAX_INPUT);
+                u32 bytes_read = system_call_3(syscall_read, 0, (positive)command_buffer, MAX_INPUT);
+
+                if (bytes_read > 0 && bytes_read < MAX_INPUT)
+                {
+                        command_buffer[bytes_read] = '\0';
+                }
 
                 process_command();
 

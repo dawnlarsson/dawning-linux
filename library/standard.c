@@ -742,6 +742,8 @@ string_address strchr(string_address source, u8 character)
 #define syscall_execve 59
 
 #define syscall_nanosleep 35
+
+#define syscall_wait4 61
 #endif
 
 #ifdef X86 || ARM32 || RISCV32 || RISCV64 || ARM64
