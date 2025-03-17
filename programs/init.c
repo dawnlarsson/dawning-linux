@@ -40,7 +40,7 @@ fn mount_filesystems()
         }
 }
 
-i32 main()
+b32 main()
 {
         system_call(syscall_setsid);
 
@@ -50,7 +50,7 @@ i32 main()
 
         if (process_id != 0)
         {
-                u8 ADDRESS_TO argv[] = {init_program};
+                b8 ADDRESS_TO argv[] = {init_program};
 
                 system_call_3(syscall_execve, (bipolar)init_program, (bipolar)argv, 0);
                 print("Failed to execute init program");

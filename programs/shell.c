@@ -4,7 +4,7 @@
 #define MAX_INPUT 1024
 #define MAX_ARGS 64
 
-u8 command_buffer[MAX_INPUT];
+p8 command_buffer[MAX_INPUT];
 
 #define O_RDONLY 00
 #define O_WRONLY 01
@@ -32,7 +32,7 @@ typedef struct
 
 fn exec_command(string_address args)
 {
-        u32 pid = system_call(syscall_fork);
+        p32 pid = system_call(syscall_fork);
 
         if (pid == 0)
         {
@@ -103,7 +103,7 @@ bipolar process_command()
 
         trim_newline(command_buffer);
 
-        u8 name[MAX_INPUT] = {0};
+        p8 name[MAX_INPUT] = {0};
         extract_command_name(name, command_buffer);
 
         if (!string_get(name))
@@ -133,7 +133,7 @@ bipolar process_command()
         return 0;
 }
 
-i32 main()
+b32 main()
 {
         memset(command_buffer, 0, MAX_INPUT);
 
@@ -143,7 +143,7 @@ i32 main()
         {
                 print(RESET PROMPT);
 
-                u32 bytes_read = system_call_3(syscall_read, 0, (positive)command_buffer, MAX_INPUT);
+                p32 bytes_read = system_call_3(syscall_read, 0, (positive)command_buffer, MAX_INPUT);
 
                 if (bytes_read > 0 && bytes_read < MAX_INPUT)
                 {

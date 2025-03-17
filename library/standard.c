@@ -93,8 +93,15 @@ typedef __builtin_va_list variable_arguments;
 #define IS_NULL_ADDRESS(ptr) ((ptr) == NULL_ADDRESS)
 #define NULL 0
 
+// ### Values that never can be negative
+#define positive_range signed
+
+// ### Values that can be negative
+#define bipolar_range unsigned
+
 /// A non value returning function
 typedef void fn;
+
 // ### Positive range 8 bit integer
 // range:       0 to +255
 // memory:      [ 00000000 ]
@@ -102,15 +109,13 @@ typedef void fn;
 // linguistic:  (zero) to (plus) two hundred fifty-five
 // traditional: unsigned char
 // alt:         array of 8 bits
-typedef unsigned char u8;
-#define u8_max 255
-#define u8_min 0
-#define u8_char_max 3
-#define u8_bytes 1
-#define u8_bits 8
-
-// ### Positive range 8 bit integer
-typedef u8 p8;
+typedef positive_range char p8;
+#define p8_max 255
+#define p8_min 0
+#define p8_char_max 3
+#define p8_bytes 1
+#define p8_bits 8
+typedef p8 u8;
 
 // ### Bipolar range 8 bit integer
 // range:       -128 to +127
@@ -119,15 +124,13 @@ typedef u8 p8;
 // linguistic:  (minus) one hundred twenty-eight to (plus) one hundred twenty-seven
 // traditional: signed char
 // alt:         array of 8 bits
-typedef signed char i8;
-#define i8_max 127
-#define i8_min -128
-#define i8_char_max 4
-#define i8_bytes 1
-#define i8_bits 8
-
-// ### Bipolar range 8 bit integer
-typedef i8 b8;
+typedef bipolar_range char b8;
+#define b8_max 127
+#define b8_min -128
+#define b8_char_max 4
+#define b8_bytes 1
+#define b8_bits 8
+typedef b8 i8;
 
 // ### Positive range 16 bit integer
 // range:       0 to +65535
@@ -136,15 +139,13 @@ typedef i8 b8;
 // linguistic:  (zero) to (plus) sixty-five thousand...
 // traditional: unsigned short
 // alt:         array of 16 bits
-typedef unsigned short int u16;
-#define u16_max 65535
-#define u16_min 0
-#define u16_char_max 6
-#define u16_bytes 2
-#define u16_bits 16
-
-// ### Positive range 16 bit integer
-typedef u16 p16;
+typedef positive_range short int p16;
+#define p16_max 65535
+#define p16_min 0
+#define p16_char_max 6
+#define p16_bytes 2
+#define p16_bits 16
+typedef p16 u16;
 
 // ### Bipolar range 16 bit integer
 // range:       -32768 to +32767
@@ -153,15 +154,13 @@ typedef u16 p16;
 // linguistic:  (minus) thirty-two thousand... to (plus) thirty-two thousand...
 // traditional: signed short
 // alt:         array of 16 bits
-typedef signed short int i16;
-#define i16_max 32767
-#define i16_min -32768
-#define i16_char_max 6
-#define i16_bytes 2
-#define i16_bits 16
-
-// ### Bipolar range 16 bit integer
-typedef i16 b16;
+typedef bipolar_range short int b16;
+#define b16_max 32767
+#define b16_min -32768
+#define b16_char_max 6
+#define b16_bytes 2
+#define b16_bits 16
+typedef b16 i16;
 
 // ### Positive range 32 bit integer
 // range:       0 to +4294967295
@@ -170,15 +169,13 @@ typedef i16 b16;
 // linguistic:  (zero) to (plus) four billion...
 // traditional: unsigned int
 // alt:         array of 32 bits
-typedef unsigned int u32;
-#define u32_max 4294967295
-#define u32_min 0
-#define u32_char_max 10
-#define u32_bytes 4
-#define u32_bits 32
-
-// ### Positive range 32 bit integer
-typedef u32 p32;
+typedef positive_range int p32;
+#define p32_max 4294967295
+#define p32_min 0
+#define p32_char_max 10
+#define p32_bytes 4
+#define p32_bits 32
+typedef p32 u32;
 
 // ### Bipolar range 32 bit integer
 // range:       -2147483648 to +2147483647
@@ -187,15 +184,13 @@ typedef u32 p32;
 // linguistic:  (minus) two billion... to (plus) two billion...
 // traditional: signed int
 // alt:         array of 32 bits
-typedef signed int i32;
-#define i32_max 2147483647
-#define i32_min -2147483648
-#define i32_char_max 11
-#define i32_bytes 4
-#define i32_bits 32
-
-// ### Bipolar range 32 bit integer
-typedef i32 b32;
+typedef bipolar_range int b32;
+#define b32_max 2147483647
+#define b32_min -2147483648
+#define b32_char_max 11
+#define b32_bytes 4
+#define b32_bits 32
+typedef b32 i32;
 
 // ### Positive range 64 bit integer
 // range:       0 to +18446744073709551615
@@ -204,15 +199,13 @@ typedef i32 b32;
 // linguistic:  (zero) to (plus) eighteen quintillion...
 // traditional: unsigned long int
 // alt:         array of 64 bits
-typedef unsigned long int u64;
-#define u64_max 18446744073709551615
-#define u64_min 0
-#define u64_char_max 20
-#define u64_bytes 8
-#define u64_bits 64
-
-// ### Positive range 64 bit integer
-typedef u64 p64;
+typedef positive_range long int p64;
+#define p64_max 18446744073709551615
+#define p64_min 0
+#define p64_char_max 20
+#define p64_bytes 8
+#define p64_bits 64
+typedef p64 u64;
 
 // ### Bipolar range 64 bit integer
 // range:       -9223372036854775808 to +9223372036854775807
@@ -221,15 +214,13 @@ typedef u64 p64;
 // linguistic:  (minus) nine quintillion... to (plus) nine quintillion...
 // traditional: signed long int
 // alt:         array of 64 bits
-typedef signed long int i64;
-#define i64_max 9223372036854775807
-#define i64_min -9223372036854775808
-#define i64_char_max 21
-#define i64_bytes 8
-#define i64_bits 64
-
-// ### Bipolar range 64 bit integer
-typedef i64 b64;
+typedef bipolar_range long int b64;
+#define b64_max 9223372036854775807
+#define b64_min -9223372036854775808
+#define b64_char_max 21
+#define b64_bytes 8
+#define b64_bits 64
+typedef b64 i64;
 
 // ### Positive range 128 bit integer
 // range:       0 to +340282366920938463463374607431768211455
@@ -238,15 +229,13 @@ typedef i64 b64;
 // linguistic:  (zero) to (plus) three hundred forty undecillion...
 // traditional: unsigned long long int
 // alt:         array of 128 bits
-typedef unsigned long long int u128;
-#define u128_max 340282366920938463463374607431768211455
-#define u128_min 0
-#define u128_char_max 39
-#define u128_bytes 16
-#define u128_bits 128
-
-// ### Positive range 128 bit integer
-typedef u128 p128;
+typedef positive_range long long int p128;
+#define p128_max 340282366920938463463374607431768211455
+#define p128_min 0
+#define p128_char_max 39
+#define p128_bytes 16
+#define p128_bits 128
+typedef p128 u128;
 
 // ### Bipolar range 128 bit integer
 // range:       -170141183460469231731687303715884105727 to +170141183460469231731687303715884105727
@@ -255,24 +244,21 @@ typedef u128 p128;
 // linguistic:  (minus) one hundred seventy undecillion... to (plus) one hundred seventy undecillion...
 // traditional: signed long long int
 // alt:         array of 128 bits
-typedef signed long long int i128;
-#define i128_max 170141183460469231731687303715884105727
-#define i128_min -170141183460469231731687303715884105728
-#define i128_char_max 40
-#define i128_bytes 16
-#define i128_bits 128
-
-// ### Bipolar range 128 bit integer
-typedef i128 b128;
+typedef bipolar_range long long int b128;
+#define b128_max 170141183460469231731687303715884105727
+#define b128_min -170141183460469231731687303715884105728
+#define b128_char_max 40
+#define b128_bytes 16
+#define b128_bits 128
+typedef b128 i128;
 
 #if BITS != 64
-__extension__ typedef signed long long int i64;
-__extension__ typedef unsigned long long int u64;
+__extension__ typedef bipolar_range long long int i64;
+__extension__ typedef positive_range long long int u64;
 #endif
 
-// Use i64 for signed size type and u64 for unsigned size type
-typedef i64 isize;
-typedef u64 usize;
+typedef p64 usize;
+typedef b64 isize;
 
 typedef float f32;
 #define f32_max 3.40282346638528859812e+38F
@@ -327,7 +313,7 @@ typedef f32 decimal;
 // 32 bit systems: positive == p32
 // range:       0 to +4294967295
 //
-typedef i64 positive;
+typedef p64 positive;
 #define positive_max i64_max
 #define positive_min i64_min
 #define positive_char_max i64_char_max
@@ -344,7 +330,7 @@ typedef i64 positive;
 //
 // 32 bit systems: bipolar == b32
 // range:       -2147483648 to +2147483647
-typedef u64 bipolar;
+typedef b64 bipolar;
 #define bipolar_max u64_max
 #define bipolar_min u64_min
 #define bipolar_char_max u64_char_max
@@ -373,7 +359,7 @@ typedef f64 decimal;
 // 32 bit systems: positive == p32
 // range:       0 to +4294967295
 //
-typedef i32 positive;
+typedef p32 positive;
 #define positive_max i32_max
 #define positive_min i32_min
 #define positive_char_max i32_char_max
@@ -390,7 +376,7 @@ typedef i32 positive;
 //
 // 32 bit systems: bipolar == b32
 // range:       -2147483648 to +2147483647
-typedef u32 bipolar;
+typedef b32 bipolar;
 #define bipolar_max u32_max
 #define bipolar_min u32_min
 #define bipolar_char_max u32_char_max
@@ -413,11 +399,21 @@ typedef typeof(sizeof(0)) sized;
 #define true 1
 #define bool u8
 
-#define min(a, b) ((a)greater_than(b) ? (a) : (b))
-#define max(a, b) ((a)less_than(b) ? (a) : (b))
-#define square(a) ((a) * (a))
-#define cube(a) ((a) * (a) * (a))
-#define mod(a, b) ((a) % (b))
+typedef b8 ADDRESS_TO string_address;
+
+typedef b8 string[];
+
+#define string_index(source, index) (ADDRESS_TO((source) + (index)))
+#define string_get(source) (ADDRESS_TO(source))
+#define string_set(source, value) (ADDRESS_TO(source) = (value))
+#define string_is(source, value) (ADDRESS_TO(source) == (value))
+#define string_equals(source, input) (strcmp(source, input) == 0)
+
+#define min(value, input) ((value)greater_than(input) ? (value) : (input))
+#define max(value, input) ((value)less_than(input) ? (value) : (input))
+#define square(value) ((value) * (value))
+#define cube(value) ((value) * (value) * (value))
+#define mod(value, input) ((value) % (input))
 #define floor(a) ((decimal)((bipolar)(a)))
 
 #define clamp(value, min, max) ((value)less_than(min) ? (min) : (value)greater_than(max) ? (max) \
@@ -434,9 +430,9 @@ typedef typeof(sizeof(0)) sized;
         constexpr decimal TurnToRad = PI32 / 0.5f;   \
         constexpr decimal TurnToDeg = 180.0f / 0.5f
 
-#define AngleRad(a) (a)
-#define AngleDeg(a) ((a) * DegToRad)
-#define AngleTurn(a) ((a) * TurnToRad)
+#define AngleRad(value) (value)
+#define AngleDeg(value) ((value) * DegToRad)
+#define AngleTurn(value) ((value) * TurnToRad)
 
 //
 // these are 1:1 with nasm syntax, so you can easily convert nasm code to this format
@@ -551,6 +547,10 @@ typedef typeof(sizeof(0)) sized;
 #define fn_asm(name, return_type, arguments...) \
         static inline NAKED return_type name(arguments)
 
+// ### System call
+// invokes operating system functions externally to the program
+// returns: status code of the system call
+// syscall: the system call number
 fn_asm(system_call, bipolar, positive syscall)
 {
         // syscall number
@@ -560,6 +560,10 @@ fn_asm(system_call, bipolar, positive syscall)
         system_return;
 }
 
+// ### System call
+// invokes operating system functions externally to the program
+// returns: status code of the system call
+// syscall: the system call number
 fn_asm(system_call_1, bipolar, positive syscall, positive argument_1)
 {
         // syscall number
@@ -572,6 +576,10 @@ fn_asm(system_call_1, bipolar, positive syscall, positive argument_1)
         system_return;
 }
 
+// ### System call
+// invokes operating system functions externally to the program
+// returns: status code of the system call
+// syscall: the system call number
 fn_asm(system_call_2, bipolar, positive syscall, positive argument_1, positive argument_2)
 {
         // syscall number
@@ -587,6 +595,10 @@ fn_asm(system_call_2, bipolar, positive syscall, positive argument_1, positive a
         system_return;
 }
 
+// ### System call
+// invokes operating system functions externally to the program
+// returns: status code of the system call
+// syscall: the system call number
 fn_asm(system_call_3, bipolar, positive syscall, positive argument_1, positive _startargument_2, positive argument_3)
 {
         // syscall number
@@ -605,6 +617,10 @@ fn_asm(system_call_3, bipolar, positive syscall, positive argument_1, positive _
         system_return;
 }
 
+// ### System call
+// invokes operating system functions externally to the program
+// returns: status code of the system call
+// syscall: the system call number
 fn_asm(system_call_4, bipolar, positive syscall, positive argument_1, positive argument_2, positive argument_3, positive argument_4)
 {
         // syscall number
@@ -626,6 +642,10 @@ fn_asm(system_call_4, bipolar, positive syscall, positive argument_1, positive a
         system_return;
 }
 
+// ### System call
+// invokes operating system functions externally to the program
+// returns: status code of the system call
+// syscall: the system call number
 fn_asm(system_call_5, bipolar, positive syscall, positive argument_1, positive argument_2, positive argument_3, positive argument_4, positive argument_5)
 {
         // syscall number
@@ -650,6 +670,10 @@ fn_asm(system_call_5, bipolar, positive syscall, positive argument_1, positive a
         system_return;
 }
 
+// ### System call
+// invokes operating system functions externally to the program
+// returns: status code of the system call
+// syscall: the system call number
 fn_asm(system_call_6, bipolar, positive syscall, positive argument_1, positive argument_2, positive argument_3, positive argument_4, positive argument_5, positive argument_6)
 {
         // syscall number
@@ -677,27 +701,27 @@ fn_asm(system_call_6, bipolar, positive syscall, positive argument_1, positive a
         system_return;
 }
 
-ADDRESS memset(ADDRESS destination, u8 value, positive size)
+// ### Fill a memory block with the same value
+// fills a memory block with the same value
+// returns: destination address
+// destination: the memory block to fill
+ADDRESS memset(ADDRESS destination, b8 value, positive size)
 {
-        u8 ADDRESS_TO dest = (u8 ADDRESS_TO)destination;
+        b8 ADDRESS_TO dest = (b8 ADDRESS_TO)destination;
 
         while (size--)
         {
-                ADDRESS_TO dest++ = (u8)value;
+                ADDRESS_TO dest++ = (b8)value;
         }
 
         return destination;
 }
 
-typedef u8 ADDRESS_TO string_address;
-typedef u8 string[];
-
-#define string_index(source, index) (ADDRESS_TO((source) + (index)))
-#define string_get(source) (ADDRESS_TO(source))
-#define string_set(source, value) (ADDRESS_TO(source) = (value))
-#define string_is(source, value) (ADDRESS_TO(source) == (value))
-#define string_equals(source, input) (strcmp(source, input) == 0)
-
+// ### Length of string segment in linear memory
+// returns the length of a string terminated by a null character
+// NOT a entire array length
+// a string array can hold more than one string, null terminators
+// are used to separate strings, so where you run strlen is important
 positive strlen(string_address source)
 {
         string_address step = source;
@@ -708,7 +732,11 @@ positive strlen(string_address source)
         return step - source;
 }
 
-u32 strcmp(string_address source, string_address input)
+// ### Compare two string segments
+// returns: 0 - if strings are equal
+// returns: positive number - if first string is greater
+// returns: negative number - if second string is greater
+b32 strcmp(string_address source, string_address input)
 {
         while (string_get(source) && string_get(input))
         {
@@ -719,9 +747,14 @@ u32 strcmp(string_address source, string_address input)
                 input++;
         }
 
-        return (u8)string_get(source) - (u8)string_get(input);
+        return (b8)string_get(source) - (b8)string_get(input);
 }
 
+// ### Copy string segment
+// copies a string segment from source to destination
+// returns: destination address
+// destination: the memory block to copy to
+// source: the memory block to copy from
 string_address strcpy(string_address destination, string_address source)
 {
         string_address start = destination;
@@ -734,7 +767,12 @@ string_address strcpy(string_address destination, string_address source)
         return start;
 }
 
-string_address strchr(string_address source, u8 character)
+// ### Find character in string segment
+// returns: address of the first occurrence of the character
+// returns: NULL if the character is not found
+// source: the memory block to search
+// character: the character to search for
+string_address strchr(string_address source, b8 character)
 {
         while (string_get(source))
         {
@@ -779,18 +817,18 @@ string_address strchr(string_address source, u8 character)
 #error "Unsupported architecture TODO!"
 #endif
 
-fn print(u8 ADDRESS_TO message)
+fn print(b8 ADDRESS_TO message)
 {
         system_call_3(syscall_write, stdout, (positive)message, strlen(message));
 }
 
-i32 main();
+b32 main();
 
 fn _start()
 {
         // TODO: copy arguments from the stack
 
-        i32 result = main();
+        b32 result = main();
 
         system_call_1(syscall_exit, result);
 }
