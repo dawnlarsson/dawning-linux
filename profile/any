@@ -1,6 +1,8 @@
 #
 # Any profile, essensial for all
 #
+CONFIG_64BIT=y
+
 CONFIG_INITRAMFS_SOURCE="../fs"
 CONFIG_DEFAULT_INIT="/init"
 
