@@ -1,4 +1,4 @@
-![image](https://github.com/user-attachments/assets/dd6ba21d-8f3f-481a-a36c-301d79435a80)
+![Dawning Linux Header (1) (1)](https://github.com/user-attachments/assets/041c002f-5f08-43c5-baf6-905d72689052)
 
 <div align="center">
   <a href="https://discord.gg/cxRvzUyzG8">Discord<a>
