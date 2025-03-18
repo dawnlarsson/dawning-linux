@@ -57,6 +57,38 @@
 #define BITS 32
 #endif
 
+#ifdef X64
+#define stdin 0
+#define stdout 1
+#define stderr 2
+
+#define syscall_exit 60
+#define syscall_read 0
+#define syscall_write 1
+#define syscall_open 2
+#define syscall_close 3
+#define syscall_stat 4
+#define syscall_mmap 9
+#define syscall_ioctl 16
+#define syscall_readv 19
+#define syscall_writev 20
+
+#define syscall_mount 40
+#define syscall_umount2 39
+#define syscall_chdir 80
+#define syscall_fork 57
+#define syscall_execve 59
+
+#define syscall_nanosleep 35
+#define syscall_setsid 112
+
+#define syscall_wait4 61
+#endif
+
+#ifdef X86 || ARM32 || RISCV32 || RISCV64 || ARM64
+#error "Unsupported architecture TODO!"
+#endif
+
 #if defined(__SSE__) || __ARM_NEON
 #define SIMD
 #endif
@@ -314,11 +346,11 @@ typedef f32 decimal;
 // range:       0 to +4294967295
 //
 typedef p64 positive;
-#define positive_max i64_max
-#define positive_min i64_min
-#define positive_char_max i64_char_max
-#define positive_bytes i64_bytes
-#define positive_bits i64_bits
+#define positive_max p64_max
+#define positive_min p64_min
+#define positive_char_max p64_char_max
+#define positive_bytes p64_bytes
+#define positive_bits p64_bits
 
 // ### Bipolar range [native] bit integer
 // recommended type for most cases (especially for memory addresses, or loops)
@@ -331,11 +363,11 @@ typedef p64 positive;
 // 32 bit systems: bipolar == b32
 // range:       -2147483648 to +2147483647
 typedef b64 bipolar;
-#define bipolar_max u64_max
-#define bipolar_min u64_min
-#define bipolar_char_max u64_char_max
-#define bipolar_bytes u64_bytes
-#define bipolar_bits u64_bits
+#define bipolar_max b64_max
+#define bipolar_min b64_min
+#define bipolar_char_max b64_char_max
+#define bipolar_bytes b64_bytes
+#define bipolar_bits b64_bits
 
 // ### Native Decimal range floating point
 // range:       1.7E-308 to 1.7E+308
@@ -360,11 +392,11 @@ typedef f64 decimal;
 // range:       0 to +4294967295
 //
 typedef p32 positive;
-#define positive_max i32_max
-#define positive_min i32_min
-#define positive_char_max i32_char_max
-#define positive_bytes i32_bytes
-#define positive_bits i32_bits
+#define positive_max p32_max
+#define positive_min p32_min
+#define positive_char_max p32_char_max
+#define positive_bytes p32_bytes
+#define positive_bits p32_bits
 
 // ### Bipolar range [native] bit integer
 // recommended type for most cases (especially for memory addresses, or loops)
@@ -377,11 +409,11 @@ typedef p32 positive;
 // 32 bit systems: bipolar == b32
 // range:       -2147483648 to +2147483647
 typedef b32 bipolar;
-#define bipolar_max u32_max
-#define bipolar_min u32_min
-#define bipolar_char_max u32_char_max
-#define bipolar_bytes u32_bytes
-#define bipolar_bits u32_bits
+#define bipolar_max b32_max
+#define bipolar_min b32_min
+#define bipolar_char_max b32_char_max
+#define bipolar_bytes b32_bytes
+#define bipolar_bits b32_bits
 
 // ### Native Decimal range floating point
 
@@ -814,38 +846,7 @@ string_address strchr(string_address source, b8 character)
         return (string_get(source) == character) ? source : NULL;
 }
 
-#ifdef X64
-#define stdin 0
-#define stdout 1
-#define stderr 2
-
-#define syscall_exit 60
-#define syscall_read 0
-#define syscall_write 1
-#define syscall_open 2
-#define syscall_close 3
-#define syscall_stat 4
-#define syscall_mmap 9
-#define syscall_ioctl 16
-#define syscall_readv 19
-#define syscall_writev 20
-
-#define syscall_mount 40
-#define syscall_umount2 39
-#define syscall_chdir 80
-#define syscall_fork 57
-#define syscall_execve 59
-
-#define syscall_nanosleep 35
-#define syscall_setsid 112
-
-#define syscall_wait4 61
-#endif
-
-#ifdef X86 || ARM32 || RISCV32 || RISCV64 || ARM64
-#error "Unsupported architecture TODO!"
-#endif
-
+// Print a string
 fn print(b8 ADDRESS_TO message)
 {
         system_call_3(syscall_write, stdout, (positive)message, strlen(message));
