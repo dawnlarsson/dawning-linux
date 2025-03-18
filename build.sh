@@ -30,7 +30,7 @@ sh library/compile programs/shell fs/shell
 sudo sh script/get.kernel
 
 sh script/is_file artifacts/.config || \
-        sudo sh script/config any limbo desktop
+        sudo sh script/config any debug limbo desktop
 
 cd linux
 sudo make allnoconfig
