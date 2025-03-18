@@ -1,3 +1,5 @@
+#!/bin/sh
+
 compiler="clang"
 suppress=" -Wno-main-return-type -Wno-extra-tokens -Wno-invalid-pp-token -Wno-pointer-sign"
 

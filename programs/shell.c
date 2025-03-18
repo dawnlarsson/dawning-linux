@@ -50,6 +50,27 @@ fn cmd_echo()
         print("\n");
 }
 
+fn cmd_pwd()
+{
+        p8 buffer[MAX_INPUT] = {0};
+        system_call_2(syscall_getcwd, (positive)buffer, MAX_INPUT);
+        print(buffer);
+        print("\n");
+}
+
+fn cmd_cd()
+{
+        string_address args = strchr(command_buffer, ' ');
+        string_address path = args ? args + 1 : "/";
+
+        if (system_call_1(syscall_chdir, (positive)path) != 0)
+        {
+                print("cd: No such directory: ");
+                print(path);
+                print("\n");
+        }
+}
+
 fn cmd_exit()
 {
         system_call_1(syscall_exit, 0);
@@ -62,6 +83,8 @@ fn cmd_clear()
 
 Command commands[] = {
     {"echo", cmd_echo},
+    {"pwd", cmd_pwd},
+    {"cd", cmd_cd},
     {"exit", cmd_exit},
     {"clear", cmd_clear},
     {NULL, NULL},

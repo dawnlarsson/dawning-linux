@@ -82,6 +82,8 @@
 #define syscall_nanosleep 35
 #define syscall_setsid 112
 
+#define syscall_getcwd 79
+
 #define syscall_wait4 61
 #endif
 

@@ -1,4 +1,5 @@
 #!/bin/sh
+
 sh script/is_safe || exit 1
 
 
