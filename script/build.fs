@@ -1,4 +1,6 @@
 #!/bin/sh
+sh script/is_safe || exit 1
+
 
 echo "Creating fs/ system directories"
 

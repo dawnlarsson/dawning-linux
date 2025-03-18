@@ -1,4 +1,5 @@
 #!/bin/sh
+sh script/is_safe || exit 1
 
 # the version of the release
 # this is <year><month><day>
@@ -16,8 +17,8 @@ info_full_name="$info_name-$info_version"
 
 sudo sh script/repo.setup
 
-echo "CONFIG_LOCALVERSION=\"$info_full_name\"" > config/info
-echo "CONFIG_DEFAULT_HOSTNAME=\"$info_name-box\"" >> config/info
+echo "CONFIG_LOCALVERSION=\"$info_full_name\"" > artifacts/info
+echo "CONFIG_DEFAULT_HOSTNAME=\"$info_name-box\"" >> artifacts/info
 
 sudo sh script/build.fs
 
@@ -28,8 +29,7 @@ sh library/compile programs/shell fs/shell
 # Download kernel
 sudo sh script/get.kernel
 
-# Config gen / setup
-sudo sh script/build.config $target_profile
+sudo sh script/config any limbo desktop
 
 cd linux
 sudo make allnoconfig

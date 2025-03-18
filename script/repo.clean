@@ -1,10 +1,8 @@
 #!/bin/sh
+sh script/is_safe || exit 1
+
 
 # uncomment this line when not in active development (don't re-download kernel every time lol)
 # rm -rf artifacts/
 
-rm -rf config/
-rm -rf dist/
-rm -rf fs/
-rm -rf linux/
-
+rm -rf dist/ fs/ linux/

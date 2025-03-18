@@ -1,4 +1,7 @@
 #!/bin/sh
+sh script/is_safe || exit 1
+
+
 echo "Downloading kernel"
 
 kernel_extract_dir="linux/" 
