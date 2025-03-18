@@ -9,16 +9,16 @@
 
 ### **Experimental** Linux Distro
 
-co-developed with Dawning-Standard C, a experimental micro runtime library.
-Aim is to lay the groundwork for a flexible core that's entirely self contained in terms of 3rd party dependecies.
+co-developed with Dawning-Standard C, an experimental micro runtime library.
+The aim is to lay the groundwork for a flexible core that's entirely self contained in terms of 3rd party dependencies.
 
-Threre is also going to be a fair bit of arcitectural diffrances from the usual mainstream distro setup, 
-filesystem, depdencecy managment, linking & runtime requirements.
+There is also going to be a fair bit of architectural differences from the usual mainstream distro setup, 
+filesystem, dependency management, linking & runtime requirements.
 
 ### Profile based build & configuration
-**`profile/*`** — Compartamentalized kernel configuration files. 
-these are merged before building the kernel, and they are selectivly chosen based on your
-requirments
+**`profile/*`** — Compartmentalized kernel configuration files. 
+these are merged before building the kernel, and they are selectively chosen based on your
+requirements
 
 #### Profiles
 **`profile/any`** — Build required.
@@ -30,16 +30,16 @@ requirments
 `TODO: debug<level> - debug01 - debug02 ect... `
 
 ### Configuration (WIP)
-**`sh script/config <profile> <profile>...`** — Takes any ammount of profile names, simply merged by file name matching...
+**`sh script/config <profile> <profile>...`** — Takes any amount of profile names, simply merged by file name matching...
 
 ### Scripts
 **`script/build.fs`** — Generates /fs (initram fs) structural setup
 
 **`script/build.kernel`** — Kernel compile.
 
-**`script/get.kernel`** — Downloads the Linux Kernel from kernel.org, version usualy the latest version.
+**`script/get.kernel`** — Downloads the Linux Kernel from kernel.org, version usually the latest version.
 
-**`script/repo.clean`** — Removes any generated artifacts, reset's the repo, but keeps downloaded kernel archive.
+**`script/repo.clean`** — Removes any generated artifacts, resets the repo, but keeps downloaded kernel archive.
 
 **`script/size`** — Utility script, just prints the file size in arg 1
 
