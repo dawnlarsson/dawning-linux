@@ -431,6 +431,8 @@ typedef typeof(sizeof(0)) sized;
 #define true 1
 #define bool u8
 
+// ### String address
+// a pointer to a string in memory, usually the first b8 character of the string
 typedef b8 ADDRESS_TO string_address;
 
 typedef b8 string[];
@@ -828,7 +830,7 @@ string_address strcpy(string_address destination, string_address source)
         return start;
 }
 
-// ### Find character in string segment
+// ### Find first character in string segment
 // returns: address of the first occurrence of the character
 // returns: NULL if the character is not found
 // source: the memory block to search

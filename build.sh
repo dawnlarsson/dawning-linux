@@ -29,7 +29,8 @@ sh library/compile programs/shell fs/shell
 # Download kernel
 sudo sh script/get.kernel
 
-sudo sh script/config any limbo desktop
+sh script/is_file artifacts/.config || \
+        sudo sh script/config any limbo desktop
 
 cd linux
 sudo make allnoconfig

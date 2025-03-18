@@ -5,4 +5,4 @@ sh script/is_safe || exit 1
 # uncomment this line when not in active development (don't re-download kernel every time lol)
 # rm -rf artifacts/
 
-rm -rf dist/ fs/ linux/
+rm -rf dist/ fs/ linux/ artifacts/merge.config artifacts/.config artifacts/info

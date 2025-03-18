@@ -34,6 +34,9 @@ z8kTvX4257Nnrmj310VCHet6/W5o9uyLDa0+Sq32LAxdNQr/qRc=
 -----END PGP SIGNATURE-----
 "
 
+kernel_tarball=$download_artifacts_dir"linux-$kernel_version.tar"
+kernel_archive=$kernel_tarball".xz"
+
 mkdir -p $download_artifacts_dir
 mkdir -p $kernel_extract_dir
 
@@ -41,26 +44,20 @@ extract_kernel() {
     echo "Checking kernel signature"
     gpg2 --locate-keys $trusted_keys
 
-    unxz -k $download_artifacts_dir"linux-$kernel_version.tar.xz"
+    unxz -k $kernel_archive
 
-    echo "$kernel_pgp" > $download_artifacts_dir"linux-$kernel_version.tar.sign"
+    echo "$kernel_pgp" > $kernel_tarball".sign"
 
-    gpg2 --verify $download_artifacts_dir"linux-$kernel_version.tar.sign" $download_artifacts_dir"linux-$kernel_version.tar"
+    gpg2 --verify $kernel_tarball".sign" $kernel_tarball
 
-    tar -xf $download_artifacts_dir"linux-$kernel_version.tar" --strip-components=1 -C $kernel_extract_dir
+    tar -xf $kernel_tarball --strip-components=1 -C $kernel_extract_dir
     echo "Kernel extracted"
 
-    rm $download_artifacts_dir"linux-$kernel_version.tar"
+    rm $kernel_tarball
 }
 
-if [ -f $download_artifacts_dir"linux-$kernel_version.tar.xz" ]; then
-    echo "Kernel already downloaded"
-    extract_kernel
-    exit 0
-fi
-
-echo "Downloading kernel $kernel_version"
-wget -O $download_artifacts_dir"linux-$kernel_version.tar.xz" $kernel_download
+sh script/is_file $kernel_archive || \
+    wget -O $kernel_archive $kernel_download
 
 extract_kernel
 
