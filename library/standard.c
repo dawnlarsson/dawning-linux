@@ -74,7 +74,7 @@
 
 #define syscall_nanosleep 35
 
-#define syscall_mount 40
+#define syscall_mount 165
 #define syscall_umount2 39
 
 #define syscall_exit 60
