@@ -1,6 +1,6 @@
 // A primitive pre-historic shell,
 // it lobs rocks at the kernel and says ouga boga at the user.
-#include "../library/standard.c"
+#include "../standard/library.c"
 
 #define MAX_INPUT 1024
 #define MAX_ARGS 64

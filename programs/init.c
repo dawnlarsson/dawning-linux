@@ -1,4 +1,4 @@
-#include "../library/standard.c"
+#include "../standard/library.c"
 
 #define lable TERM_BOLD "[Init]" TERM_RESET " "
 #define init_program "/shell"

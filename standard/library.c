@@ -9,7 +9,7 @@
         www.dawning.dev
 
         use the accompanying build shell script to compile
-        $ sh compile <source_file.c> <output_file_name>
+        $ sh build <source_file.c> <output_file_name>
 */
 
 #ifndef DAWN_MODERN_C

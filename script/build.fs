@@ -21,3 +21,6 @@ mknod fs/dev/null c 1 3
 mknod fs/dev/zero c 1 5
 mknod fs/dev/random c 1 8
 mknod fs/dev/urandom c 1 9
+
+# Installs the latest copy of the dawning standard into the fs/ directory
+# cp -r standard fs/

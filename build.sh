@@ -23,8 +23,8 @@ echo "CONFIG_DEFAULT_HOSTNAME=\"$info_name-box\"" >> artifacts/info
 sudo sh script/build.fs
 
 # Compile runtime programs
-sh library/compile programs/init fs/init
-sh library/compile programs/shell fs/shell
+sh standard/build programs/init fs/init
+sh standard/build programs/shell fs/shell
 
 # Download kernel
 sudo sh script/get.kernel
