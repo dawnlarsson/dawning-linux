@@ -773,7 +773,8 @@ p64 get_cpu_time()
 // fills a memory block with the same value
 // returns: destination address
 // destination: the memory block to fill
-ADDRESS memset(ADDRESS destination, b8 value, positive size)
+// traditional: memset
+ADDRESS memory_fill(ADDRESS destination, b8 value, positive size)
 {
         b8 ADDRESS_TO dest = (b8 ADDRESS_TO)destination;
 
@@ -785,12 +786,19 @@ ADDRESS memset(ADDRESS destination, b8 value, positive size)
         return destination;
 }
 
+// use memory_fill instead, this is for compatibility
+ADDRESS memset(ADDRESS destination, b8 value, positive size)
+{
+        return memory_fill(destination, value, size);
+}
+
 // ### Length of string segment in linear memory
 // returns the length of a string terminated by a null character
 // NOT a entire array length
 // a string array can hold more than one string, null terminators
 // are used to separate strings, so where you run strlen is important
-positive strlen(string_address source)
+// traditional: strlen
+positive string_length(string_address source)
 {
         string_address step = source;
 
@@ -800,11 +808,18 @@ positive strlen(string_address source)
         return step - source;
 }
 
+// use string_length instead, this is for compatibility
+positive strlen(string_address source)
+{
+        return string_length(source);
+}
+
 // ### Compare two string segments
 // returns: 0 - if strings are equal
 // returns: positive number - if first string is greater
 // returns: negative number - if second string is greater
-b32 strcmp(string_address source, string_address input)
+// traditional: strcmp
+b32 string_compare(string_address source, string_address input)
 {
         while (string_get(source) && string_get(input))
         {
@@ -818,12 +833,19 @@ b32 strcmp(string_address source, string_address input)
         return (b8)string_get(source) - (b8)string_get(input);
 }
 
+// use string_compare instead, this is for compatibility
+b32 strcmp(string_address source, string_address input)
+{
+        return string_compare(source, input);
+}
+
 // ### Copy string segment
 // copies a string segment from source to destination
 // returns: destination address
 // destination: the memory block to copy to
 // source: the memory block to copy from
-string_address strcpy(string_address destination, string_address source)
+// traditional: strcpy
+string_address string_copy(string_address destination, string_address source)
 {
         string_address start = destination;
 
@@ -835,12 +857,19 @@ string_address strcpy(string_address destination, string_address source)
         return start;
 }
 
+// use string_copy instead, this is for compatibility
+string_address strcpy(string_address destination, string_address source)
+{
+        return string_copy(destination, source);
+}
+
 // ### Find first character in string segment
 // returns: address of the first occurrence of the character
 // returns: NULL if the character is not found
 // source: the memory block to search
 // character: the character to search for
-string_address strchr(string_address source, b8 character)
+// traditional: strchr
+string_address string_first_of(string_address source, b8 character)
 {
         while (string_get(source))
         {
@@ -853,10 +882,16 @@ string_address strchr(string_address source, b8 character)
         return (string_get(source) == character) ? source : NULL;
 }
 
+// use string_first_of instead, this is for compatibility
+string_address strchr(string_address source, b8 character)
+{
+        return string_first_of(source, character);
+}
+
 // Print a string
 fn print(b8 ADDRESS_TO message)
 {
-        system_call_3(syscall_write, stdout, (positive)message, strlen(message));
+        system_call_3(syscall_write, stdout, (positive)message, string_length(message));
 }
 
 b32 main();

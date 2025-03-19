@@ -60,7 +60,7 @@ fn exec_command(string_address args)
 
 fn cmd_echo()
 {
-        string_address args = strchr(command_buffer, ' ');
+        string_address args = string_first_of(command_buffer, ' ');
         print(args ? args + 1 : (string_address) "");
         print("\n");
 }
@@ -75,7 +75,7 @@ fn cmd_pwd()
 
 fn cmd_cd()
 {
-        string_address args = strchr(command_buffer, ' ');
+        string_address args = string_first_of(command_buffer, ' ');
         string_address path = args ? args + 1 : (string_address) "/";
 
         if (system_call_1(syscall_chdir, (positive)path) != 0)
@@ -91,7 +91,7 @@ fn cmd_ls()
         const b32 max_line_entries = 8;
 
         string_address path = ".";
-        string_address args = strchr(command_buffer, ' ');
+        string_address args = string_first_of(command_buffer, ' ');
 
         if (args && string_get(args + 1) != '\0')
         {
@@ -154,7 +154,7 @@ fn cmd_ls()
 
 fn cmd_mkdir()
 {
-        string_address args = strchr(command_buffer, ' ');
+        string_address args = string_first_of(command_buffer, ' ');
         string_address path = args ? args + 1 : (string_address) "/";
 
         if (system_call_2(syscall_mkdir, (positive)path, 0777) != 0)
@@ -231,7 +231,7 @@ bipolar process_command()
         Command ADDRESS_TO cmd = commands;
         while (cmd->name)
         {
-                if (strcmp(cmd->name, name) == 0)
+                if (string_compare(cmd->name, name) == 0)
                 {
                         cmd->func();
                         return 0;
@@ -254,7 +254,7 @@ bipolar process_command()
 
 fn read_line()
 {
-        memset(command_buffer, 0, MAX_INPUT);
+        memory_fill(command_buffer, 0, MAX_INPUT);
 
         print(RESET PROMPT);
 
