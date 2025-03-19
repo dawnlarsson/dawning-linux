@@ -258,22 +258,19 @@ fn read_line()
 
         print(RESET PROMPT);
 
-        p32 bytes_read = system_call_3(syscall_read, 0, (positive)command_buffer, MAX_INPUT);
+        p32 command_length = system_call_3(syscall_read, 0, (positive)command_buffer, MAX_INPUT);
 
-        if (bytes_read > 0 && bytes_read < MAX_INPUT)
-                command_buffer[bytes_read] = '\0';
+        if (command_length == 0)
+                read_line();
 }
 
 b32 main()
 {
-        memset(command_buffer, 0, MAX_INPUT);
-
         system_call_2(2, (positive) "/dev/console", O_RDWR | O_NOCTTY);
 
         while (1)
         {
                 read_line();
-
                 process_command();
         }
 }
