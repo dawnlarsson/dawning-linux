@@ -62,7 +62,6 @@
 #define stdout 1
 #define stderr 2
 
-#define syscall_exit 60
 #define syscall_read 0
 #define syscall_write 1
 #define syscall_open 2
@@ -73,18 +72,20 @@
 #define syscall_readv 19
 #define syscall_writev 20
 
+#define syscall_nanosleep 35
+
 #define syscall_mount 40
 #define syscall_umount2 39
+
+#define syscall_exit 60
+
 #define syscall_chdir 80
 #define syscall_fork 57
 #define syscall_execve 59
-
-#define syscall_nanosleep 35
-#define syscall_setsid 112
-
-#define syscall_getcwd 79
-
 #define syscall_wait4 61
+#define syscall_getcwd 79
+#define syscall_setsid 112
+#define syscall_getdents64 217
 #endif
 
 #ifdef X86 || ARM32 || RISCV32 || RISCV64 || ARM64
