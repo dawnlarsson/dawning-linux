@@ -22,11 +22,7 @@ p8 command_buffer[MAX_INPUT];
 #define SIGKILL 9
 #define SIGSTOP 20
 
-#define CLEAR_SCREEN "\033[2J\033[H"
-#define HIDE_CURSOR "\033[?25l"
-#define SHOW_CURSOR "\033[?25h"
-#define RESET "\033[0m"
-#define PROMPT " $ "
+#define PROMPT TERM_BOLD " $ " TERM_RESET
 
 typedef fn(ADDRESS_TO CommandFunc)();
 
@@ -127,15 +123,15 @@ fn cmd_ls()
                         {
                                 if (d->d_type == DT_DIR)
                                 {
-                                        print("\033[1;34m");
+                                        print(TERM_BLUE);
                                 }
                                 else if (d->d_type == DT_LNK)
                                 {
-                                        print("\033[1;36m");
+                                        print(TERM_CYAN);
                                 }
 
                                 print(d->d_name);
-                                print("\033[0m  ");
+                                print(TERM_RESET " ");
 
                                 entries_count++;
                                 if (entries_count % max_line_entries == 0)
@@ -172,7 +168,7 @@ fn cmd_exit()
 
 fn cmd_clear()
 {
-        print(CLEAR_SCREEN);
+        print(TERM_CLEAR_SCREEN);
 }
 
 Command commands[] = {
@@ -256,7 +252,7 @@ fn read_line()
 {
         memory_fill(command_buffer, 0, MAX_INPUT);
 
-        print(RESET PROMPT);
+        print(TERM_RESET PROMPT);
 
         p32 command_length = system_call_3(syscall_read, 0, (positive)command_buffer, MAX_INPUT);
 

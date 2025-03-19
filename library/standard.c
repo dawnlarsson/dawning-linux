@@ -130,6 +130,39 @@ typedef __builtin_va_list variable_arguments;
 #define IS_NULL_ADDRESS(ptr) ((ptr) == NULL_ADDRESS)
 #define NULL 0
 
+#define ANSI "\033["
+
+#define TERM_CLEAR_SCREEN ANSI "2J" ANSI "H"
+#define TERM_HIDE_CURSOR ANSI "?25l"
+#define TERM_SHOW_CURSOR ANSI "?25h"
+
+#define TERM_RESET ANSI "0m"
+#define TERM_BOLD ANSI "1m"
+#define TERM_DIM ANSI "2m"
+#define TERM_UNDERLINED ANSI "4m"
+#define TERM_BLINK ANSI "5m"
+#define TERM_REVERSE ANSI "7m"
+#define TERM_HIDDEN ANSI "8m"
+#define TERM_INVERT ANSI "7m"
+
+#define TERM_BLACK_DARK ANSI "30m"
+#define TERM_RED_DARK ANSI "31m"
+#define TERM_GREEN_DARK ANSI "32m"
+#define TERM_YELLOW_DARK ANSI "33m"
+#define TERM_BLUE_DARK ANSI "34m"
+#define TERM_MAGENTA_DARK ANSI "35m"
+#define TERM_CYAN_DARK ANSI "36m"
+#define TERM_WHITE_DARK ANSI "37m"
+
+#define TERM_BLACK ANSI "90m"
+#define TERM_RED ANSI "91m"
+#define TERM_GREEN ANSI "92m"
+#define TERM_YELLOW ANSI "93m"
+#define TERM_BLUE ANSI "94m"
+#define TERM_MAGENTA ANSI "95m"
+#define TERM_CYAN ANSI "96m"
+#define TERM_WHITE ANSI "97m"
+
 // ### Values that never can be negative
 #define positive_range signed
 

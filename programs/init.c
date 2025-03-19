@@ -1,6 +1,6 @@
 #include "../library/standard.c"
 
-#define lable "[Init] "
+#define lable TERM_BOLD "[Init]" TERM_RESET " "
 #define init_program "/shell"
 
 #define MS_NONE 0
@@ -62,14 +62,14 @@ fn mount_filesystems()
 
                 if (result == 0)
                 {
-                        print(" [OK]");
+                        print(TERM_BOLD TERM_GREEN " OK");
                 }
                 else
                 {
-                        print(" [FAILED]");
+                        print(TERM_BOLD TERM_RED " FAILED");
                 }
 
-                print("\n");
+                print(TERM_RESET "\n");
 
                 mount++;
         }
