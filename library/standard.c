@@ -79,6 +79,8 @@
 
 #define syscall_exit 60
 
+#define syscall_mkdir 83
+
 #define syscall_chdir 80
 #define syscall_fork 57
 #define syscall_execve 59

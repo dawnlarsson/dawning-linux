@@ -150,6 +150,19 @@ fn cmd_ls()
         system_call_1(syscall_close, fd);
 }
 
+fn cmd_mkdir()
+{
+        string_address args = strchr(command_buffer, ' ');
+        string_address path = args ? args + 1 : "/";
+
+        if (system_call_2(syscall_mkdir, (positive)path, 0777) != 0)
+        {
+                print("mkdir: Cannot create directory: ");
+                print(path);
+                print("\n");
+        }
+}
+
 fn cmd_exit()
 {
         system_call_1(syscall_exit, 0);
@@ -165,6 +178,7 @@ Command commands[] = {
     {"pwd", cmd_pwd},
     {"cd", cmd_cd},
     {"ls", cmd_ls},
+    {"mkdir", cmd_mkdir},
     {"exit", cmd_exit},
     {"clear", cmd_clear},
     {NULL, NULL},
