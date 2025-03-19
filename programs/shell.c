@@ -7,12 +7,17 @@
 
 p8 command_buffer[MAX_INPUT];
 
+#define DT_DIR 4
+#define DT_REG 8
+#define DT_LNK 10
+
 #define O_RDONLY 00
 #define O_WRONLY 01
 #define O_RDWR 02
-#define O_DIRECTORY 02
 #define O_NOCTTY 0400
 #define O_NONBLOCK 0
+#define O_DIRECTORY 0200000
+
 #define SIGTRAP 5
 #define SIGKILL 9
 #define SIGSTOP 20
@@ -30,11 +35,6 @@ typedef struct
         string_address name;
         CommandFunc func;
 } Command;
-
-#define DT_DIR 4
-#define DT_REG 8
-#define DT_LNK 10
-#define O_DIRECTORY 0200000
 
 struct linux_dirent64
 {
@@ -61,7 +61,7 @@ fn exec_command(string_address args)
 fn cmd_echo()
 {
         string_address args = strchr(command_buffer, ' ');
-        print(args ? args + 1 : "");
+        print(args ? args + 1 : (string_address) "");
         print("\n");
 }
 
@@ -76,7 +76,7 @@ fn cmd_pwd()
 fn cmd_cd()
 {
         string_address args = strchr(command_buffer, ' ');
-        string_address path = args ? args + 1 : "/";
+        string_address path = args ? args + 1 : (string_address) "/";
 
         if (system_call_1(syscall_chdir, (positive)path) != 0)
         {
@@ -88,6 +88,8 @@ fn cmd_cd()
 
 fn cmd_ls()
 {
+        const b32 max_line_entries = 8;
+
         string_address path = ".";
         string_address args = strchr(command_buffer, ' ');
 
@@ -136,7 +138,7 @@ fn cmd_ls()
                                 print("\033[0m  ");
 
                                 entries_count++;
-                                if (entries_count % 5 == 0)
+                                if (entries_count % max_line_entries == 0)
                                         print("\n");
                         }
 
@@ -144,7 +146,7 @@ fn cmd_ls()
                 }
         }
 
-        if (entries_count % 5 != 0)
+        if (entries_count % max_line_entries != 0)
                 print("\n");
 
         system_call_1(syscall_close, fd);
@@ -153,7 +155,7 @@ fn cmd_ls()
 fn cmd_mkdir()
 {
         string_address args = strchr(command_buffer, ' ');
-        string_address path = args ? args + 1 : "/";
+        string_address path = args ? args + 1 : (string_address) "/";
 
         if (system_call_2(syscall_mkdir, (positive)path, 0777) != 0)
         {
@@ -250,6 +252,18 @@ bipolar process_command()
         return 0;
 }
 
+fn read_line()
+{
+        memset(command_buffer, 0, MAX_INPUT);
+
+        print(RESET PROMPT);
+
+        p32 bytes_read = system_call_3(syscall_read, 0, (positive)command_buffer, MAX_INPUT);
+
+        if (bytes_read > 0 && bytes_read < MAX_INPUT)
+                command_buffer[bytes_read] = '\0';
+}
+
 b32 main()
 {
         memset(command_buffer, 0, MAX_INPUT);
@@ -258,15 +272,8 @@ b32 main()
 
         while (1)
         {
-                print(RESET PROMPT);
-
-                p32 bytes_read = system_call_3(syscall_read, 0, (positive)command_buffer, MAX_INPUT);
-
-                if (bytes_read > 0 && bytes_read < MAX_INPUT)
-                        command_buffer[bytes_read] = '\0';
+                read_line();
 
                 process_command();
-
-                memset(command_buffer, 0, MAX_INPUT);
         }
 }

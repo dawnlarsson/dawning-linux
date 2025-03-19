@@ -57,5 +57,5 @@ b32 main()
         }
 
         while (1)
-                system_call_1(syscall_nanosleep, (bipolar){1, 0});
+                system_call_1(syscall_nanosleep, (bipolar){1});
 }
