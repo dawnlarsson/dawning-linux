@@ -31,6 +31,20 @@ typedef struct
         CommandFunc func;
 } Command;
 
+#define DT_DIR 4
+#define DT_REG 8
+#define DT_LNK 10
+#define O_DIRECTORY 0200000
+
+struct linux_dirent64
+{
+        p64 d_ino;
+        p64 d_off;
+        p16 d_reclen;
+        p8 d_type;
+        b8 d_name[];
+};
+
 fn exec_command(string_address args)
 {
         p32 pid = system_call(syscall_fork);
@@ -71,20 +85,6 @@ fn cmd_cd()
                 print("\n");
         }
 }
-
-#define DT_DIR 4
-#define DT_REG 8
-#define DT_LNK 10
-#define O_DIRECTORY 0200000
-
-struct linux_dirent64
-{
-        p64 d_ino;
-        p64 d_off;
-        p16 d_reclen;
-        p8 d_type;
-        b8 d_name[];
-};
 
 fn cmd_ls()
 {
