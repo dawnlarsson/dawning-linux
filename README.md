@@ -15,6 +15,23 @@ The aim is to lay the groundwork for a flexible core that's entirely self contai
 There is also going to be a fair bit of architectural differences from the usual mainstream distro setup, 
 filesystem, dependency management, linking & runtime requirements.
 
+## build
+your build enviroment needs to be able to prefrom a normal kernel build, and
+the clang C compiler is needed
+
+see what you need to install here: https://docs.kernel.org/process/changes.html
+
+building the distro:
+```
+sudo sh build.sh
+```
+
+if you want to run this in a virtual machine for testing:
+```
+sh build.run.sh
+```
+but, you need https://www.qemu.org/
+
 ### Profile based build & configuration
 **`profile/*`** — Compartmentalized kernel configuration files. 
 these are merged before building the kernel, and they are selectively chosen based on your
@@ -42,11 +59,6 @@ requirements
 **`script/repo.clean`** — Removes any generated artifacts, resets the repo, but keeps downloaded kernel archive.
 
 **`script/size`** — Utility script, just prints the file size in arg 1
-
-## build:
-```
-sudo sh build.sh
-```
 
 ### License
 logos, branding, trademarks - Copyright Dawn Larsson 2025
