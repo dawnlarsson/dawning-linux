@@ -63,37 +63,12 @@
 #error "Unsupported architecture TODO!"
 #endif
 
+#include "syscalls.c"
+
 #if defined(X64)
 #define stdin 0
 #define stdout 1
 #define stderr 2
-
-#define syscall_read 0
-#define syscall_write 1
-#define syscall_open 2
-#define syscall_close 3
-#define syscall_stat 4
-#define syscall_mmap 9
-#define syscall_ioctl 16
-#define syscall_readv 19
-#define syscall_writev 20
-
-#define syscall_nanosleep 35
-
-#define syscall_mount 165
-#define syscall_umount2 39
-
-#define syscall_exit 60
-
-#define syscall_mkdir 83
-
-#define syscall_chdir 80
-#define syscall_fork 57
-#define syscall_execve 59
-#define syscall_wait4 61
-#define syscall_getcwd 79
-#define syscall_setsid 112
-#define syscall_getdents64 217
 #endif
 
 #if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 202311L
