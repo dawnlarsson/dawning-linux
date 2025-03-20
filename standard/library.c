@@ -15,6 +15,18 @@
 #ifndef DAWN_MODERN_C
 #define DAWN_MODERN_C
 
+#if defined(__linux__)
+#define LINUX
+#elif defined(__APPLE__)
+#define MACOS
+#elif defined(_WIN32)
+#define WINDOWS
+#elif defined(__IOS__)
+#define IOS
+#elif defined(__ANDROID__)
+#define ANDROID
+#endif
+
 #if defined(__x86_64__) || defined(_M_X64)
 #define X64
 #define BITS 64
