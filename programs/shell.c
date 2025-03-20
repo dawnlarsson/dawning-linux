@@ -1,32 +1,12 @@
 // A primitive pre-historic shell,
 // it lobs rocks at the kernel and says ouga boga at the user.
-#include "../standard/library.c"
+#include "../standard/linux.c"
 
+#define PROMPT TERM_BOLD " $ " TERM_RESET
 #define MAX_INPUT 1024
 #define MAX_ARGS 64
 
 p8 command_buffer[MAX_INPUT];
-
-#define DT_DIR 4
-#define DT_REG 8
-#define DT_LNK 10
-#define DT_FIFO 1
-#define DT_SOCK 12
-#define DT_CHR 2
-#define DT_BLK 6
-
-#define O_RDONLY 00
-#define O_WRONLY 01
-#define O_RDWR 02
-#define O_NOCTTY 0400
-#define O_NONBLOCK 0
-#define O_DIRECTORY 0200000
-
-#define SIGTRAP 5
-#define SIGKILL 9
-#define SIGSTOP 20
-
-#define PROMPT TERM_BOLD " $ " TERM_RESET
 
 typedef fn(ADDRESS_TO CommandFunc)();
 
@@ -36,15 +16,6 @@ typedef struct
         CommandFunc func;
 } Command;
 
-struct linux_dirent64
-{
-        p64 d_ino;
-        p64 d_off;
-        p16 d_reclen;
-        p8 d_type;
-        p8 d_name[];
-};
-
 fn exec_command(string_address args)
 {
         p32 pid = system_call(syscall_fork);
@@ -52,7 +23,7 @@ fn exec_command(string_address args)
         if (pid == 0)
         {
                 system_call_2(syscall_execve, (positive)args, (positive)args);
-                system_call_1(syscall_exit, 0);
+                exit(0);
         }
 
         system_call_1(syscall_wait4, pid);
@@ -175,7 +146,7 @@ fn cmd_mkdir()
 
 fn cmd_exit()
 {
-        system_call_1(syscall_exit, 0);
+        exit(0);
 }
 
 fn cmd_clear()

@@ -926,6 +926,16 @@ fn print(p8 ADDRESS_TO message)
         system_call_3(syscall_write, stdout, (positive)message, string_length(message));
 }
 
+fn sleep(p32 seconds, p32 nanoseconds)
+{
+        system_call_2(syscall_nanosleep, seconds, nanoseconds);
+}
+
+fn exit(b32 code)
+{
+        system_call_1(syscall_exit, code);
+}
+
 b32 main();
 
 fn _start()
@@ -934,7 +944,7 @@ fn _start()
 
         b32 result = main();
 
-        system_call_1(syscall_exit, result);
+        exit(result);
 }
 
 #endif
