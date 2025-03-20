@@ -47,17 +47,27 @@
 #define BITS 32
 #endif
 
-#if defined(__riscv) && __riscv_xlen == 64
+#if defined(__riscv)
+
+#if __riscv_xlen == 64
 #define RISCV64
 #define BITS 64
-#endif
-
-#if defined(__riscv) && __riscv_xlen == 32
+#elif __riscv_xlen == 32
 #define RISCV32
 #define BITS 32
 #endif
 
-#ifdef X64
+#endif
+
+#if defined(__SSE__) || defined(__ARM_NEON)
+#define SIMD
+#endif
+
+#if defined(X86) || defined(ARM32) || defined(RISCV32) || defined(RISCV64) || defined(ARM64)
+#error "Unsupported architecture TODO!"
+#endif
+
+#if defined(X64)
 #define stdin 0
 #define stdout 1
 #define stderr 2
@@ -88,14 +98,6 @@
 #define syscall_getcwd 79
 #define syscall_setsid 112
 #define syscall_getdents64 217
-#endif
-
-#ifdef X86 || ARM32 || RISCV32 || RISCV64 || ARM64
-#error "Unsupported architecture TODO!"
-#endif
-
-#if defined(__SSE__) || __ARM_NEON
-#define SIMD
 #endif
 
 #if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 202311L
@@ -164,10 +166,10 @@ typedef __builtin_va_list variable_arguments;
 #define TERM_WHITE ANSI "97m"
 
 // ### Values that never can be negative
-#define positive_range signed
+#define positive_range unsigned
 
 // ### Values that can be negative
-#define bipolar_range unsigned
+#define bipolar_range signed
 
 /// A non value returning function
 typedef void fn;
@@ -177,9 +179,9 @@ typedef void fn;
 // memory:      [ 00000000 ]
 // hex:         [ 0x00 ]
 // linguistic:  (zero) to (plus) two hundred fifty-five
-// traditional: unsigned char
+// traditional: char
 // alt:         array of 8 bits
-typedef positive_range char p8;
+typedef char p8;
 #define p8_max 255
 #define p8_min 0
 #define p8_char_max 3
@@ -207,9 +209,9 @@ typedef b8 i8;
 // memory:      [ 00000000 | 00000000 ]
 // hex:         [ 0x00 | 0x00 ]
 // linguistic:  (zero) to (plus) sixty-five thousand...
-// traditional: unsigned short
+// traditional:  short
 // alt:         array of 16 bits
-typedef positive_range short int p16;
+typedef short int p16;
 #define p16_max 65535
 #define p16_min 0
 #define p16_char_max 6
@@ -237,9 +239,9 @@ typedef b16 i16;
 // memory:      [ 00000000 | 00000000 | 00000000 | 00000000 ]
 // hex:         [ 0x00 | 0x00 | 0x00 | 0x00 ]
 // linguistic:  (zero) to (plus) four billion...
-// traditional: unsigned int
+// traditional: int
 // alt:         array of 32 bits
-typedef positive_range int p32;
+typedef int p32;
 #define p32_max 4294967295
 #define p32_min 0
 #define p32_char_max 10
@@ -267,9 +269,9 @@ typedef b32 i32;
 // memory:      [ 00000000 | 00000000 | 00000000 | 00000000 | 00000000 | 00000000 | 00000000 | 00000000 ]
 // hex:         [ 0x00 | 0x00 | 0x00 | 0x00 | 0x00 | 0x00 | 0x00 | 0x00 ]
 // linguistic:  (zero) to (plus) eighteen quintillion...
-// traditional: unsigned long int
+// traditional: long int
 // alt:         array of 64 bits
-typedef positive_range long int p64;
+typedef long int p64;
 #define p64_max 18446744073709551615
 #define p64_min 0
 #define p64_char_max 20
@@ -297,9 +299,9 @@ typedef b64 i64;
 // memory:      2x [ 00000000 | 00000000 | 00000000 | 00000000 | 00000000 | 00000000 | 00000000 | 00000000 ]
 // hex:         2x [ 0x00 | 0x00 | 0x00 | 0x00 | 0x00 | 0x00 | 0x00 | 0x00 ]
 // linguistic:  (zero) to (plus) three hundred forty undecillion...
-// traditional: unsigned long long int
+// traditional: long long int
 // alt:         array of 128 bits
-typedef positive_range long long int p128;
+typedef long long int p128;
 #define p128_max 340282366920938463463374607431768211455
 #define p128_min 0
 #define p128_char_max 39
@@ -354,7 +356,7 @@ typedef long double f128;
 #define f128_bytes 16
 #define f128_bits 128
 
-#ifdef BITS == 64
+#if BITS == 64
 typedef f64 decimal;
 #define decimal_max f64_max
 #define decimal_min f64_min
@@ -370,7 +372,7 @@ typedef f32 decimal;
 #define decimal_bits f32_bits
 #endif
 
-#ifdef BITS == 64
+#if BITS == 64
 
 // ### Positive range [native] bit integer
 // recommended type for most cases (especially for memory addresses, or loops)
@@ -470,10 +472,9 @@ typedef typeof(sizeof(0)) sized;
 #define bool u8
 
 // ### String address
-// a pointer to a string in memory, usually the first b8 character of the string
-typedef b8 ADDRESS_TO string_address;
-
-typedef b8 string[];
+// a pointer to a string in memory, usually the first p8 character of the string
+typedef p8 ADDRESS_TO string_address;
+typedef p8 string[];
 
 #define string_index(source, index) (ADDRESS_TO((source) + (index)))
 #define string_get(source) (ADDRESS_TO(source))
@@ -536,12 +537,6 @@ typedef b8 string[];
 #define asm_copy_64 "movq"
 #define asm_copy_32 "movl"
 
-#ifdef BITS == 64
-#define asm_copy asm_copy_64
-#else
-#define asm_copy asm_copy_32
-#endif
-
 #define asm_store "mov"
 #define asm_jump "jmp"
 #define asm_branch "je"
@@ -557,6 +552,12 @@ typedef b8 string[];
 #define tem_1 "%r11"
 #define stack_pointer "%rsp"
 #define frame_pointer "%rbp"
+
+#if defined(X64)
+#define asm_copy asm_copy_64
+#else
+#define asm_copy asm_copy_32
+#endif
 
 #elif defined(ARM64)
 #define asm_copy "ldr"
@@ -576,7 +577,6 @@ typedef b8 string[];
 #define tem_1 "x10"
 #define stack_pointer "sp"
 #define frame_pointer "x29"
-
 #elif defined(RISCV64)
 #define asm_copy "ld"
 #define asm_store "sd"
@@ -595,7 +595,6 @@ typedef b8 string[];
 #define tem_1 "t1"
 #define stack_pointer "sp"
 #define frame_pointer "s0"
-
 #endif
 
 #define ir(asm_args...) \
@@ -773,7 +772,7 @@ fn_asm(system_call_6, bipolar, positive syscall, positive argument_1, positive a
         system_return;
 }
 
-#ifdef X64
+#if defined(X64)
 // ### Get CPU time (Time Stamp Counter)
 // returns: the current CPU time
 p64 get_cpu_time()
@@ -902,7 +901,7 @@ string_address strcpy(string_address destination, string_address source)
 // source: the memory block to search
 // character: the character to search for
 // traditional: strchr
-string_address string_first_of(string_address source, b8 character)
+string_address string_first_of(string_address source, p8 character)
 {
         while (string_get(source))
         {
@@ -916,13 +915,13 @@ string_address string_first_of(string_address source, b8 character)
 }
 
 // use string_first_of instead, this is for compatibility
-string_address strchr(string_address source, b8 character)
+string_address strchr(string_address source, p8 character)
 {
         return string_first_of(source, character);
 }
 
 // Print a string
-fn print(b8 ADDRESS_TO message)
+fn print(p8 ADDRESS_TO message)
 {
         system_call_3(syscall_write, stdout, (positive)message, string_length(message));
 }

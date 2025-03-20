@@ -85,9 +85,9 @@ b32 main()
 
         if (process_id != 0)
         {
-                b8 ADDRESS_TO argv[] = {init_program};
+                p8 ADDRESS_TO argv[] = {init_program};
 
-                system_call_2(syscall_execve, (bipolar)init_program, (bipolar)argv);
+                system_call_2(syscall_execve, (bipolar)init_program, (positive)argv);
                 print(lable "Failed to execute init program");
 
                 system_call_1(syscall_exit, 1);

@@ -38,7 +38,7 @@ struct linux_dirent64
         p64 d_off;
         p16 d_reclen;
         p8 d_type;
-        b8 d_name[];
+        p8 d_name[];
 };
 
 fn exec_command(string_address args)
@@ -84,7 +84,7 @@ fn cmd_cd()
 
 fn cmd_ls()
 {
-        const b32 max_line_entries = 8;
+        const p32 max_line_entries = 8;
 
         string_address path = ".";
         string_address args = string_first_of(command_buffer, ' ');

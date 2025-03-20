@@ -25,6 +25,7 @@ sudo sh script/build.fs
 # Compile runtime programs
 sh standard/build programs/init fs/init
 sh standard/build programs/shell fs/shell
+sh standard/build programs/duck fs/duck
 
 # Download kernel
 sudo sh script/get.kernel
