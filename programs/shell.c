@@ -22,8 +22,11 @@ fn exec_command(string_address args)
 
         if (pid == 0)
         {
-                system_call_2(syscall_execve, (positive)args, (positive)args);
-                exit(0);
+                p8 ADDRESS_TO argv[] = {args};
+
+                system_call_3(syscall_execve, (positive)args, (positive)argv, 0);
+
+                exit(1);
         }
 
         system_call_1(syscall_wait4, pid);

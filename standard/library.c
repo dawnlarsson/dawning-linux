@@ -15,40 +15,19 @@
 #ifndef DAWN_MODERN_C
 #define DAWN_MODERN_C
 
-#if defined(__linux__)
-#define LINUX
-#elif defined(__APPLE__)
-#define MACOS
-#elif defined(_WIN32)
-#define WINDOWS
-#elif defined(__IOS__)
-#define IOS
-#elif defined(__ANDROID__)
-#define ANDROID
-#endif
-
 #if defined(__x86_64__) || defined(_M_X64)
 #define X64
 #define BITS 64
-#endif
-
-#if defined(__i386) || defined(_M_IX86)
+#elif defined(__i386) || defined(_M_IX86)
 #define X86
 #define BITS 32
-#endif
-
-#if defined(__aarch64__) || defined(_M_ARM64)
+#elif defined(__aarch64__) || defined(_M_ARM64)
 #define ARM64
 #define BITS 64
-#endif
-
-#if defined(__arm__) || defined(_M_ARM)
+#elif defined(__arm__) || defined(_M_ARM)
 #define ARM32
 #define BITS 32
-#endif
-
-#if defined(__riscv)
-
+#elif defined(__riscv)
 #if __riscv_xlen == 64
 #define RISCV64
 #define BITS 64
@@ -56,7 +35,12 @@
 #define RISCV32
 #define BITS 32
 #endif
-
+#elif defined(__PPC64__)
+#define PPC64
+#define BITS 64
+#elif defined(__s390x__)
+#define S390X
+#define BITS 64
 #endif
 
 #if defined(__SSE__) || defined(__ARM_NEON)
