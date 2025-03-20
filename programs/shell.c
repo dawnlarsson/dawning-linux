@@ -10,6 +10,10 @@ p8 command_buffer[MAX_INPUT];
 #define DT_DIR 4
 #define DT_REG 8
 #define DT_LNK 10
+#define DT_FIFO 1
+#define DT_SOCK 12
+#define DT_CHR 2
+#define DT_BLK 6
 
 #define O_RDONLY 00
 #define O_WRONLY 01
@@ -123,11 +127,19 @@ fn cmd_ls()
                         {
                                 if (d->d_type == DT_DIR)
                                 {
-                                        print(TERM_BLUE);
+                                        print(TERM_BOLD TERM_BLUE);
                                 }
                                 else if (d->d_type == DT_LNK)
                                 {
                                         print(TERM_CYAN);
+                                }
+                                else if (d->d_type == DT_REG)
+                                {
+                                        print(TERM_RESET);
+                                }
+                                else
+                                {
+                                        print(TERM_YELLOW);
                                 }
 
                                 print(d->d_name);
