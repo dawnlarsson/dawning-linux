@@ -44,6 +44,11 @@ fn process_command()
                 length++;
         }
 
+        if (is_first_section)
+        {
+                arguments_buffer = NULL;
+        }
+
         if (is_executable)
         {
                 positive pid = system_call(syscall_fork);

@@ -5,7 +5,9 @@
 
 fn core_echo(string_address buffer)
 {
-        print(buffer ? buffer : (string_address) "");
+        if (buffer != NULL)
+                print(buffer);
+
         print("\n");
 }
 
@@ -19,18 +21,27 @@ fn core_pwd(string_address buffer)
 
 fn core_cd(string_address buffer)
 {
-        string_address path = buffer ? buffer : (string_address) "/";
+        if (buffer == NULL)
+        {
+                buffer = "/";
+        }
 
-        if (system_call_1(syscall_chdir, (positive)path) != 0)
+        if (system_call_1(syscall_chdir, (positive)buffer) != 0)
         {
                 print("cd: No such directory: ");
-                print(path);
+                print(buffer);
                 print("\n");
         }
 }
 
 fn core_basename(string_address buffer)
 {
+        if (buffer == NULL)
+        {
+                print("basename: missing operand\n");
+                return;
+        }
+
         string_address base = string_last_of(buffer, '/');
 
         print(base);
@@ -41,14 +52,17 @@ fn core_ls(string_address buffer)
 {
         const p32 max_line_entries = 8;
 
-        string_address path = buffer ? buffer : (string_address) ".";
+        if (buffer == NULL)
+        {
+                buffer = ".";
+        }
 
-        bipolar fd = system_call_2(syscall_open, (positive)path, O_RDONLY | O_DIRECTORY);
+        bipolar file_descriptor = system_call_2(syscall_open, (positive)buffer, O_RDONLY | O_DIRECTORY);
 
-        if (fd < 0)
+        if (file_descriptor < 0)
         {
                 print("ls: Cannot access '");
-                print(path);
+                print(buffer);
                 print("': No such file or directory\n");
                 return;
         }
@@ -58,7 +72,7 @@ fn core_ls(string_address buffer)
 
         while (1)
         {
-                bipolar nread = system_call_3(syscall_getdents64, fd, (positive)out_buffer, MAX_INPUT);
+                bipolar nread = system_call_3(syscall_getdents64, file_descriptor, (positive)out_buffer, MAX_INPUT);
                 if (nread <= 0)
                         break;
 
@@ -102,17 +116,21 @@ fn core_ls(string_address buffer)
         if (entries_count % max_line_entries != 0)
                 print("\n");
 
-        system_call_1(syscall_close, fd);
+        system_call_1(syscall_close, file_descriptor);
 }
 
 fn core_mkdir(string_address buffer)
 {
-        string_address path = buffer ? buffer : (string_address) "/";
+        if (buffer == NULL)
+        {
+                print("mkdir: missing operand\n");
+                return;
+        }
 
-        if (system_call_2(syscall_mkdir, (positive)path, 0777) != 0)
+        if (system_call_2(syscall_mkdir, (positive)buffer, 0777) != 0)
         {
                 print("mkdir: Cannot create directory: ");
-                print(path);
+                print(buffer);
                 print("\n");
         }
 }
