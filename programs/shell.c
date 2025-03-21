@@ -10,6 +10,9 @@ positive buffer_length;
 // Single pass command parser
 fn process_command()
 {
+        if (buffer[0] == 0)
+                return;
+
         u32 length = 0;
         string_address arguments_buffer;
         bool is_first_section = true;
@@ -30,6 +33,7 @@ fn process_command()
                                 buffer[length] = '\0';
                                 is_first_section = false;
 
+                                length++;
                                 arguments_buffer = buffer + length;
 
                                 // we don't care about arguments for now
@@ -94,12 +98,6 @@ b32 main()
 
                 if (buffer_length > MAX_INPUT)
                         buffer_length = MAX_INPUT;
-
-                if (buffer_length <= 0)
-                        continue;
-
-                if (!buffer[0])
-                        continue;
 
                 if (buffer[buffer_length - 1] == '\n')
                         buffer[buffer_length - 1] = '\0';

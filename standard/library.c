@@ -893,17 +893,17 @@ string_address strchr(string_address source, p8 character)
 
 string_address string_last_of(string_address source, p8 character)
 {
-        positive length = string_length(source);
+        string_address last = NULL;
 
-        while (length--)
+        while (string_get(source))
         {
                 if (string_get(source) == character)
-                        return source;
+                        last = source;
 
-                source--;
+                source++;
         }
 
-        return NULL;
+        return last;
 }
 
 string_address basename(string_address source)

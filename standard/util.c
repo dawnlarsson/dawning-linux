@@ -19,7 +19,7 @@ fn core_pwd(string_address buffer)
 
 fn core_cd(string_address buffer)
 {
-        string_address path = buffer ? buffer + 1 : (string_address) "/";
+        string_address path = buffer ? buffer : (string_address) "/";
 
         if (system_call_1(syscall_chdir, (positive)path) != 0)
         {
@@ -31,9 +31,7 @@ fn core_cd(string_address buffer)
 
 fn core_basename(string_address buffer)
 {
-        string_address path = buffer ? buffer + 1 : (string_address) "/";
-
-        string_address base = basename(path);
+        string_address base = string_last_of(buffer, '/');
 
         print(base);
         print("\n");
@@ -43,12 +41,7 @@ fn core_ls(string_address buffer)
 {
         const p32 max_line_entries = 8;
 
-        string_address path = ".";
-
-        if (buffer && string_get(buffer + 1) != '\0')
-        {
-                path = buffer + 1;
-        }
+        string_address path = buffer ? buffer : (string_address) ".";
 
         bipolar fd = system_call_2(syscall_open, (positive)path, O_RDONLY | O_DIRECTORY);
 
@@ -114,7 +107,7 @@ fn core_ls(string_address buffer)
 
 fn core_mkdir(string_address buffer)
 {
-        string_address path = buffer ? buffer + 1 : (string_address) "/";
+        string_address path = buffer ? buffer : (string_address) "/";
 
         if (system_call_2(syscall_mkdir, (positive)path, 0777) != 0)
         {
