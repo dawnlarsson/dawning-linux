@@ -3,19 +3,17 @@
 #define MAX_INPUT 1024
 #define MAX_ARGS 64
 
-fn core_echo(string_address buffer)
+fn core_basename(string_address buffer)
 {
-        if (buffer != NULL)
-                print(buffer);
+        if (buffer == NULL)
+        {
+                print("basename: missing operand\n");
+                return;
+        }
 
-        print("\n");
-}
+        string_address base = string_last_of(buffer, '/');
 
-fn core_pwd(string_address buffer)
-{
-        p8 out_buffer[MAX_INPUT] = {0};
-        system_call_2(syscall_getcwd, (positive)out_buffer, MAX_INPUT);
-        print(out_buffer);
+        print(base);
         print("\n");
 }
 
@@ -34,17 +32,84 @@ fn core_cd(string_address buffer)
         }
 }
 
-fn core_basename(string_address buffer)
+fn core_clear(string_address buffer)
+{
+        print(TERM_CLEAR_SCREEN);
+}
+
+fn core_chmod(string_address buffer)
 {
         if (buffer == NULL)
         {
-                print("basename: missing operand\n");
+                print("chmod: missing operand\n");
                 return;
         }
 
-        string_address base = string_last_of(buffer, '/');
+        if (system_call_2(syscall_chmod, (positive)buffer, 0777) != 0)
+        {
+                print("chmod: Cannot change permissions: ");
+                print(buffer);
+                print("\n");
+        }
+}
 
-        print(base);
+fn core_cp(string_address buffer)
+{
+        if (buffer == NULL)
+        {
+                print("cp: missing operand\n");
+                return;
+        }
+
+        string_address source = buffer;
+        string_address destination = strchr(buffer, ' ');
+
+        if (destination == NULL)
+        {
+                print("cp: missing destination\n");
+                return;
+        }
+
+        ADDRESS_TO destination = '\0';
+        destination++;
+
+        bipolar source_fd = system_call_2(syscall_open, (positive)source, O_RDONLY);
+        if (source_fd < 0)
+        {
+                print("cp: Cannot open source file: ");
+                print(source);
+                print("\n");
+                return;
+        }
+
+        bipolar destination_fd = system_call_2(syscall_open, (positive)destination, O_CREAT | O_WRONLY);
+        if (destination_fd < 0)
+        {
+                print("cp: Cannot open destination file: ");
+                print(destination);
+                print("\n");
+                return;
+        }
+
+        p8 out_buffer[1024];
+        while (1)
+        {
+                bipolar nread = system_call_3(syscall_read, source_fd, (positive)out_buffer, 1024);
+                if (nread <= 0)
+                        break;
+
+                system_call_3(syscall_write, destination_fd, (positive)out_buffer, nread);
+        }
+
+        system_call_1(syscall_close, source_fd);
+        system_call_1(syscall_close, destination_fd);
+}
+
+fn core_echo(string_address buffer)
+{
+        if (buffer != NULL)
+                print(buffer);
+
         print("\n");
 }
 
@@ -119,6 +184,14 @@ fn core_ls(string_address buffer)
         system_call_1(syscall_close, file_descriptor);
 }
 
+fn core_pwd(string_address buffer)
+{
+        p8 out_buffer[MAX_INPUT] = {0};
+        system_call_2(syscall_getcwd, (positive)out_buffer, MAX_INPUT);
+        print(out_buffer);
+        print("\n");
+}
+
 fn core_mkdir(string_address buffer)
 {
         if (buffer == NULL)
@@ -135,14 +208,37 @@ fn core_mkdir(string_address buffer)
         }
 }
 
+fn core_mv(string_address buffer)
+{
+        if (buffer == NULL)
+        {
+                print("mv: missing operand\n");
+                return;
+        }
+
+        string_address source = buffer;
+        string_address destination = strchr(buffer, ' ');
+
+        if (destination == NULL)
+        {
+                print("mv: missing destination\n");
+                return;
+        }
+
+        ADDRESS_TO destination = '\0';
+        destination++;
+
+        if (system_call_2(syscall_rename, (positive)source, (positive)destination) != 0)
+        {
+                print("mv: Cannot move file: ");
+                print(source);
+                print("\n");
+        }
+}
+
 fn core_exit(string_address buffer)
 {
         exit(0);
-}
-
-fn core_clear(string_address buffer)
-{
-        print(TERM_CLEAR_SCREEN);
 }
 
 typedef fn(ADDRESS_TO core_command_function)(string_address buffer);
@@ -157,10 +253,13 @@ core_command core_commands[] = {
     {"basename", core_basename},
     {"cd", core_cd},
     {"clear", core_clear},
+    {"cp", core_cp},
+    {"chmod", core_chmod},
     {"echo", core_echo},
     {"exit", core_exit},
     {"ls", core_ls},
     {"mkdir", core_mkdir},
+    {"mv", core_mv},
     {"pwd", core_pwd},
     {NULL, NULL},
 };

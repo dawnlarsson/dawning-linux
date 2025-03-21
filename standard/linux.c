@@ -44,6 +44,7 @@
 #define O_NOCTTY 0400
 #define O_NONBLOCK 0
 #define O_DIRECTORY 0200000
+#define O_CREAT 0100
 
 #define SIGTRAP 5
 #define SIGKILL 9

@@ -68,7 +68,9 @@ fn process_command()
                         exit(1);
                 }
 
-                system_call_1(syscall_wait4, pid);
+                positive status = 0;
+
+                system_call_4(syscall_wait4, pid, (positive)&status, 0, 0);
                 return;
         }
 
