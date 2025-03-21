@@ -272,6 +272,8 @@ fn core_exit(string_address buffer)
         exit(0);
 }
 
+fn core_help();
+
 typedef fn(ADDRESS_TO core_command_function)(string_address buffer);
 
 typedef struct
@@ -293,5 +295,25 @@ core_command core_commands[] = {
     {"mkdir", core_mkdir},
     {"mv", core_mv},
     {"pwd", core_pwd},
+    {"help", core_help},
     {NULL, NULL},
 };
+
+fn core_help(string_address buffer)
+{
+        print("Dawning Shell, WIP, " TERM_RED TERM_BOLD "expect crashes! \n\n" TERM_RESET);
+        print("Available built-in commands:\n");
+
+        core_command ADDRESS_TO command = core_commands;
+
+        while (command->name)
+        {
+                print(" - " TERM_BOLD);
+                print(command->name);
+                print(TERM_RESET "\n");
+
+                command++;
+        }
+
+        print("\n");
+}
