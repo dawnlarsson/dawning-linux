@@ -17,6 +17,37 @@ fn core_basename(string_address buffer)
         print("\n");
 }
 
+fn core_cat(string_address buffer)
+{
+        if (buffer == NULL)
+        {
+                print("cat: missing operand\n");
+                return;
+        }
+
+        bipolar file_descriptor = system_call_2(syscall_open, (positive)buffer, O_RDONLY);
+
+        if (file_descriptor < 0)
+        {
+                print("cat: Cannot open file: ");
+                print(buffer);
+                print("\n");
+                return;
+        }
+
+        p8 out_buffer[2048];
+        while (1)
+        {
+                bipolar nread = system_call_3(syscall_read, file_descriptor, (positive)out_buffer, 2048);
+                if (nread <= 0)
+                        break;
+
+                system_call_3(syscall_write, 1, (positive)out_buffer, nread);
+        }
+
+        system_call_1(syscall_close, file_descriptor);
+}
+
 fn core_cd(string_address buffer)
 {
         if (buffer == NULL)
@@ -251,6 +282,7 @@ typedef struct
 
 core_command core_commands[] = {
     {"basename", core_basename},
+    {"cat", core_cat},
     {"cd", core_cd},
     {"clear", core_clear},
     {"cp", core_cp},
