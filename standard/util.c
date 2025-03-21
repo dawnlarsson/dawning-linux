@@ -144,6 +144,13 @@ fn core_echo(string_address buffer)
         print("\n");
 }
 
+fn core_exec(string_address buffer)
+{
+        p8 ADDRESS_TO argv[] = {buffer};
+
+        bipolar result = system_call_2(syscall_execve, (positive)buffer, (positive)argv);
+}
+
 fn core_ls(string_address buffer)
 {
         const p32 max_line_entries = 8;
@@ -290,6 +297,7 @@ core_command core_commands[] = {
     {"cp", core_cp},
     {"chmod", core_chmod},
     {"echo", core_echo},
+    {"exec", core_exec},
     {"exit", core_exit},
     {"ls", core_ls},
     {"mkdir", core_mkdir},

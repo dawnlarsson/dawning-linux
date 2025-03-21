@@ -61,9 +61,12 @@ b32 main()
         {
                 p8 ADDRESS_TO argv[] = {init_program};
 
-                system_call_2(syscall_execve, (positive)init_program, (positive)argv);
+                bipolar result = system_call_2(syscall_execve, (positive)init_program, (positive)argv);
 
                 print(lable "Failed to execute init program");
+                print(" (error: ");
+                print_bipolar(result);
+                print(")\n");
 
                 exit(1);
         }

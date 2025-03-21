@@ -9,6 +9,12 @@ positive buffer_length;
 
 fn exec_command(string_address command, string_address args)
 {
+        if (command[0] != '/')
+        {
+                print("TODO: exec relative paths, try exec for now :) \n");
+                return;
+        }
+
         positive process_id = system_call(syscall_fork);
 
         if (process_id < 0)

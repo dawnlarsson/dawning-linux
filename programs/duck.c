@@ -4,6 +4,10 @@
 
 b32 main()
 {
-        print("quack\n");
+        while (1)
+        {
+                print("quack\n");
+        }
+
         return 0;
 }
