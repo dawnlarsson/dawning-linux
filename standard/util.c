@@ -274,6 +274,42 @@ fn core_mv(string_address buffer)
         }
 }
 
+fn core_mount(string_address buffer)
+{
+        if (buffer == NULL)
+        {
+                print("mount: missing operand\n");
+                return;
+        }
+
+        string_address source = buffer;
+        string_address destination = strchr(buffer, ' ');
+
+        if (destination == NULL)
+        {
+                print("mount: missing destination\n");
+                return;
+        }
+
+        ADDRESS_TO destination = '\0';
+        destination++;
+
+        bipolar result = system_call_5(
+            syscall_mount,
+            (positive)source,
+            (positive)destination,
+            (positive)source,
+            MS_BIND,
+            NULL);
+
+        if (result != 0)
+        {
+                print("mount: Cannot mount filesystem: ");
+                print(source);
+                print("\n");
+        }
+}
+
 fn core_exit(string_address buffer)
 {
         exit(0);
@@ -302,6 +338,7 @@ core_command core_commands[] = {
     {"ls", core_ls},
     {"mkdir", core_mkdir},
     {"mv", core_mv},
+    {"mount", core_mount},
     {"pwd", core_pwd},
     {"help", core_help},
     {NULL, NULL},
