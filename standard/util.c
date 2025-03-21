@@ -5,7 +5,7 @@
 
 fn core_echo(string_address buffer)
 {
-        print(buffer ? buffer + 1 : (string_address) "");
+        print(buffer ? buffer : (string_address) "");
         print("\n");
 }
 
