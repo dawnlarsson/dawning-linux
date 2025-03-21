@@ -1,249 +1,83 @@
 // A primitive pre-historic shell,
 // it lobs rocks at the kernel and says ouga boga at the user.
-#include "../standard/linux.c"
+#include "../standard/util.c"
 
 #define PROMPT TERM_BOLD " $ " TERM_RESET
-#define MAX_INPUT 1024
-#define MAX_ARGS 64
 
-p8 command_buffer[MAX_INPUT];
+p8 buffer[MAX_INPUT];
+positive buffer_length;
 
-typedef fn(ADDRESS_TO CommandFunc)();
-
-typedef struct
+// Single pass command parser
+fn process_command()
 {
-        string_address name;
-        CommandFunc func;
-} Command;
+        u32 length = 0;
+        string_address arguments_buffer;
+        bool is_first_section = true;
 
-fn exec_command(string_address args)
-{
-        p32 pid = system_call(syscall_fork);
+        bool is_executable = false;
 
-        if (pid == 0)
+        if (buffer[0] == '.' || buffer[0] == '/')
         {
-                p8 ADDRESS_TO argv[] = {args};
-
-                system_call_3(syscall_execve, (positive)args, (positive)argv, 0);
-
-                exit(1);
+                is_executable = true;
         }
 
-        system_call_1(syscall_wait4, pid);
-}
-
-fn cmd_echo()
-{
-        string_address args = string_first_of(command_buffer, ' ');
-        print(args ? args + 1 : (string_address) "");
-        print("\n");
-}
-
-fn cmd_pwd()
-{
-        p8 buffer[MAX_INPUT] = {0};
-        system_call_2(syscall_getcwd, (positive)buffer, MAX_INPUT);
-        print(buffer);
-        print("\n");
-}
-
-fn cmd_cd()
-{
-        string_address args = string_first_of(command_buffer, ' ');
-        string_address path = args ? args + 1 : (string_address) "/";
-
-        if (system_call_1(syscall_chdir, (positive)path) != 0)
+        while (buffer[length] != '\0')
         {
-                print("cd: No such directory: ");
-                print(path);
-                print("\n");
-        }
-}
+                if (is_first_section)
+                {
+                        if (buffer[length] == ' ')
+                        {
+                                buffer[length] = '\0';
+                                is_first_section = false;
 
-fn cmd_ls()
-{
-        const p32 max_line_entries = 8;
+                                arguments_buffer = buffer + length;
 
-        string_address path = ".";
-        string_address args = string_first_of(command_buffer, ' ');
+                                // we don't care about arguments for now
+                                break;
+                        }
+                }
 
-        if (args && string_get(args + 1) != '\0')
-        {
-                path = args + 1;
+                length++;
         }
 
-        bipolar fd = system_call_2(syscall_open, (positive)path, O_RDONLY | O_DIRECTORY);
-
-        if (fd < 0)
+        if (is_executable)
         {
-                print("ls: Cannot access '");
-                print(path);
-                print("': No such file or directory\n");
+                positive pid = system_call(syscall_fork);
+
+                if (pid == 0)
+                {
+                        p8 ADDRESS_TO argv[3];
+                        argv[0] = buffer;
+                        argv[1] = is_first_section ? NULL : arguments_buffer;
+                        argv[2] = NULL;
+
+                        system_call_3(syscall_execve, (positive)buffer, (positive)argv, 0);
+
+                        print("Failed to execute: ");
+                        print(buffer);
+                        print("\n");
+                        exit(1);
+                }
+
+                system_call_1(syscall_wait4, pid);
                 return;
         }
 
-        p8 buffer[1024];
-        positive entries_count = 0;
+        core_command ADDRESS_TO command = core_commands;
 
-        while (1)
+        while (command->name)
         {
-                bipolar nread = system_call_3(syscall_getdents64, fd, (positive)buffer, 1024);
-                if (nread <= 0)
-                        break;
-
-                p8 ADDRESS_TO bpos = buffer;
-                while (bpos < buffer + nread)
+                if (string_compare(command->name, buffer) == 0)
                 {
-                        struct linux_dirent64 ADDRESS_TO d = (struct linux_dirent64 ADDRESS_TO)bpos;
-
-                        if (!(d->d_name[0] == '.' && (d->d_name[1] == '\0' ||
-                                                      (d->d_name[1] == '.' && d->d_name[2] == '\0'))))
-                        {
-                                if (d->d_type == DT_DIR)
-                                {
-                                        print(TERM_BOLD TERM_BLUE);
-                                }
-                                else if (d->d_type == DT_LNK)
-                                {
-                                        print(TERM_CYAN);
-                                }
-                                else if (d->d_type == DT_REG)
-                                {
-                                        print(TERM_RESET);
-                                }
-                                else
-                                {
-                                        print(TERM_YELLOW);
-                                }
-
-                                print(d->d_name);
-                                print(TERM_RESET " ");
-
-                                entries_count++;
-                                if (entries_count % max_line_entries == 0)
-                                        print("\n");
-                        }
-
-                        bpos += d->d_reclen;
+                        command->function(arguments_buffer);
+                        return;
                 }
-        }
-
-        if (entries_count % max_line_entries != 0)
-                print("\n");
-
-        system_call_1(syscall_close, fd);
-}
-
-fn cmd_mkdir()
-{
-        string_address args = string_first_of(command_buffer, ' ');
-        string_address path = args ? args + 1 : (string_address) "/";
-
-        if (system_call_2(syscall_mkdir, (positive)path, 0777) != 0)
-        {
-                print("mkdir: Cannot create directory: ");
-                print(path);
-                print("\n");
-        }
-}
-
-fn cmd_exit()
-{
-        exit(0);
-}
-
-fn cmd_clear()
-{
-        print(TERM_CLEAR_SCREEN);
-}
-
-Command commands[] = {
-    {"echo", cmd_echo},
-    {"pwd", cmd_pwd},
-    {"cd", cmd_cd},
-    {"ls", cmd_ls},
-    {"mkdir", cmd_mkdir},
-    {"exit", cmd_exit},
-    {"clear", cmd_clear},
-    {NULL, NULL},
-};
-
-fn extract_command_name(string_address dest, string_address source)
-{
-        while (string_get(source) && string_is(source, ' '))
-                source++;
-
-        while (string_get(source) && !string_is(source, ' ') && !string_is(source, '\n'))
-        {
-                string_set(dest, string_get(source));
-                dest++;
-                source++;
-        }
-
-        string_set(dest, '\0');
-}
-
-fn trim_newline(string_address soruce)
-{
-        string_address step = soruce;
-
-        while (string_get(step))
-                step++;
-
-        if (step > soruce)
-                step--;
-
-        if (string_is(step, '\n'))
-                string_set(step, '\0');
-}
-
-bipolar process_command()
-{
-        if (!string_get(command_buffer) || string_is(command_buffer, '\n'))
-                return 0;
-
-        trim_newline(command_buffer);
-
-        p8 name[MAX_INPUT] = {0};
-        extract_command_name(name, command_buffer);
-
-        if (!string_get(name))
-                return 0;
-
-        Command ADDRESS_TO cmd = commands;
-        while (cmd->name)
-        {
-                if (string_compare(cmd->name, name) == 0)
-                {
-                        cmd->func();
-                        return 0;
-                }
-                cmd++;
-        }
-
-        if (string_index(command_buffer, 0) == '.' || string_index(command_buffer, 0) == '/')
-        {
-                exec_command(command_buffer);
-                return 0;
+                command++;
         }
 
         print("Command not found: ");
-        print(name);
+        print(buffer);
         print("\n");
-
-        return 0;
-}
-
-fn read_line()
-{
-        memory_fill(command_buffer, 0, MAX_INPUT);
-
-        print(TERM_RESET PROMPT);
-
-        p32 command_length = system_call_3(syscall_read, 0, (positive)command_buffer, MAX_INPUT);
-
-        if (command_length == 0)
-                read_line();
 }
 
 b32 main()
@@ -252,7 +86,24 @@ b32 main()
 
         while (1)
         {
-                read_line();
+                memory_fill(buffer, 0, MAX_INPUT);
+
+                print(TERM_RESET PROMPT);
+
+                buffer_length = system_call_3(syscall_read, 0, (positive)buffer, MAX_INPUT);
+
+                if (buffer_length > MAX_INPUT)
+                        buffer_length = MAX_INPUT;
+
+                if (buffer_length <= 0)
+                        continue;
+
+                if (!buffer[0])
+                        continue;
+
+                if (buffer[buffer_length - 1] == '\n')
+                        buffer[buffer_length - 1] = '\0';
+
                 process_command();
         }
 }

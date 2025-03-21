@@ -891,6 +891,26 @@ string_address strchr(string_address source, p8 character)
         return string_first_of(source, character);
 }
 
+string_address string_last_of(string_address source, p8 character)
+{
+        positive length = string_length(source);
+
+        while (length--)
+        {
+                if (string_get(source) == character)
+                        return source;
+
+                source--;
+        }
+
+        return NULL;
+}
+
+string_address basename(string_address source)
+{
+        return string_last_of(source, '/');
+}
+
 // Print a string
 fn print(p8 ADDRESS_TO message)
 {

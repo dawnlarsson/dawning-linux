@@ -1,4 +1,7 @@
-// Common linux specific functionality
+
+#ifndef DAWN_MODERN_C_LINUX
+#define DAWN_MODERN_C_LINUX
+
 #include "library.c"
 
 #define MS_NONE 0
@@ -54,3 +57,5 @@ struct linux_dirent64
         p8 d_type;
         p8 d_name[];
 };
+
+#endif
