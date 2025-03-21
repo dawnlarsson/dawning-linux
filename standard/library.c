@@ -916,16 +916,17 @@ fn print(p8 ADDRESS_TO message)
         system_call_3(syscall_write, stdout, (positive)message, string_length(message));
 }
 
-fn print_bipolar(bipolar number)
+// Convert a positive number to a string
+// buffer must be at least 32 bytes long
+fn positive_to_string(positive number, p8 *buffer)
 {
-        p8 buffer[32];
         positive step = 0;
 
-        bool negative = (number < 0);
-
-        if (negative)
+        if (number == 0)
         {
-                number = -number;
+                buffer[0] = '0';
+                buffer[1] = '\0';
+                return;
         }
 
         do
@@ -934,18 +935,47 @@ fn print_bipolar(bipolar number)
                 number /= 10;
         } while (number > 0 && step < 31);
 
-        if (negative)
-        {
-                buffer[step++] = '-';
-        }
-
         buffer[step] = '\0';
 
-        while (step > 0)
+        positive start = 0;
+        positive end = step - 1;
+
+        while (start < end)
         {
-                p8 character[2] = {buffer[--step], '\0'};
-                print(character);
+                p8 temp = buffer[start];
+                buffer[start] = buffer[end];
+                buffer[end] = temp;
+                start++;
+                end--;
         }
+}
+
+fn bipolar_to_string(bipolar number, p8 *buffer)
+{
+        if (number < 0)
+        {
+                buffer[0] = '-';
+
+                positive_to_string((positive)(-number), buffer + 1);
+        }
+        else
+        {
+                positive_to_string((positive)number, buffer);
+        }
+}
+
+fn print_bipolar(bipolar number)
+{
+        p8 buffer[32];
+        bipolar_to_string(number, buffer);
+        print(buffer);
+}
+
+fn print_positive(positive number)
+{
+        p8 buffer[32];
+        positive_to_string(number, buffer);
+        print(buffer);
 }
 
 fn sleep(p32 seconds, p32 nanoseconds)
