@@ -30,6 +30,12 @@ fn process_command()
                 {
                         if (buffer[length] == ' ')
                         {
+                                if (buffer[length + 1] == ' ' || buffer[length + 1] == '\0')
+                                {
+                                        print("Invalid command\n");
+                                        return;
+                                }
+
                                 buffer[length] = '\0';
                                 is_first_section = false;
 
