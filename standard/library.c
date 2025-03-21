@@ -911,10 +911,41 @@ string_address basename(string_address source)
         return string_last_of(source, '/');
 }
 
-// Print a string
 fn print(p8 ADDRESS_TO message)
 {
         system_call_3(syscall_write, stdout, (positive)message, string_length(message));
+}
+
+fn print_bipolar(bipolar number)
+{
+        p8 buffer[32];
+        positive step = 0;
+
+        bool negative = (number < 0);
+
+        if (negative)
+        {
+                number = -number;
+        }
+
+        do
+        {
+                buffer[step++] = '0' + (number % 10);
+                number /= 10;
+        } while (number > 0 && step < 31);
+
+        if (negative)
+        {
+                buffer[step++] = '-';
+        }
+
+        buffer[step] = '\0';
+
+        while (step > 0)
+        {
+                p8 character[2] = {buffer[--step], '\0'};
+                print(character);
+        }
 }
 
 fn sleep(p32 seconds, p32 nanoseconds)

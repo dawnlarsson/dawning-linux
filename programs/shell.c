@@ -7,6 +7,33 @@
 p8 buffer[MAX_INPUT];
 positive buffer_length;
 
+fn exec_command(string_address command, string_address args)
+{
+        positive process_id = system_call(syscall_fork);
+
+        if (process_id < 0)
+        {
+                print("Failed to fork (error: ");
+                print_bipolar(process_id);
+                print(")\n");
+                return;
+        }
+
+        if (process_id == 0)
+        {
+                p8 ADDRESS_TO argv[] = {command};
+
+                bipolar result = system_call_2(syscall_execve, (positive)command, (positive)argv);
+
+                print("Failed to execute command (error: ");
+                print_bipolar(result);
+                print(")\n");
+                exit(1);
+        }
+
+        system_call_1(syscall_wait4, process_id);
+}
+
 // Single pass command parser
 fn process_command()
 {
@@ -57,30 +84,7 @@ fn process_command()
 
         if (is_executable)
         {
-                // TODO: Debug :) it's still broken...
-                positive pid = system_call(syscall_fork);
-
-                if (pid == 0)
-                {
-                        p8 ADDRESS_TO argv[] = {buffer};
-
-                        system_call_3(syscall_execve, (positive)buffer, (positive)argv, 0);
-
-                        print("Failed to execute: ");
-                        print(buffer);
-                        print("\n");
-                        exit(1);
-                }
-                else if (pid > 0)
-                {
-                        positive status = 0;
-                        system_call_4(syscall_wait4, pid, (positive)&status, 0, 0);
-                }
-                else
-                {
-                        print("TODO: (Debug): Failed to fork shell process\n");
-                }
-
+                exec_command(buffer, arguments_buffer);
                 return;
         }
 
