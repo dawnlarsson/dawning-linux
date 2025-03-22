@@ -917,8 +917,6 @@ fn print_positive(positive number)
         print(buffer);
 }
 
-#endif
-
 // for compatibility, makes the linker happy
 ADDRESS memset(ADDRESS destination, b8 value, positive size)
 {
@@ -971,7 +969,7 @@ string_address strchr(string_address source, p8 character)
         return string_first_of(source, character);
 }
 
-#endif
+#endif // DAWN_MODERN_C_COMPATIBILITY
 
 #ifndef DAWN_MODERN_C_NO_MATH
 
@@ -1059,4 +1057,6 @@ typedef union matrix4
         vector4 colum[4];
 } matrix4;
 
-#endif
+#endif // DAWN_MODERN_C_NO_MATH
+
+#endif // DAWN_MODERN_C
