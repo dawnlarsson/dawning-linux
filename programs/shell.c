@@ -1,6 +1,6 @@
 // A primitive pre-historic shell,
 // it lobs rocks at the kernel and says ouga boga at the user.
-#include "../standard/util.c"
+#include "../standard/linux/util.c"
 
 #define PROMPT TERM_BOLD " $ " TERM_RESET
 

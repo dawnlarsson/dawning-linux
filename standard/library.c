@@ -63,8 +63,6 @@
 #error "Unsupported architecture TODO!"
 #endif
 
-#include "syscalls.c"
-
 #if defined(X64)
 #define stdin 0
 #define stdout 1
@@ -863,16 +861,6 @@ string_address string_last_of(string_address source, p8 character)
         return last;
 }
 
-string_address basename(string_address source)
-{
-        return string_last_of(source, '/');
-}
-
-fn print(p8 ADDRESS_TO message)
-{
-        system_call_3(syscall_write, stdout, (positive)message, string_length(message));
-}
-
 // Convert a positive number to a string
 // buffer must be at least 32 bytes long
 fn positive_to_string(positive number, p8 *buffer)
@@ -921,6 +909,15 @@ fn bipolar_to_string(bipolar number, p8 *buffer)
         }
 }
 
+// User required implementations
+b32 main();
+
+// Platform required implementations
+fn print(p8 ADDRESS_TO message);
+fn exit(b32 code);
+fn sleep(p32 seconds, p32 nanoseconds);
+fn _start();
+
 fn print_bipolar(bipolar number)
 {
         p8 buffer[32];
@@ -933,27 +930,6 @@ fn print_positive(positive number)
         p8 buffer[32];
         positive_to_string(number, buffer);
         print(buffer);
-}
-
-fn sleep(p32 seconds, p32 nanoseconds)
-{
-        system_call_2(syscall_nanosleep, seconds, nanoseconds);
-}
-
-fn exit(b32 code)
-{
-        system_call_1(syscall_exit, code);
-}
-
-b32 main();
-
-fn _start()
-{
-        // TODO: copy arguments from the stack
-
-        b32 result = main();
-
-        exit(result);
 }
 
 #endif
