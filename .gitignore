@@ -1,7 +1,7 @@
-.vscode/
+/.vscode/
 
-artifacts/
-config/info
-dist/
-fs/
-linux/
+/artifacts/
+/config/info/
+/dist/
+/fs/
+/linux/
