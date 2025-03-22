@@ -63,13 +63,13 @@ fn process_command()
                 {
                         if (buffer[length] == ' ' || buffer[length] == '\n')
                         {
+                                buffer[length] = '\0';
+
                                 if (buffer[length + 1] == ' ' || buffer[length + 1] == '\0')
                                 {
-                                        print("Invalid command\n");
-                                        return;
+                                        break;
                                 }
 
-                                buffer[length] = '\0';
                                 is_first_section = false;
 
                                 length++;

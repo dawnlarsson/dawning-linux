@@ -60,7 +60,7 @@
 #endif
 
 #if defined(X86) || defined(ARM32) || defined(RISCV32) || defined(RISCV64) || defined(ARM64)
-#error "Unsupported architecture TODO!"
+#warning "Unsupported architecture TODO!"
 #endif
 
 #if defined(X64)
