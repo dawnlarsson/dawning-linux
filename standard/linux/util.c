@@ -11,45 +11,22 @@ fn core_basename(string_address buffer)
                 return;
         }
 
-        string_address step = buffer;
-        string_address last_slash = NULL;
-        string_address end = buffer;
-        b8 trailing_slashes = false;
+        positive len = string_length(buffer);
 
-        while (string_get(step))
+        while (len > 1 && buffer[len - 1] == '/')
+                len--;
+
+        if (len == 1 && buffer[0] == '/')
         {
-                if (string_get(step) == '/')
-                {
-                        if (!trailing_slashes && string_get(step + 1) != '\0')
-                        {
-                                last_slash = step;
-                        }
-
-                        trailing_slashes = true;
-                }
-                else
-                {
-                        trailing_slashes = false;
-                        end = step + 1;
-                }
-
-                step++;
+                print("/\n");
+                return;
         }
 
-        if (end == buffer && last_slash == NULL)
-        {
-                if (buffer[0] == '/')
-                {
-                        print("/\n");
-                        return;
-                }
-        }
+        positive i = len;
+        while (i > 0 && buffer[i - 1] != '/')
+                i--;
 
-        string_address base = last_slash ? last_slash + 1 : buffer;
-
-        positive length = end - base;
-
-        system_call_3(syscall_write, stdout, (positive)base, length);
+        system_call_3(syscall_write, stdout, (positive)(buffer + i), len - i);
         print("\n");
 }
 
