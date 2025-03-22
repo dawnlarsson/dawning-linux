@@ -427,7 +427,7 @@ typedef typeof(sizeof(0)) sized;
 
 #define false 0
 #define true 1
-#define bool u8
+#define bool p8
 
 // ### String address
 // a pointer to a string in memory, usually the first p8 character of the string
@@ -958,6 +958,12 @@ fn _start()
 
 #endif
 
+// for compatibility, makes the linker happy
+ADDRESS memset(ADDRESS destination, b8 value, positive size)
+{
+        return memory_fill(destination, value, size);
+}
+
 #ifdef DAWN_MODERN_C_COMPATIBILITY
 
 typedef p8 u8;
@@ -979,12 +985,6 @@ typedef p128 uintmax_t;
 typedef b64 ptrdiff_t;
 typedef unsigned long int uintptr_t;
 typedef long int intptr_t;
-
-// use memory_fill instead, this is for compatibility
-ADDRESS memset(ADDRESS destination, b8 value, positive size)
-{
-        return memory_fill(destination, value, size);
-}
 
 // use string_length instead, this is for compatibility
 positive strlen(string_address source)

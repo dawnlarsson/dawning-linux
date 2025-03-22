@@ -46,7 +46,7 @@ fn process_command()
         if (buffer[0] == 0)
                 return;
 
-        u32 length = 0;
+        p32 length = 0;
         string_address arguments_buffer;
         bool is_first_section = true;
 

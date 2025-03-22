@@ -93,7 +93,7 @@ fn core_cp(string_address buffer)
         }
 
         string_address source = buffer;
-        string_address destination = strchr(buffer, ' ');
+        string_address destination = string_first_of(buffer, ' ');
 
         if (destination == NULL)
         {
@@ -255,7 +255,7 @@ fn core_mv(string_address buffer)
         }
 
         string_address source = buffer;
-        string_address destination = strchr(buffer, ' ');
+        string_address destination = string_first_of(buffer, ' ');
 
         if (destination == NULL)
         {
@@ -283,7 +283,7 @@ fn core_mount(string_address buffer)
         }
 
         string_address source = buffer;
-        string_address destination = strchr(buffer, ' ');
+        string_address destination = string_first_of(buffer, ' ');
 
         if (destination == NULL)
         {
