@@ -448,21 +448,6 @@ typedef p8 string[];
 #define clamp(value, min, max) ((value)less_than(min) ? (min) : (value)greater_than(max) ? (max) \
                                                                                          : (value))
 
-#define PI_2x (PI32 * 2.0f)
-#define PI_05x (PI32 * 0.5f)
-
-#define CONVERSION_CONSTANTS                         \
-        constexpr decimal RadToDeg = 180.0f / PI32;  \
-        constexpr decimal RadToTurn = 0.5f / PI32;   \
-        constexpr decimal DegToRad = PI32 / 180.0f;  \
-        constexpr decimal DegToTurn = 0.5f / 180.0f; \
-        constexpr decimal TurnToRad = PI32 / 0.5f;   \
-        constexpr decimal TurnToDeg = 180.0f / 0.5f
-
-#define AngleRad(value) (value)
-#define AngleDeg(value) ((value) * DegToRad)
-#define AngleTurn(value) ((value) * TurnToRad)
-
 //
 // these are 1:1 with nasm syntax, so you can easily convert nasm code to this format
 //
@@ -985,5 +970,93 @@ string_address strchr(string_address source, p8 character)
 {
         return string_first_of(source, character);
 }
+
+#endif
+
+#ifndef DAWN_MODERN_C_NO_MATH
+
+#define PI 3.14159265359f
+#define PI_2x (PI * 2.0f)
+#define PI_05x (PI * 0.5f)
+
+#define CONVERSION_CONSTANTS                         \
+        constexpr decimal RadToDeg = 180.0f / PI;    \
+        constexpr decimal RadToTurn = 0.5f / PI;     \
+        constexpr decimal DegToRad = PI / 180.0f;    \
+        constexpr decimal DegToTurn = 0.5f / 180.0f; \
+        constexpr decimal TurnToRad = PI / 0.5f;     \
+        constexpr decimal TurnToDeg = 180.0f / 0.5f
+
+#define AngleRad(value) (value)
+#define AngleDeg(value) ((value) * DegToRad)
+#define AngleTurn(value) ((value) * TurnToRad)
+
+typedef union vector2
+{
+        struct
+        {
+                decimal x, y;
+        };
+
+        struct
+        {
+                decimal width, height;
+        };
+
+        decimal axis[2];
+
+} vector2;
+
+typedef union vector3
+{
+        struct
+        {
+                decimal x, y, z;
+        };
+
+        struct
+        {
+                decimal width, height, depth;
+        };
+
+        decimal axis[3];
+
+} vector3;
+
+typedef union vector4
+{
+        struct
+        {
+                decimal x, y, z, w;
+        };
+
+        struct
+        {
+                decimal width, height, depth, time;
+        };
+
+        decimal axis[4];
+
+} vector4;
+
+typedef vector4 quaternion;
+
+typedef union matrix2
+{
+        decimal axis[2][2];
+        vector2 colum[2];
+} matrix2;
+
+typedef union matrix3
+{
+        decimal axis[3][3];
+        vector3 colum[3];
+} matrix3;
+
+typedef union matrix4
+{
+        decimal axis[4][4];
+        vector4 colum[4];
+} matrix4;
 
 #endif
