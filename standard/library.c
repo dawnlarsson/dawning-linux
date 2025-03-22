@@ -158,7 +158,6 @@ typedef char p8;
 #define p8_char_max 3
 #define p8_bytes 1
 #define p8_bits 8
-typedef p8 u8;
 
 // ### Bipolar range 8 bit integer
 // range:       -128 to +127
@@ -173,7 +172,6 @@ typedef bipolar_range char b8;
 #define b8_char_max 4
 #define b8_bytes 1
 #define b8_bits 8
-typedef b8 i8;
 
 // ### Positive range 16 bit integer
 // range:       0 to +65535
@@ -188,7 +186,6 @@ typedef short int p16;
 #define p16_char_max 6
 #define p16_bytes 2
 #define p16_bits 16
-typedef p16 u16;
 
 // ### Bipolar range 16 bit integer
 // range:       -32768 to +32767
@@ -203,7 +200,6 @@ typedef bipolar_range short int b16;
 #define b16_char_max 6
 #define b16_bytes 2
 #define b16_bits 16
-typedef b16 i16;
 
 // ### Positive range 32 bit integer
 // range:       0 to +4294967295
@@ -218,7 +214,6 @@ typedef int p32;
 #define p32_char_max 10
 #define p32_bytes 4
 #define p32_bits 32
-typedef p32 u32;
 
 // ### Bipolar range 32 bit integer
 // range:       -2147483648 to +2147483647
@@ -233,7 +228,6 @@ typedef bipolar_range int b32;
 #define b32_char_max 11
 #define b32_bytes 4
 #define b32_bits 32
-typedef b32 i32;
 
 // ### Positive range 64 bit integer
 // range:       0 to +18446744073709551615
@@ -248,7 +242,6 @@ typedef long int p64;
 #define p64_char_max 20
 #define p64_bytes 8
 #define p64_bits 64
-typedef p64 u64;
 
 // ### Bipolar range 64 bit integer
 // range:       -9223372036854775808 to +9223372036854775807
@@ -263,7 +256,6 @@ typedef bipolar_range long int b64;
 #define b64_char_max 21
 #define b64_bytes 8
 #define b64_bits 64
-typedef b64 i64;
 
 // ### Positive range 128 bit integer
 // range:       0 to +340282366920938463463374607431768211455
@@ -278,7 +270,6 @@ typedef long long int p128;
 #define p128_char_max 39
 #define p128_bytes 16
 #define p128_bits 128
-typedef p128 u128;
 
 // ### Bipolar range 128 bit integer
 // range:       -170141183460469231731687303715884105727 to +170141183460469231731687303715884105727
@@ -293,15 +284,11 @@ typedef bipolar_range long long int b128;
 #define b128_char_max 40
 #define b128_bytes 16
 #define b128_bits 128
-typedef b128 i128;
 
 #if BITS != 64
 __extension__ typedef bipolar_range long long int i64;
 __extension__ typedef positive_range long long int u64;
 #endif
-
-typedef p64 usize;
-typedef b64 isize;
 
 typedef float f32;
 #define f32_max 3.40282346638528859812e+38F
@@ -789,12 +776,6 @@ ADDRESS memory_fill(ADDRESS destination, b8 value, positive size)
         return destination;
 }
 
-// use memory_fill instead, this is for compatibility
-ADDRESS memset(ADDRESS destination, b8 value, positive size)
-{
-        return memory_fill(destination, value, size);
-}
-
 // ### Length of string segment in linear memory
 // returns the length of a string terminated by a null character
 // NOT a entire array length
@@ -809,12 +790,6 @@ positive string_length(string_address source)
                 step++;
 
         return step - source;
-}
-
-// use string_length instead, this is for compatibility
-positive strlen(string_address source)
-{
-        return string_length(source);
 }
 
 // ### Compare two string segments
@@ -836,12 +811,6 @@ b32 string_compare(string_address source, string_address input)
         return (b8)string_get(source) - (b8)string_get(input);
 }
 
-// use string_compare instead, this is for compatibility
-b32 strcmp(string_address source, string_address input)
-{
-        return string_compare(source, input);
-}
-
 // ### Copy string segment
 // copies a string segment from source to destination
 // returns: destination address
@@ -858,12 +827,6 @@ string_address string_copy(string_address destination, string_address source)
         string_set(destination, '\0');
 
         return start;
-}
-
-// use string_copy instead, this is for compatibility
-string_address strcpy(string_address destination, string_address source)
-{
-        return string_copy(destination, source);
 }
 
 // ### Find first character in string segment
@@ -883,12 +846,6 @@ string_address string_first_of(string_address source, p8 character)
         }
 
         return (string_get(source) == character) ? source : NULL;
-}
-
-// use string_first_of instead, this is for compatibility
-string_address strchr(string_address source, p8 character)
-{
-        return string_first_of(source, character);
 }
 
 string_address string_last_of(string_address source, p8 character)
@@ -997,6 +954,60 @@ fn _start()
         b32 result = main();
 
         exit(result);
+}
+
+#endif
+
+#ifdef DAWN_MODERN_C_COMPATIBILITY
+
+typedef p8 u8;
+typedef b8 i8;
+typedef p16 u16;
+typedef b16 i16;
+typedef p32 u32;
+typedef b32 i32;
+typedef p64 u64;
+typedef b64 i64;
+typedef p128 u128;
+typedef b128 i128;
+typedef p64 usize;
+typedef b64 isize;
+
+typedef sized size_t;
+typedef b128 intmax_t;
+typedef p128 uintmax_t;
+typedef b64 ptrdiff_t;
+typedef unsigned long int uintptr_t;
+typedef long int intptr_t;
+
+// use memory_fill instead, this is for compatibility
+ADDRESS memset(ADDRESS destination, b8 value, positive size)
+{
+        return memory_fill(destination, value, size);
+}
+
+// use string_length instead, this is for compatibility
+positive strlen(string_address source)
+{
+        return string_length(source);
+}
+
+// use string_compare instead, this is for compatibility
+b32 strcmp(string_address source, string_address input)
+{
+        return string_compare(source, input);
+}
+
+// use string_copy instead, this is for compatibility
+string_address strcpy(string_address destination, string_address source)
+{
+        return string_copy(destination, source);
+}
+
+// use string_first_of instead, this is for compatibility
+string_address strchr(string_address source, p8 character)
+{
+        return string_first_of(source, character);
 }
 
 #endif
