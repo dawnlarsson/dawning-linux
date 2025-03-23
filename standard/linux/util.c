@@ -4,43 +4,29 @@ fn core_basename(writer write, string_address input)
 {
         if (input == NULL)
         {
-                write("basename: missing operand\n", 26);
+                write(str("basename: missing operand\n"));
                 return;
         }
 
-        positive length = string_length(input);
+        path_basename(write, input);
 
-        while (length > 1 && input[length - 1] == '/')
-                length--;
-
-        if (length == 1 && input[0] == '/')
-        {
-                write("/\n", 2);
-                return;
-        }
-
-        positive i = length;
-        while (i > 0 && input[i - 1] != '/')
-                i--;
-
-        write(input + i, length - i);
-        write("\n", 1);
+        write(str("\n"));
 }
 
 fn core_cat(writer write, string_address input)
 {
         if (input == NULL)
         {
-                write("cat: missing operand\n", 21);
+                write(str("cat: missing operand\n"));
                 return;
         }
 
         bipolar file_descriptor = system_call_2(syscall_open, (positive)input, O_RDONLY);
         if (file_descriptor < 0)
         {
-                write("cat: Cannot open file: ", 24);
+                write(str("cat: Cannot open file: "));
                 write(input, 0);
-                write("\n", 1);
+                write(str("\n"));
                 return;
         }
 
@@ -68,9 +54,9 @@ fn core_cd(writer write, string_address buffer)
         if (system_call_1(syscall_chdir, (positive)buffer) == 0)
                 return;
 
-        write("cd: No such directory: ", 24);
+        write(str("cd: No such directory: "));
         write(buffer, 0);
-        write("\n", 1);
+        write(str("\n"));
 }
 
 fn core_clear(writer write, string_address buffer)
@@ -82,23 +68,23 @@ fn core_chmod(writer write, string_address buffer)
 {
         if (buffer == NULL)
         {
-                write("chmod: missing operand\n", 23);
+                write(str("chmod: missing operand\n"));
                 return;
         }
 
         if (system_call_2(syscall_chmod, (positive)buffer, 0777) == 0)
                 return;
 
-        write("chmod: Cannot change permissions: ", 35);
+        write(str("chmod: Cannot change permissions: "));
         write(buffer, 0);
-        write("\n", 1);
+        write(str("\n"));
 }
 
 fn core_cp(writer write, string_address buffer)
 {
         if (buffer == NULL)
         {
-                write("cp: missing operand\n", 20);
+                write(str("cp: missing operand\n"));
                 return;
         }
 
@@ -107,7 +93,7 @@ fn core_cp(writer write, string_address buffer)
 
         if (destination == NULL)
         {
-                write("cp: missing destination\n", 24);
+                write(str("cp: missing destination\n"));
                 return;
         }
 
@@ -117,18 +103,18 @@ fn core_cp(writer write, string_address buffer)
         bipolar source_fd = system_call_2(syscall_open, (positive)source, O_RDONLY);
         if (source_fd < 0)
         {
-                write("cp: Cannot open source file: ", 30);
+                write(str("cp: Cannot open source file: "));
                 write(source, 0);
-                write("\n", 1);
+                write(str("\n"));
                 return;
         }
 
         bipolar destination_fd = system_call_2(syscall_open, (positive)destination, O_CREAT | O_WRONLY);
         if (destination_fd < 0)
         {
-                write("cp: Cannot open destination file: ", 35);
+                write(str("cp: Cannot open destination file: "));
                 write(destination, 0);
-                write("\n", 1);
+                write(str("\n"));
                 return;
         }
 
@@ -154,7 +140,7 @@ fn core_echo(writer write, string_address buffer)
         if (buffer != NULL)
                 write(buffer, 0);
 
-        write("\n", 1);
+        write(str("\n"));
 }
 
 fn core_exec(writer write, string_address buffer)
@@ -175,9 +161,9 @@ fn core_ls(writer write, string_address buffer)
 
         if (file_descriptor < 0)
         {
-                write("ls: Cannot access '", 20);
+                write(str("ls: Cannot access '"));
                 write(buffer, 0);
-                write("': No such file or directory\n", 29);
+                write(str("': No such file or directory\n"));
                 return;
         }
 
@@ -219,7 +205,7 @@ fn core_ls(writer write, string_address buffer)
 
                                 entries_count++;
                                 if (entries_count % max_line_entries == 0)
-                                        write("\n", 1);
+                                        write(str("\n"));
                         }
 
                         step += entry->d_reclen;
@@ -227,7 +213,7 @@ fn core_ls(writer write, string_address buffer)
         }
 
         if (entries_count % max_line_entries != 0)
-                write("\n", 1);
+                write(str("\n"));
 
         system_call_1(syscall_close, file_descriptor);
 }
@@ -237,30 +223,30 @@ fn core_pwd(writer write, string_address buffer)
         p8 out_buffer[4096] = {0};
         system_call_2(syscall_getcwd, (positive)out_buffer, 4096);
         write(out_buffer, 0);
-        write("\n", 1);
+        write(str("\n"));
 }
 
 fn core_mkdir(writer write, string_address buffer)
 {
         if (buffer == NULL)
         {
-                write("mkdir: missing operand\n", 23);
+                write(str("mkdir: missing operand\n"));
                 return;
         }
 
         if (system_call_2(syscall_mkdir, (positive)buffer, 0777) == 0)
                 return;
 
-        write("mkdir: Cannot create directory: ", 33);
+        write(str("mkdir: Cannot create directory: "));
         write(buffer, 0);
-        write("\n", 1);
+        write(str("\n"));
 }
 
 fn core_mv(writer write, string_address buffer)
 {
         if (buffer == NULL)
         {
-                write("mv: missing operand\n", 20);
+                write(str("mv: missing operand\n"));
                 return;
         }
 
@@ -269,7 +255,7 @@ fn core_mv(writer write, string_address buffer)
 
         if (destination == NULL)
         {
-                write("mv: missing destination\n", 24);
+                write(str("mv: missing destination\n"));
                 return;
         }
 
@@ -278,9 +264,9 @@ fn core_mv(writer write, string_address buffer)
 
         if (system_call_2(syscall_rename, (positive)source, (positive)destination) != 0)
         {
-                write("mv: Cannot move file: ", 23);
+                write(str("mv: Cannot move file: "));
                 write(source, 0);
-                write("\n", 1);
+                write(str("\n"));
         }
 }
 
@@ -288,7 +274,7 @@ fn core_mount(writer write, string_address buffer)
 {
         if (buffer == NULL)
         {
-                write("mount: missing operand\n", 23);
+                write(str("mount: missing operand\n"));
                 return;
         }
 
@@ -297,7 +283,7 @@ fn core_mount(writer write, string_address buffer)
 
         if (destination == NULL)
         {
-                write("mount: missing destination\n", 27);
+                write(str("mount: missing destination\n"));
                 return;
         }
 
@@ -314,9 +300,9 @@ fn core_mount(writer write, string_address buffer)
 
         if (result != 0)
         {
-                write("mount: Cannot mount filesystem: ", 33);
+                write(str("mount: Cannot mount filesystem: "));
                 write(source, 0);
-                write("\n", 1);
+                write(str("\n"));
         }
 }
 
@@ -356,19 +342,19 @@ core_command core_commands[] = {
 
 fn core_help(writer write, string_address buffer)
 {
-        write("Dawning Shell, WIP, " TERM_RED TERM_BOLD "expect crashes! \n\n" TERM_RESET, 0);
-        write("Available built-in commands:\n", 29);
+        write(str("Dawning Shell, WIP, " TERM_RED TERM_BOLD "expect crashes! \n\n" TERM_RESET));
+        write(str("Available built-in commands:\n"));
 
         core_command ADDRESS_TO command = core_commands;
 
         while (command->name)
         {
-                write(" - " TERM_BOLD, sizeof(" - " TERM_BOLD));
+                write(str(" - " TERM_BOLD));
                 write(command->name, 0);
-                write(TERM_RESET "\n", sizeof(TERM_RESET "\n"));
+                write(str(TERM_RESET "\n"));
 
                 command++;
         }
 
-        write("\n", 1);
+        write(str("\n"));
 }

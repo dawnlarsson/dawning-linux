@@ -38,7 +38,7 @@ fn exec_command(string_address command, string_address args)
 {
         if (command[0] != '/')
         {
-                write("TODO: exec relative paths\n", 26);
+                write(str("TODO: exec relative paths\n"));
                 return;
         }
 
@@ -46,9 +46,9 @@ fn exec_command(string_address command, string_address args)
 
         if (process_id < 0)
         {
-                write("Failed to fork (error: ", 24);
+                write(str("Failed to fork (error: "));
                 string_to_bipolar(write, process_id);
-                write(")\n", 2);
+                write(str(")\n"));
                 return;
         }
 
@@ -58,9 +58,9 @@ fn exec_command(string_address command, string_address args)
 
                 bipolar result = system_call_2(syscall_execve, (positive)command, (positive)argv);
 
-                write("Failed to execute command (error: ", 35);
+                write(str("Failed to execute command (error: "));
                 string_to_bipolar(write, result);
-                write(")\n", 2);
+                write(str(")\n"));
                 exit(1);
         }
 
@@ -127,9 +127,9 @@ fn process_command()
                 command++;
         }
 
-        write("Command not found: ", 20);
+        write(str("Command not found: "));
         write(buffer, 0);
-        write("\n", 1);
+        write(str("\n"));
 }
 
 b32 main()

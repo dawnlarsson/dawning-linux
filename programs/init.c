@@ -33,7 +33,7 @@ fn mount_filesystems()
         {
                 write(lable "Mounting ", 0);
                 write(mount->path, 0);
-                write("...", 4);
+                write(str("..."));
 
                 bipolar result = system_call_5(
                     syscall_mount,
@@ -70,9 +70,9 @@ b32 main()
                 bipolar result = system_call_2(syscall_execve, (positive)init_program, (positive)argv);
 
                 write(lable "Failed to execute init program", 0);
-                write(" (error: ", 10);
+                write(str(" (error: "));
                 string_to_bipolar(write, result);
-                write(")\n", 2);
+                write(str(")\n"));
 
                 exit(1);
         }

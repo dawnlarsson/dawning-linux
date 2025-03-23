@@ -722,6 +722,13 @@ typedef fn(ADDRESS_TO writer)(ADDRESS data, positive length);
 typedef fn(ADDRESS_TO writer_string)(string_address string);
 typedef fn(ADDRESS_TO writer_string_len)(string_address string, positive length);
 
+// Helper function for writing static strings to a writer with data + length
+// example with:
+//      write(str("Hello, world!\n"));
+// example without:
+//      write("Hello, world!\n", 14); // error prone!
+#define str(string) (string), (sizeof(string))
+
 // User required implementations
 b32 main();
 
@@ -906,6 +913,26 @@ fn string_to_bipolar(writer write, bipolar number)
 
         write("-", 1);
         string_to_positive(write, (positive)(-number));
+}
+
+fn path_basename(writer write, string_address input)
+{
+        positive length = string_length(input);
+
+        while (length > 1 && input[length - 1] == '/')
+                length--;
+
+        if (length == 1 && input[0] == '/')
+        {
+                write("/", 1);
+                return;
+        }
+
+        positive i = length;
+        while (i > 0 && input[i - 1] != '/')
+                i--;
+
+        write(input + i, length - i);
 }
 
 // for compatibility, makes the linker happy
