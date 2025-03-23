@@ -2,16 +2,29 @@
 // it lobs rocks at the kernel and says ouga boga at the user.
 #include "../standard/linux/util.c"
 
-#define PROMPT TERM_BOLD " $ " TERM_RESET
+#define PROMPT TERM_RESET TERM_BOLD " $ " TERM_RESET
+
+#define MAX_INPUT 4096
 
 p8 buffer[MAX_INPUT];
 positive buffer_length;
+
+// TODO: just a placeholder, we are going to buffer the writes
+fn write(ADDRESS data, positive length)
+{
+        if (length == 0)
+        {
+                length = string_length(data);
+        }
+
+        system_call_3(syscall_write, stdout, (positive)data, length);
+}
 
 fn exec_command(string_address command, string_address args)
 {
         if (command[0] != '/')
         {
-                print("TODO: exec relative paths, try exec for now :) \n");
+                write("TODO: exec relative paths\n", 26);
                 return;
         }
 
@@ -19,9 +32,9 @@ fn exec_command(string_address command, string_address args)
 
         if (process_id < 0)
         {
-                print("Failed to fork (error: ");
-                print_bipolar(process_id);
-                print(")\n");
+                write("Failed to fork (error: ", 0);
+                string_to_bipolar(write, process_id);
+                write(")\n", 2);
                 return;
         }
 
@@ -31,9 +44,9 @@ fn exec_command(string_address command, string_address args)
 
                 bipolar result = system_call_2(syscall_execve, (positive)command, (positive)argv);
 
-                print("Failed to execute command (error: ");
-                print_bipolar(result);
-                print(")\n");
+                write("Failed to execute command (error: ", 35);
+                string_to_bipolar(write, result);
+                write(")\n", 2);
                 exit(1);
         }
 
@@ -100,15 +113,15 @@ fn process_command()
         {
                 if (string_compare(command->name, buffer) == 0)
                 {
-                        command->function(arguments_buffer);
+                        command->function(write, arguments_buffer);
                         return;
                 }
                 command++;
         }
 
-        print("Command not found: ");
-        print(buffer);
-        print("\n");
+        write("Command not found: ", 20);
+        write(buffer, 0);
+        write("\n", 1);
 }
 
 b32 main()
@@ -120,7 +133,7 @@ b32 main()
         {
                 memory_fill(buffer, 0, MAX_INPUT);
 
-                print(TERM_RESET PROMPT);
+                write(PROMPT, sizeof(PROMPT));
 
                 buffer_length = system_call_3(syscall_read, 0, (positive)buffer, MAX_INPUT);
 

@@ -1,5 +1,16 @@
 #include "../standard/linux.c"
 
+// TODO: just a placeholder, we are going to buffer the writes in the std
+fn write(ADDRESS data, positive length)
+{
+        if (length == 0)
+        {
+                length = string_length(data);
+        }
+
+        system_call_3(syscall_write, stdout, (positive)data, length);
+}
+
 #define lable TERM_BOLD "[Init]" TERM_RESET " "
 #define init_program "/shell"
 
@@ -22,9 +33,9 @@ fn mount_filesystems()
 
         while (mount->filesystem)
         {
-                print(lable "Mounting ");
-                print(mount->path);
-                print("...");
+                write(lable "Mounting ", 0);
+                write(mount->path, 0);
+                write("...", 4);
 
                 bipolar result = system_call_5(
                     syscall_mount,
@@ -36,14 +47,14 @@ fn mount_filesystems()
 
                 if (result == 0)
                 {
-                        print(TERM_BOLD TERM_GREEN " OK");
+                        write(TERM_BOLD TERM_GREEN " OK", 0);
                 }
                 else
                 {
-                        print(TERM_BOLD TERM_RED " FAILED");
+                        write(TERM_BOLD TERM_RED " FAILED", 0);
                 }
 
-                print(TERM_RESET "\n");
+                write(TERM_RESET "\n", 6);
 
                 mount++;
         }
@@ -63,10 +74,10 @@ b32 main()
 
                 bipolar result = system_call_2(syscall_execve, (positive)init_program, (positive)argv);
 
-                print(lable "Failed to execute init program");
-                print(" (error: ");
-                print_bipolar(result);
-                print(")\n");
+                write(lable "Failed to execute init program", 0);
+                write(" (error: ", 10);
+                string_to_bipolar(write, result);
+                write(")\n", 2);
 
                 exit(1);
         }

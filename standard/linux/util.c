@@ -1,107 +1,104 @@
 #include "../linux.c"
 
-#define MAX_INPUT 1024
-#define MAX_ARGS 64
-
-fn core_basename(string_address buffer)
+fn core_basename(writer write, string_address input)
 {
-        if (buffer == NULL)
+        if (input == NULL)
         {
-                print("basename: missing operand\n");
+                write("basename: missing operand\n", 26);
                 return;
         }
 
-        positive len = string_length(buffer);
+        positive length = string_length(input);
 
-        while (len > 1 && buffer[len - 1] == '/')
-                len--;
+        while (length > 1 && input[length - 1] == '/')
+                length--;
 
-        if (len == 1 && buffer[0] == '/')
+        if (length == 1 && input[0] == '/')
         {
-                print("/\n");
+                write("/\n", 2);
                 return;
         }
 
-        positive i = len;
-        while (i > 0 && buffer[i - 1] != '/')
+        positive i = length;
+        while (i > 0 && input[i - 1] != '/')
                 i--;
 
-        system_call_3(syscall_write, stdout, (positive)(buffer + i), len - i);
-        print("\n");
+        write(input + i, length - i);
+        write("\n", 1);
 }
 
-fn core_cat(string_address buffer)
+fn core_cat(writer write, string_address input)
 {
-        if (buffer == NULL)
+        if (input == NULL)
         {
-                print("cat: missing operand\n");
+                write("cat: missing operand\n", 21);
                 return;
         }
 
-        bipolar file_descriptor = system_call_2(syscall_open, (positive)buffer, O_RDONLY);
-
+        bipolar file_descriptor = system_call_2(syscall_open, (positive)input, O_RDONLY);
         if (file_descriptor < 0)
         {
-                print("cat: Cannot open file: ");
-                print(buffer);
-                print("\n");
+                write("cat: Cannot open file: ", 23);
+                write(input, 0);
+                write("\n", 1);
                 return;
         }
 
-        p8 out_buffer[2048];
+        const positive buffer_size = 4096;
+        p8 buffer[buffer_size];
+
         while (1)
         {
-                bipolar nread = system_call_3(syscall_read, file_descriptor, (positive)out_buffer, 2048);
-                if (nread <= 0)
+                bipolar bytes_read = system_call_3(syscall_read, file_descriptor, (positive)buffer, buffer_size);
+
+                if (bytes_read <= 0)
                         break;
 
-                system_call_3(syscall_write, 1, (positive)out_buffer, nread);
+                write(buffer, bytes_read);
         }
 
         system_call_1(syscall_close, file_descriptor);
 }
 
-fn core_cd(string_address buffer)
+fn core_cd(writer write, string_address buffer)
 {
         if (buffer == NULL)
-        {
                 buffer = "/";
-        }
 
-        if (system_call_1(syscall_chdir, (positive)buffer) != 0)
-        {
-                print("cd: No such directory: ");
-                print(buffer);
-                print("\n");
-        }
+        if (system_call_1(syscall_chdir, (positive)buffer) == 0)
+                return;
+
+        write("cd: No such directory: ", 24);
+        write(buffer, 0);
+        write("\n", 1);
 }
 
-fn core_clear(string_address buffer)
+fn core_clear(writer write, string_address buffer)
 {
-        print(TERM_CLEAR_SCREEN);
+        write(TERM_CLEAR_SCREEN, sizeof(TERM_CLEAR_SCREEN));
 }
 
-fn core_chmod(string_address buffer)
+fn core_chmod(writer write, string_address buffer)
 {
         if (buffer == NULL)
         {
-                print("chmod: missing operand\n");
+                write("chmod: missing operand\n", 23);
                 return;
         }
 
-        if (system_call_2(syscall_chmod, (positive)buffer, 0777) != 0)
-        {
-                print("chmod: Cannot change permissions: ");
-                print(buffer);
-                print("\n");
-        }
+        if (system_call_2(syscall_chmod, (positive)buffer, 0777) == 0)
+                return;
+
+        write("chmod: Cannot change permissions: ", 34);
+        write(buffer, 0);
+        write("\n", 1);
 }
 
-fn core_cp(string_address buffer)
+fn core_cp(writer write, string_address buffer)
 {
         if (buffer == NULL)
         {
-                print("cp: missing operand\n");
+                write("cp: missing operand\n", 20);
                 return;
         }
 
@@ -110,7 +107,7 @@ fn core_cp(string_address buffer)
 
         if (destination == NULL)
         {
-                print("cp: missing destination\n");
+                write("cp: missing destination\n", 24);
                 return;
         }
 
@@ -120,51 +117,54 @@ fn core_cp(string_address buffer)
         bipolar source_fd = system_call_2(syscall_open, (positive)source, O_RDONLY);
         if (source_fd < 0)
         {
-                print("cp: Cannot open source file: ");
-                print(source);
-                print("\n");
+                write("cp: Cannot open source file: ", 29);
+                write(source, 0);
+                write("\n", 1);
                 return;
         }
 
         bipolar destination_fd = system_call_2(syscall_open, (positive)destination, O_CREAT | O_WRONLY);
         if (destination_fd < 0)
         {
-                print("cp: Cannot open destination file: ");
-                print(destination);
-                print("\n");
+                write("cp: Cannot open destination file: ", 34);
+                write(destination, 0);
+                write("\n", 1);
                 return;
         }
 
-        p8 out_buffer[1024];
+        const positive buffer_size = 4096;
+        p8 out_buffer[buffer_size];
+
         while (1)
         {
-                bipolar nread = system_call_3(syscall_read, source_fd, (positive)out_buffer, 1024);
-                if (nread <= 0)
+                bipolar bytes_read = system_call_3(syscall_read, source_fd, (positive)out_buffer, buffer_size);
+
+                if (bytes_read <= 0)
                         break;
 
-                system_call_3(syscall_write, destination_fd, (positive)out_buffer, nread);
+                system_call_3(syscall_write, destination_fd, (positive)out_buffer, bytes_read);
         }
 
         system_call_1(syscall_close, source_fd);
         system_call_1(syscall_close, destination_fd);
 }
 
-fn core_echo(string_address buffer)
+fn core_echo(writer write, string_address buffer)
 {
         if (buffer != NULL)
-                print(buffer);
+                write(buffer, 0);
 
-        print("\n");
+        write("\n", 1);
 }
 
-fn core_exec(string_address buffer)
+fn core_exec(writer write, string_address buffer)
 {
         p8 ADDRESS_TO argv[] = {buffer};
 
-        bipolar result = system_call_2(syscall_execve, (positive)buffer, (positive)argv);
+        system_call_2(syscall_execve, (positive)buffer, (positive)argv);
 }
 
-fn core_ls(string_address buffer)
+fn core_ls(writer write, string_address buffer)
 {
         const p32 max_line_entries = 8;
 
@@ -177,93 +177,97 @@ fn core_ls(string_address buffer)
 
         if (file_descriptor < 0)
         {
-                print("ls: Cannot access '");
-                print(buffer);
-                print("': No such file or directory\n");
+                write("ls: Cannot access '", 20);
+                write(buffer, 0);
+                write("': No such file or directory\n", 29);
                 return;
         }
 
-        p8 out_buffer[MAX_INPUT];
+        const positive buffer_size = 4096;
+        p8 out_buffer[buffer_size];
+
         positive entries_count = 0;
 
         while (1)
         {
-                bipolar nread = system_call_3(syscall_getdents64, file_descriptor, (positive)out_buffer, MAX_INPUT);
-                if (nread <= 0)
+                bipolar bytes_read = system_call_3(syscall_getdents64, file_descriptor, (positive)out_buffer, buffer_size);
+
+                if (bytes_read <= 0)
                         break;
 
-                p8 ADDRESS_TO bpos = out_buffer;
-                while (bpos < out_buffer + nread)
-                {
-                        struct linux_dirent64 ADDRESS_TO d = (struct linux_dirent64 ADDRESS_TO)bpos;
+                p8 ADDRESS_TO step = out_buffer;
 
-                        if (!(d->d_name[0] == '.' && (d->d_name[1] == '\0' ||
-                                                      (d->d_name[1] == '.' && d->d_name[2] == '\0'))))
+                while (step < out_buffer + bytes_read)
+                {
+                        struct linux_dirent64 ADDRESS_TO entry = (struct linux_dirent64 ADDRESS_TO)step;
+
+                        if (!(entry->d_name[0] == '.' && (entry->d_name[1] == '\0' ||
+                                                          (entry->d_name[1] == '.' && entry->d_name[2] == '\0'))))
                         {
-                                if (d->d_type == DT_DIR)
+                                if (entry->d_type == DT_DIR)
                                 {
-                                        print(TERM_BOLD TERM_BLUE);
+                                        write(TERM_BOLD TERM_BLUE, sizeof(TERM_BOLD TERM_BLUE));
                                 }
-                                else if (d->d_type == DT_LNK)
+                                else if (entry->d_type == DT_LNK)
                                 {
-                                        print(TERM_CYAN);
+                                        write(TERM_CYAN, 7);
                                 }
-                                else if (d->d_type == DT_REG)
+                                else if (entry->d_type == DT_REG)
                                 {
-                                        print(TERM_RESET);
+                                        write(TERM_RESET, 5);
                                 }
                                 else
                                 {
-                                        print(TERM_YELLOW);
+                                        write(TERM_YELLOW, 7);
                                 }
 
-                                print(d->d_name);
-                                print(TERM_RESET " ");
+                                write(entry->d_name, 0);
+                                write(TERM_RESET " ", 6);
 
                                 entries_count++;
                                 if (entries_count % max_line_entries == 0)
-                                        print("\n");
+                                        write("\n", 1);
                         }
 
-                        bpos += d->d_reclen;
+                        step += entry->d_reclen;
                 }
         }
 
         if (entries_count % max_line_entries != 0)
-                print("\n");
+                write("\n", 1);
 
         system_call_1(syscall_close, file_descriptor);
 }
 
-fn core_pwd(string_address buffer)
+fn core_pwd(writer write, string_address buffer)
 {
-        p8 out_buffer[MAX_INPUT] = {0};
-        system_call_2(syscall_getcwd, (positive)out_buffer, MAX_INPUT);
-        print(out_buffer);
-        print("\n");
+        p8 out_buffer[4096] = {0};
+        system_call_2(syscall_getcwd, (positive)out_buffer, 4096);
+        write(out_buffer, 0);
+        write("\n", 1);
 }
 
-fn core_mkdir(string_address buffer)
+fn core_mkdir(writer write, string_address buffer)
 {
         if (buffer == NULL)
         {
-                print("mkdir: missing operand\n");
+                write("mkdir: missing operand\n", 23);
                 return;
         }
 
-        if (system_call_2(syscall_mkdir, (positive)buffer, 0777) != 0)
-        {
-                print("mkdir: Cannot create directory: ");
-                print(buffer);
-                print("\n");
-        }
+        if (system_call_2(syscall_mkdir, (positive)buffer, 0777) == 0)
+                return;
+
+        write("mkdir: Cannot create directory: ", 33);
+        write(buffer, 0);
+        write("\n", 1);
 }
 
-fn core_mv(string_address buffer)
+fn core_mv(writer write, string_address buffer)
 {
         if (buffer == NULL)
         {
-                print("mv: missing operand\n");
+                write("mv: missing operand\n", 20);
                 return;
         }
 
@@ -272,7 +276,7 @@ fn core_mv(string_address buffer)
 
         if (destination == NULL)
         {
-                print("mv: missing destination\n");
+                write("mv: missing destination\n", 24);
                 return;
         }
 
@@ -281,17 +285,17 @@ fn core_mv(string_address buffer)
 
         if (system_call_2(syscall_rename, (positive)source, (positive)destination) != 0)
         {
-                print("mv: Cannot move file: ");
-                print(source);
-                print("\n");
+                write("mv: Cannot move file: ", 23);
+                write(source, 0);
+                write("\n", 1);
         }
 }
 
-fn core_mount(string_address buffer)
+fn core_mount(writer write, string_address buffer)
 {
         if (buffer == NULL)
         {
-                print("mount: missing operand\n");
+                write("mount: missing operand\n", 23);
                 return;
         }
 
@@ -300,7 +304,7 @@ fn core_mount(string_address buffer)
 
         if (destination == NULL)
         {
-                print("mount: missing destination\n");
+                write("mount: missing destination\n", 27);
                 return;
         }
 
@@ -317,20 +321,20 @@ fn core_mount(string_address buffer)
 
         if (result != 0)
         {
-                print("mount: Cannot mount filesystem: ");
-                print(source);
-                print("\n");
+                write("mount: Cannot mount filesystem: ", 32);
+                write(source, 0);
+                write("\n", 1);
         }
 }
 
-fn core_exit(string_address buffer)
+fn core_exit(writer write, string_address buffer)
 {
         exit(0);
 }
 
-fn core_help(string_address buffer);
+fn core_help(writer write, string_address buffer);
 
-typedef fn(ADDRESS_TO core_command_function)(string_address buffer);
+typedef fn(ADDRESS_TO core_command_function)(writer write, string_address buffer);
 
 typedef struct
 {
@@ -357,21 +361,21 @@ core_command core_commands[] = {
     {NULL, NULL},
 };
 
-fn core_help(string_address buffer)
+fn core_help(writer write, string_address buffer)
 {
-        print("Dawning Shell, WIP, " TERM_RED TERM_BOLD "expect crashes! \n\n" TERM_RESET);
-        print("Available built-in commands:\n");
+        write("Dawning Shell, WIP, " TERM_RED TERM_BOLD "expect crashes! \n\n" TERM_RESET, 0);
+        write("Available built-in commands:\n", 29);
 
         core_command ADDRESS_TO command = core_commands;
 
         while (command->name)
         {
-                print(" - " TERM_BOLD);
-                print(command->name);
-                print(TERM_RESET "\n");
+                write(" - " TERM_BOLD, sizeof(" - " TERM_BOLD));
+                write(command->name, 0);
+                write(TERM_RESET "\n", sizeof(TERM_RESET "\n"));
 
                 command++;
         }
 
-        print("\n");
+        write("\n", 1);
 }

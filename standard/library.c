@@ -713,6 +713,23 @@ fn_asm(system_call_6, bipolar, positive syscall, positive argument_1, positive a
         system_return;
 }
 
+// Writer functions are intended as flexible outout functions passed to functions as arguments
+// and should be easy for compiler to optimize into a zero cost abstraction
+// if length is zero, the function should write until a null terminator is reached (string_length)
+// writers redused file size, faster, and more flexible
+typedef fn(ADDRESS_TO writer)(ADDRESS data, positive length);
+
+typedef fn(ADDRESS_TO writer_string)(string_address string);
+typedef fn(ADDRESS_TO writer_string_len)(string_address string, positive length);
+
+// User required implementations
+b32 main();
+
+// Platform required implementations
+fn exit(b32 code);
+fn sleep(p32 seconds, p32 nanoseconds);
+fn _start();
+
 #if defined(X64)
 // ### Get CPU time (Time Stamp Counter)
 // returns: the current CPU time
@@ -848,73 +865,37 @@ string_address string_last_of(string_address source, p8 character)
 
 // Convert a positive number to a string
 // buffer must be at least 32 bytes long
-fn positive_to_string(positive number, p8 *buffer)
+fn string_to_positive(writer write, positive number)
 {
-        positive step = 0;
-
         if (number == 0)
         {
-                buffer[0] = '0';
-                buffer[1] = '\0';
+                write("0", 1);
                 return;
         }
 
-        do
+        p8 digits[32];
+        positive count = 0;
+
+        while (number > 0 && count < 32)
         {
-                buffer[step++] = '0' + (number % 10);
+                digits[count++] = '0' + (number % 10);
                 number /= 10;
-        } while (number > 0 && step < 31);
-
-        buffer[step] = '\0';
-
-        positive start = 0;
-        positive end = step - 1;
-
-        while (start < end)
-        {
-                p8 temp = buffer[start];
-                buffer[start] = buffer[end];
-                buffer[end] = temp;
-                start++;
-                end--;
         }
+
+        while (count > 0)
+                write(&digits[--count], 1);
 }
 
-fn bipolar_to_string(bipolar number, p8 *buffer)
+fn string_to_bipolar(writer write, bipolar number)
 {
-        if (number < 0)
+        if (number > 0)
         {
-                buffer[0] = '-';
-
-                positive_to_string((positive)(-number), buffer + 1);
+                string_to_positive(write, (positive)number);
+                return;
         }
-        else
-        {
-                positive_to_string((positive)number, buffer);
-        }
-}
 
-// User required implementations
-b32 main();
-
-// Platform required implementations
-fn print(p8 ADDRESS_TO message);
-fn exit(b32 code);
-fn sleep(p32 seconds, p32 nanoseconds);
-fn _start();
-
-fn print_bipolar(bipolar number)
-{
-        p8 buffer[32];
-        bipolar_to_string(number, buffer);
-        print(buffer);
-}
-
-fn print_positive(positive number)
-{
-        p8 buffer[32];
-        positive_to_string(number, buffer);
-        print(buffer);
+        write("-", 1);
+        string_to_positive(write, (positive)(-number));
 }
 
 // for compatibility, makes the linker happy

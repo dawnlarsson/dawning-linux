@@ -453,11 +453,6 @@ struct linux_dirent64
         p8 d_name[];
 };
 
-fn print(p8 ADDRESS_TO message)
-{
-        system_call_3(syscall_write, stdout, (positive)message, string_length(message));
-}
-
 fn sleep(p32 seconds, p32 nanoseconds)
 {
         system_call_2(syscall_nanosleep, seconds, nanoseconds);

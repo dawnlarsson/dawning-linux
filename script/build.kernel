@@ -12,6 +12,6 @@ make -j$cpu_cores KCPPFLAGS="${CFLAGS}" KAFLAGS="${CFLAGS}" LDFLAGS="$linker_fla
 
 cd ..
 
-sudo cp linux/arch/x86/boot/bzImage dist/bzImage
+sudo cp linux/arch/x86/boot/bzImage dist/bootx64.efi
 
-script/size dist/bzImage
+script/size dist/bootx64.efi
