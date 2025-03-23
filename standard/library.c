@@ -882,7 +882,7 @@ string_address string_last_of(string_address source, p8 character)
 
 // Convert a positive number to a string
 // buffer must be at least 32 bytes long
-fn string_to_positive(writer write, positive number)
+fn positive_to_string(writer write, positive number)
 {
         if (number == 0)
         {
@@ -903,16 +903,16 @@ fn string_to_positive(writer write, positive number)
                 write(&digits[--count], 1);
 }
 
-fn string_to_bipolar(writer write, bipolar number)
+fn bipolar_to_string(writer write, bipolar number)
 {
         if (number > 0)
         {
-                string_to_positive(write, (positive)number);
+                positive_to_string(write, (positive)number);
                 return;
         }
 
         write("-", 1);
-        string_to_positive(write, (positive)(-number));
+        positive_to_string(write, (positive)(-number));
 }
 
 fn path_basename(writer write, string_address input)

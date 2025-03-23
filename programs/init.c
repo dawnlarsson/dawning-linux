@@ -71,7 +71,7 @@ b32 main()
 
                 write(lable "Failed to execute init program", 0);
                 write(str(" (error: "));
-                string_to_bipolar(write, result);
+                bipolar_to_string(write, result);
                 write(str(")\n"));
 
                 exit(1);

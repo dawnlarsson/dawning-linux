@@ -47,7 +47,7 @@ fn exec_command(string_address command, string_address args)
         if (process_id < 0)
         {
                 write(str("Failed to fork (error: "));
-                string_to_bipolar(write, process_id);
+                bipolar_to_string(write, process_id);
                 write(str(")\n"));
                 return;
         }
@@ -59,7 +59,7 @@ fn exec_command(string_address command, string_address args)
                 bipolar result = system_call_2(syscall_execve, (positive)command, (positive)argv);
 
                 write(str("Failed to execute command (error: "));
-                string_to_bipolar(write, result);
+                bipolar_to_string(write, result);
                 write(str(")\n"));
                 exit(1);
         }
