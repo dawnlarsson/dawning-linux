@@ -776,6 +776,20 @@ ADDRESS memory_fill(ADDRESS destination, b8 value, positive size)
         return destination;
 }
 
+// ### Copy a memory block
+ADDRESS memory_copy(ADDRESS destination, ADDRESS source, positive size)
+{
+        b8 ADDRESS_TO dest = (b8 ADDRESS_TO)destination;
+        b8 ADDRESS_TO src = (b8 ADDRESS_TO)source;
+
+        while (size--)
+        {
+                ADDRESS_TO dest++ = ADDRESS_TO src++;
+        }
+
+        return destination;
+}
+
 // ### Length of string segment in linear memory
 // returns the length of a string terminated by a null character
 // NOT a entire array length

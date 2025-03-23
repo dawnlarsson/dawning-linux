@@ -9,7 +9,19 @@
 p8 buffer[MAX_INPUT];
 positive buffer_length;
 
-// TODO: just a placeholder, we are going to buffer the writes
+p8 writer_buffer[MAX_INPUT];
+positive writer_buffer_length;
+
+fn writer_flush()
+{
+        if (writer_buffer_length == 0)
+                return;
+
+        system_call_3(syscall_write, stdout, (positive)writer_buffer, writer_buffer_length);
+
+        writer_buffer_length = 0;
+}
+
 fn write(ADDRESS data, positive length)
 {
         if (length == 0)
@@ -17,7 +29,13 @@ fn write(ADDRESS data, positive length)
                 length = string_length(data);
         }
 
-        system_call_3(syscall_write, stdout, (positive)data, length);
+        if (length + writer_buffer_length > MAX_INPUT)
+        {
+                writer_flush();
+        }
+
+        memory_copy(writer_buffer + writer_buffer_length, data, length);
+        writer_buffer_length += length;
 }
 
 fn exec_command(string_address command, string_address args)
@@ -134,6 +152,8 @@ b32 main()
                 memory_fill(buffer, 0, MAX_INPUT);
 
                 write(PROMPT, sizeof(PROMPT));
+
+                writer_flush();
 
                 buffer_length = system_call_3(syscall_read, 0, (positive)buffer, MAX_INPUT);
 
