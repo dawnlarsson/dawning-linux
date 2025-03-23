@@ -30,6 +30,12 @@ fn write(ADDRESS data, positive length)
         if (length + writer_buffer_length > MAX_INPUT)
                 writer_flush();
 
+        if (length > MAX_INPUT)
+        {
+                system_call_3(syscall_write, stdout, (positive)data, length);
+                return;
+        }
+
         memory_copy(writer_buffer + writer_buffer_length, data, length);
         writer_buffer_length += length;
 }
