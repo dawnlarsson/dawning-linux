@@ -46,7 +46,7 @@ fn exec_command(string_address command, string_address args)
 
         if (process_id < 0)
         {
-                write("Failed to fork (error: ", 0);
+                write("Failed to fork (error: ", 24);
                 string_to_bipolar(write, process_id);
                 write(")\n", 2);
                 return;

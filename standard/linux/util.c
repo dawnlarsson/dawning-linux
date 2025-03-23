@@ -38,7 +38,7 @@ fn core_cat(writer write, string_address input)
         bipolar file_descriptor = system_call_2(syscall_open, (positive)input, O_RDONLY);
         if (file_descriptor < 0)
         {
-                write("cat: Cannot open file: ", 23);
+                write("cat: Cannot open file: ", 24);
                 write(input, 0);
                 write("\n", 1);
                 return;
@@ -89,7 +89,7 @@ fn core_chmod(writer write, string_address buffer)
         if (system_call_2(syscall_chmod, (positive)buffer, 0777) == 0)
                 return;
 
-        write("chmod: Cannot change permissions: ", 34);
+        write("chmod: Cannot change permissions: ", 35);
         write(buffer, 0);
         write("\n", 1);
 }
@@ -117,7 +117,7 @@ fn core_cp(writer write, string_address buffer)
         bipolar source_fd = system_call_2(syscall_open, (positive)source, O_RDONLY);
         if (source_fd < 0)
         {
-                write("cp: Cannot open source file: ", 29);
+                write("cp: Cannot open source file: ", 30);
                 write(source, 0);
                 write("\n", 1);
                 return;
@@ -126,7 +126,7 @@ fn core_cp(writer write, string_address buffer)
         bipolar destination_fd = system_call_2(syscall_open, (positive)destination, O_CREAT | O_WRONLY);
         if (destination_fd < 0)
         {
-                write("cp: Cannot open destination file: ", 34);
+                write("cp: Cannot open destination file: ", 35);
                 write(destination, 0);
                 write("\n", 1);
                 return;
@@ -206,16 +206,16 @@ fn core_ls(writer write, string_address buffer)
                                         write(TERM_BOLD TERM_BLUE, sizeof(TERM_BOLD TERM_BLUE));
 
                                 else if (entry->d_type == DT_LNK)
-                                        write(TERM_CYAN, 7);
+                                        write(TERM_CYAN, sizeof(TERM_CYAN));
 
                                 else if (entry->d_type == DT_REG)
-                                        write(TERM_RESET, 5);
+                                        write(TERM_RESET, sizeof(TERM_RESET));
 
                                 else
-                                        write(TERM_YELLOW, 7);
+                                        write(TERM_YELLOW, sizeof(TERM_YELLOW));
 
                                 write(entry->d_name, 0);
-                                write(TERM_RESET " ", 6);
+                                write(TERM_RESET " ", sizeof(TERM_RESET " "));
 
                                 entries_count++;
                                 if (entries_count % max_line_entries == 0)
@@ -314,7 +314,7 @@ fn core_mount(writer write, string_address buffer)
 
         if (result != 0)
         {
-                write("mount: Cannot mount filesystem: ", 32);
+                write("mount: Cannot mount filesystem: ", 33);
                 write(source, 0);
                 write("\n", 1);
         }
