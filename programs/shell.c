@@ -147,7 +147,7 @@ b32 main()
         {
                 memory_fill(buffer, 0, MAX_INPUT);
 
-                write(PROMPT, sizeof(PROMPT));
+                write(str(PROMPT));
 
                 writer_flush();
 

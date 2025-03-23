@@ -781,7 +781,12 @@ ADDRESS memory_fill(ADDRESS destination, b8 value, positive size)
         return destination;
 }
 
-// ### Copy a memory block
+// ### Fill source memory block with destination memory block
+// copies a memory block from source to destination
+// returns: destination address
+// destination: the memory block to copy to
+// source: the memory block to copy from
+// traditional: memcpy
 ADDRESS memory_copy(ADDRESS destination, ADDRESS source, positive size)
 {
         b8 ADDRESS_TO dest = (b8 ADDRESS_TO)destination;
@@ -865,6 +870,12 @@ string_address string_first_of(string_address source, p8 character)
         return (string_get(source) == character) ? source : NULL;
 }
 
+// ### Find last character in string segment
+// returns: address of the last occurrence of the character
+// returns: NULL if the character is not found
+// source: the memory block to search
+// character: the character to search for
+// traditional: strrchr
 string_address string_last_of(string_address source, p8 character)
 {
         string_address last = NULL;
@@ -880,8 +891,7 @@ string_address string_last_of(string_address source, p8 character)
         return last;
 }
 
-// Convert a positive number to a string
-// buffer must be at least 32 bytes long
+// ### Writes the string representation of a positive number to a writer
 fn positive_to_string(writer write, positive number)
 {
         if (number == 0)
@@ -963,6 +973,12 @@ typedef b64 ptrdiff_t;
 typedef unsigned long int uintptr_t;
 typedef long int intptr_t;
 
+// use memory_copy instead, this is for compatibility
+positive memcpy(ADDRESS destination, ADDRESS source, positive size)
+{
+        return memory_copy(destination, source, size);
+}
+
 // use string_length instead, this is for compatibility
 positive strlen(string_address source)
 {
@@ -985,6 +1001,12 @@ string_address strcpy(string_address destination, string_address source)
 string_address strchr(string_address source, p8 character)
 {
         return string_first_of(source, character);
+}
+
+// use string_last_of instead, this is for compatibility
+string_address strrchr(string_address source, p8 character)
+{
+        return string_last_of(source, character);
 }
 
 #endif // DAWN_MODERN_C_COMPATIBILITY
