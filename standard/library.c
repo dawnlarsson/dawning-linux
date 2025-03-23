@@ -769,9 +769,7 @@ ADDRESS memory_fill(ADDRESS destination, b8 value, positive size)
         b8 ADDRESS_TO dest = (b8 ADDRESS_TO)destination;
 
         while (size--)
-        {
                 ADDRESS_TO dest++ = (b8)value;
-        }
 
         return destination;
 }
@@ -783,9 +781,7 @@ ADDRESS memory_copy(ADDRESS destination, ADDRESS source, positive size)
         b8 ADDRESS_TO src = (b8 ADDRESS_TO)source;
 
         while (size--)
-        {
                 ADDRESS_TO dest++ = ADDRESS_TO src++;
-        }
 
         return destination;
 }

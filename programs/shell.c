@@ -25,14 +25,10 @@ fn writer_flush()
 fn write(ADDRESS data, positive length)
 {
         if (length == 0)
-        {
                 length = string_length(data);
-        }
 
         if (length + writer_buffer_length > MAX_INPUT)
-        {
                 writer_flush();
-        }
 
         memory_copy(writer_buffer + writer_buffer_length, data, length);
         writer_buffer_length += length;
@@ -84,9 +80,7 @@ fn process_command()
         bool is_executable = false;
 
         if (buffer[0] == '.' || buffer[0] == '/')
-        {
                 is_executable = true;
-        }
 
         while (buffer[length] != '\0')
         {
@@ -97,9 +91,7 @@ fn process_command()
                                 buffer[length] = '\0';
 
                                 if (buffer[length + 1] == ' ' || buffer[length + 1] == '\0')
-                                {
                                         break;
-                                }
 
                                 is_first_section = false;
 
@@ -115,9 +107,7 @@ fn process_command()
         }
 
         if (is_first_section)
-        {
                 arguments_buffer = NULL;
-        }
 
         if (is_executable)
         {

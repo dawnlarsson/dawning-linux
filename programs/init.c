@@ -4,9 +4,7 @@
 fn write(ADDRESS data, positive length)
 {
         if (length == 0)
-        {
                 length = string_length(data);
-        }
 
         system_call_3(syscall_write, stdout, (positive)data, length);
 }
@@ -46,13 +44,10 @@ fn mount_filesystems()
                     NULL);
 
                 if (result == 0)
-                {
                         write(TERM_BOLD TERM_GREEN " OK", 0);
-                }
+
                 else
-                {
                         write(TERM_BOLD TERM_RED " FAILED", 0);
-                }
 
                 write(TERM_RESET "\n", 6);
 

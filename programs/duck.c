@@ -4,9 +4,7 @@
 fn write(ADDRESS data, positive length)
 {
         if (length == 0)
-        {
                 length = string_length(data);
-        }
 
         system_call_3(syscall_write, stdout, (positive)data, length);
 }
@@ -16,9 +14,7 @@ fn write(ADDRESS data, positive length)
 b32 main()
 {
         while (1)
-        {
                 write("quack\n", 6);
-        }
 
         return 0;
 }

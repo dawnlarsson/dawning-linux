@@ -169,9 +169,7 @@ fn core_ls(writer write, string_address buffer)
         const p32 max_line_entries = 8;
 
         if (buffer == NULL)
-        {
                 buffer = ".";
-        }
 
         bipolar file_descriptor = system_call_2(syscall_open, (positive)buffer, O_RDONLY | O_DIRECTORY);
 
@@ -205,21 +203,16 @@ fn core_ls(writer write, string_address buffer)
                                                           (entry->d_name[1] == '.' && entry->d_name[2] == '\0'))))
                         {
                                 if (entry->d_type == DT_DIR)
-                                {
                                         write(TERM_BOLD TERM_BLUE, sizeof(TERM_BOLD TERM_BLUE));
-                                }
+
                                 else if (entry->d_type == DT_LNK)
-                                {
                                         write(TERM_CYAN, 7);
-                                }
+
                                 else if (entry->d_type == DT_REG)
-                                {
                                         write(TERM_RESET, 5);
-                                }
+
                                 else
-                                {
                                         write(TERM_YELLOW, 7);
-                                }
 
                                 write(entry->d_name, 0);
                                 write(TERM_RESET " ", 6);
