@@ -40,13 +40,45 @@ fn write(ADDRESS data, positive length)
         writer_buffer_length += length;
 }
 
-fn shell_thread_instance()
+fn shell_thread_instance(string_address command, ADDRESS argv)
 {
-        write(str("Shell thread\n"));
+        bipolar exec_result = system_call_3(syscall_execve, (positive)command, (positive)argv, 0);
+
+        write(str("failed with error: "));
+        bipolar_to_string(write, exec_result);
+        write(str("\n"));
+
+        writer_flush();
+
+        exit(1);
 }
 
 fn shell_execute_command(string_address command, string_address args)
 {
+        bipolar fork_result = system_call_1(syscall_fork, 0);
+
+        if (fork_result == 0)
+        {
+                p8 ADDRESS_TO argv[3] = {0};
+                argv[0] = command;
+                argv[1] = args;
+                argv[2] = NULL;
+
+                shell_thread_instance(command, argv);
+        }
+        else if (fork_result > 0)
+        {
+                positive status = 0;
+                bipolar wait_result = system_call_4(syscall_wait4, fork_result, (positive)ADDRESS_OF status, 0, 0);
+        }
+        else
+        {
+                write(str("failed with error: "));
+                bipolar_to_string(write, fork_result);
+                write(str("\n"));
+        }
+
+        writer_flush();
 }
 
 bool shell_builtin(string_address arguments)
