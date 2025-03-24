@@ -138,6 +138,10 @@ fn core_exec(writer write, string_address buffer)
         system_call_2(syscall_execve, (positive)buffer, (positive)argv);
 }
 
+// - Blue: Directories
+// - Cyan: Symbolic links
+// - Default: Regular files
+// - Yellow: Special files (FIFO, sockets, devices, etc.)
 fn core_ls(writer write, string_address buffer)
 {
         const p32 max_line_entries = 8;
@@ -173,29 +177,29 @@ fn core_ls(writer write, string_address buffer)
                 {
                         struct linux_dirent64 ADDRESS_TO entry = (struct linux_dirent64 ADDRESS_TO)step;
 
-                        if (!(entry->d_name[0] == '.' && (entry->d_name[1] == '\0' ||
-                                                          (entry->d_name[1] == '.' && entry->d_name[2] == '\0'))))
+                        if (entry->d_name[0] == '.' && (entry->d_name[1] == '\0' ||
+                                                        (entry->d_name[1] == '.' && entry->d_name[2] == '\0')))
                         {
-                                if (entry->d_type == DT_DIR)
-                                        write(TERM_BOLD TERM_BLUE, sizeof(TERM_BOLD TERM_BLUE));
-
-                                else if (entry->d_type == DT_LNK)
-                                        write(TERM_CYAN, sizeof(TERM_CYAN));
-
-                                else if (entry->d_type == DT_REG)
-                                        write(TERM_RESET, sizeof(TERM_RESET));
-
-                                else
-                                        write(TERM_YELLOW, sizeof(TERM_YELLOW));
-
-                                write(entry->d_name, 0);
-                                write(TERM_RESET " ", sizeof(TERM_RESET " "));
-
-                                entries_count++;
-
-                                if (entries_count % max_line_entries == 0)
-                                        write(str("\n"));
+                                step += entry->d_reclen;
+                                continue;
                         }
+
+                        if (entry->d_type == DT_DIR)
+                                write(str(TERM_BOLD TERM_BLUE));
+                        else if (entry->d_type == DT_LNK)
+                                write(str(TERM_CYAN));
+                        else if (entry->d_type == DT_REG)
+                                write(str(TERM_RESET));
+                        else
+                                write(str(TERM_YELLOW));
+
+                        write(entry->d_name, 0);
+
+                        write(str(TERM_RESET " "));
+                        entries_count++;
+
+                        if (entries_count % max_line_entries == 0)
+                                write(str("\n"));
 
                         step += entry->d_reclen;
                 }
