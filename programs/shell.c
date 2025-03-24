@@ -47,7 +47,25 @@ fn shell_thread_instance()
 
 fn shell_execute_command(string_address command, string_address args)
 {
-        return write(str("TODO: path execution\n"));
+}
+
+bool shell_builtin(string_address arguments)
+{
+        core_command ADDRESS_TO command = core_commands;
+
+        while (command->name)
+        {
+                if (string_compare(command->name, buffer))
+                {
+                        command++;
+                        continue;
+                }
+
+                command->function(write, arguments);
+                return true;
+        }
+
+        return false;
 }
 
 // Single pass command parser
@@ -57,52 +75,33 @@ fn process_command()
                 return;
 
         p32 length = 0;
-        string_address arguments_buffer;
         bool is_first_section = true;
-
-        bool is_executable = false;
-
-        if (buffer[0] == '.' || buffer[0] == '/')
-                is_executable = true;
+        string_address arguments_buffer = NULL;
 
         while (buffer[length] != '\0')
         {
-                if (is_first_section)
+                if (buffer[length] != ' ')
                 {
-                        if (buffer[length] == ' ' || buffer[length] == '\n')
-                        {
-                                buffer[length] = '\0';
-
-                                if (buffer[length + 1] == ' ' || buffer[length + 1] == '\0')
-                                        break;
-
-                                is_first_section = false;
-
-                                length++;
-                                arguments_buffer = buffer + length;
-
-                                break;
-                        }
+                        length++;
+                        continue;
                 }
 
-                length++;
+                buffer[length] = '\0';
+
+                if (buffer[length + 1] != ' ' && buffer[length + 1] != '\0')
+                {
+                        is_first_section = false;
+                        arguments_buffer = buffer + length + 1;
+                }
+
+                break;
         }
 
-        if (is_first_section)
-                arguments_buffer = NULL;
-
-        if (is_executable)
+        if (buffer[0] == '.' || buffer[0] == '/')
                 return shell_execute_command(buffer, arguments_buffer);
 
-        core_command ADDRESS_TO command = core_commands;
-
-        while (command->name)
-        {
-                if (string_compare(command->name, buffer) == 0)
-                        return command->function(write, arguments_buffer);
-
-                command++;
-        }
+        if (shell_builtin(arguments_buffer))
+                return;
 
         write(str("Command not found: "));
         write(buffer, 0);

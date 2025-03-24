@@ -1,5 +1,8 @@
 #include "../linux.c"
 
+// kernel page is normaly 4096 bytes
+const positive page_size = 4096;
+
 fn core_basename(writer write, string_address input)
 {
         if (input == NULL)
@@ -24,12 +27,11 @@ fn core_cat(writer write, string_address input)
                 return;
         }
 
-        const positive buffer_size = 4096;
-        p8 buffer[buffer_size];
+        p8 buffer[page_size];
 
         while (1)
         {
-                bipolar bytes_read = system_call_3(syscall_read, file_descriptor, (positive)buffer, buffer_size);
+                bipolar bytes_read = system_call_3(syscall_read, file_descriptor, (positive)buffer, page_size);
 
                 if (bytes_read <= 0)
                         break;
@@ -106,12 +108,11 @@ fn core_cp(writer write, string_address buffer)
                 return;
         }
 
-        const positive buffer_size = 4096;
-        p8 out_buffer[buffer_size];
+        p8 out_buffer[page_size];
 
         while (1)
         {
-                bipolar bytes_read = system_call_3(syscall_read, source_fd, (positive)out_buffer, buffer_size);
+                bipolar bytes_read = system_call_3(syscall_read, source_fd, (positive)out_buffer, page_size);
 
                 if (bytes_read <= 0)
                         break;
@@ -159,14 +160,13 @@ fn core_ls(writer write, string_address buffer)
                 return;
         }
 
-        const positive buffer_size = 4096;
-        p8 out_buffer[buffer_size];
+        p8 out_buffer[page_size];
 
         positive entries_count = 0;
 
         while (1)
         {
-                bipolar bytes_read = system_call_3(syscall_getdents64, file_descriptor, (positive)out_buffer, buffer_size);
+                bipolar bytes_read = system_call_3(syscall_getdents64, file_descriptor, (positive)out_buffer, page_size);
 
                 if (bytes_read <= 0)
                         break;
