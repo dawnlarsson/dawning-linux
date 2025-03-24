@@ -10,27 +10,27 @@ keys_dir=$download_artifacts_dir"keys/"
 
 trusted_keys="torvalds@kernel.org gregkh@kernel.org"
 
-kernel_version="6.13.7"
-kernel_download="https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.13.7.tar.xz"
+kernel_version="6.14"
+kernel_download="https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.14.tar.xz"
 kernel_pgp="
 -----BEGIN PGP SIGNATURE-----
 Comment: This signature is for the .tar version of the archive
-Comment: git archive --format tar --prefix=linux-6.13.7/ v6.13.7
-Comment: git version 2.48.1
+Comment: git archive --format tar --prefix=linux-6.14/ v6.14
+Comment: git version 2.49.0
 
-iQIzBAABCAAdFiEEZH8oZUiU471FcZm+ONu9yGCSaT4FAmfSywIACgkQONu9yGCS
-aT5WyxAA0cSlhURm4z+kXiesR90oRA8bCHLgLI2A4VoaQ9XiHs9S70Rq4fPCX8s6
-0uqSALBPXWs7+hg3FKRUj4wUbCJaIBiaxrt4O+uXaL1LHhecr6RpyLFzWaCSKLx1
-U/CCLPT5CDdGMriCGBcQavl2mi03ITZK2F38FxeuQ3UOCMK4bUZoNl9BI8kferqR
-lKMumbgKPUXYTH4fhxVxhLlriHl0CLEcaW0cZU0nRU4WVMz1Le36ggV7jziCtyYD
-ZAhvI2fK7twA6ZsfBb68B8vTHopJD2Et4KT/umPGUhtLX9AE0Fa91CdwhtTd5L+A
-2Iyy++yRH5Ho0adFkwx7+f/5hJem93+ooqU2Twsr1FAu8meGnAoNcUw6TYnmwqpk
-q6YOO7W+WBXpTxnDQuigwFdZfXO5RQcxA/+45wKhivZE/HucQsxhmSc/nzf8/PWx
-WQWXA9BDC6P83wiwMtlzz6rbXKx4XVb/odN0SZKblJ/fN9bziXFaoDKgFI1Tjshw
-9m51hTqssxvxOXkpqpjqD+Awu/V9jNX2iOAgaJOZynk07ugN7RFCVn9KmjaBA5du
-ZvmNDNEj92t0+mbGymibX9VLJpZrqk168sALHtW5GF1Q9sEYTqdUdVULwQD8Skvo
-z8kTvX4257Nnrmj310VCHet6/W5o9uyLDa0+Sq32LAxdNQr/qRc=
-=3Kl0
+iQIzBAABCAAdFiEEZH8oZUiU471FcZm+ONu9yGCSaT4FAmfhdasACgkQONu9yGCS
+aT5MVQ/+O2twsUA9kCSVelVs80Ys/vGrw278h5CLpYoaYsxDhjQWtAqFhiYuYsSf
+fqWeyQJQs55YUcfCJGss4FPqWyxjNGoYVqv+GwJZIv74/kmjE31an+L0k5qEXiz5
+bBzwFKUobGe2UAsNWuCTgoDh7M/Xsdz+MPq9E/7gfvRwEEjKX++scEVnGV3Qy7NS
+oEOzdZpynksmF3OTnzky53XGVoW9Tk6As5r3pYy7F3KHcu/QmWKOIbU6t1+9XN08
+8QvGKdnEwv6Isd7zrg2BP6gdQfwLmP9FJbsrZ5c9XP3zNz2DsEG8H459IucCOmUR
+T3kkBonxSxlMdKRC23Nxmxb7wrzL4sGw8PC2a6iAFH+4glTc+jzvftKHzIPBQeFg
+HC4cSb1j3EEVyv+RnQNEBShY+4ghT0Zofc5k3rSPUYpW9xn0bzFNq1sP7/7nTaYG
+TNDBJrJEQmq4GarKWZ2y11I4mw7l/PBvfQpgxm6ABHfUdl0yPy89SOiBfMw+8b2Y
+mk5AXuO3qdAYqVTXUodWn79Rtno5Zrj7UXMQjoK9LcP1lr1JVvC8I/gDktdBjgqW
+60KkX0tNfIw0TzkcK/ogewBKKKRJJ1VZZOGx+tw/7ShBUpyAEu1boosx6bT88GVN
+k1wLp1FVnouFdIBLih2/ROJjTYTWUUWmvQrHYufis0AAb9Mmtjg=
+=hEZa
 -----END PGP SIGNATURE-----
 "
 
