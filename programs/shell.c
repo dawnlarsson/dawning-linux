@@ -40,9 +40,11 @@ fn write(ADDRESS data, positive length)
         writer_buffer_length += length;
 }
 
-fn shell_thread_instance(string_address command, ADDRESS argv)
+fn shell_thread_instance(string_address command, string_address arguments)
 {
-        bipolar exec_result = system_call_3(syscall_execve, (positive)command, (positive)argv, 0);
+        string_address arguments_list[] = {command, arguments, NULL};
+
+        bipolar exec_result = system_call_3(syscall_execve, (positive)command, (positive)arguments_list, 0);
 
         write(str("failed with error: "));
         bipolar_to_string(write, exec_result);
@@ -53,18 +55,15 @@ fn shell_thread_instance(string_address command, ADDRESS argv)
         exit(1);
 }
 
-fn shell_execute_command(string_address command, string_address args)
+fn shell_execute_command(string_address command, string_address arguments)
 {
+        writer_flush();
+
         bipolar fork_result = system_call_1(syscall_fork, 0);
 
         if (fork_result == 0)
         {
-                p8 ADDRESS_TO argv[3] = {0};
-                argv[0] = command;
-                argv[1] = args;
-                argv[2] = NULL;
-
-                shell_thread_instance(command, argv);
+                shell_thread_instance(command, arguments);
         }
         else if (fork_result > 0)
         {
