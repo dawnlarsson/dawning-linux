@@ -46,6 +46,30 @@ requirements
 
 `TODO: debug<level> - debug01 - debug02 ect... `
 
+### Profile driven flags
+Profiles also drive kernel flags and make options,
+any profile can include keys that are added to the kernel build like so:
+
+Make flags
+```
+#> make_flags CFLAGS="-fno-unwind-tables"
+```
+
+C flags:
+```
+#> shared_flags -O3
+```
+
+Linker flags:
+```
+#> linker_flags -Qn
+```
+
+Rust flags:
+```
+#> rust_flags -C opt-level=3
+```
+
 ### Configuration (WIP)
 **`sh script/config <profile> <profile>...`** — Takes any amount of profile names, simply merged by file name matching...
 
