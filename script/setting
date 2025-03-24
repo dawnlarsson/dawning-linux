@@ -1,0 +1,13 @@
+#!/bin/sh
+sh script/is_safe || exit 1
+
+# Get's a shell symbol out of the .config file
+# each shell entry in the .config starts with ##>
+# anything after that is the shell information
+# #> shared_flags "string"
+
+key=$1
+
+value=$(grep "#> $key" artifacts/.config | sed "s/#> $key //")
+
+[ -z "$value" ] || echo $value

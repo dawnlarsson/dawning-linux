@@ -1,14 +1,15 @@
 #!/bin/sh
 sh script/is_safe || exit 1
 
-
 cpu_cores=$(nproc)
-shared_flags=""
-linker_flags=""
-rust_flags=""
+
+make_flags=$(sh script/setting make_flags)
+shared_flags=$(sh script/setting shared_flags)
+linker_flags=$(sh script/setting linker_flags)
+rust_flags=$(sh script/setting rust_flags)
 
 cd linux
-make -j$cpu_cores KCPPFLAGS="${CFLAGS}" KAFLAGS="${CFLAGS}" LDFLAGS="$linker_flags" RUSTFLAGS="$rust_flags"
+make -j$cpu_cores $make_flags KCPPFLAGS="$shared_flags" KAFLAGS="$shared_flags" LDFLAGS="$linker_flags" RUSTFLAGS="$rust_flags"
 
 cd ..
 

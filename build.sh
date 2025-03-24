@@ -10,9 +10,6 @@ sh script/is_safe || exit 1
 info_version="25"
 info_name="dawning-linux"
 
-target_platform="x86_64"
-target_profile="desktop"
-
 info_full_name="$info_name-$info_version"
 
 sudo sh script/repo.setup
