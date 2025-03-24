@@ -14,6 +14,8 @@ cat artifacts/info >> artifacts/.config
 for profile in "$@"; do
     profile_path="profile/$profile"
     
+    echo "" >> artifacts/.config
+
     if [ -f "$profile_path" ]; then
         echo "Adding profile: $profile"
         cat "$profile_path" >> artifacts/.config

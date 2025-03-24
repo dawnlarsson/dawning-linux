@@ -15,8 +15,8 @@ The aim is to lay the groundwork for a flexible core that's entirely self contai
 There is also going to be a fair bit of architectural differences from the usual mainstream distro setup, 
 filesystem, dependency management, linking & runtime requirements.
 
-## build
-your build enviroment needs to be able to prefrom a normal kernel build, and
+## Build
+your build environment needs to be able to preform a normal kernel build, and
 the clang C compiler is needed
 
 see what you need to install here: https://docs.kernel.org/process/changes.html
@@ -40,17 +40,17 @@ requirements
 #### Profiles
 **`profile/any`** — Build required.
 
+**`profile/arch/*`** — Architecture specific requirements.
+
 **`profile/desktop`** — Low latency everyday desktop config, and gaming.
 
 **`profile/debug`** — Kernel debugging and development options.
-
-`TODO: debug<level> - debug01 - debug02 ect... `
 
 ### Profile driven flags
 Profiles also drive kernel flags and make options,
 any profile can include keys that are added to the kernel build like so:
 
-Make flags
+Make flags:
 ```
 #> make_flags CFLAGS="-fno-unwind-tables"
 ```
@@ -80,7 +80,7 @@ Rust flags:
 
 **`script/get.kernel`** — Downloads the Linux Kernel from kernel.org, version usually the latest version.
 
-**`script/repo.clean`** — Removes any generated artifacts, resets the repo, but keeps downloaded kernel archive.
+**`script/clean`** — Removes any generated artifacts, resets the repo, but keeps downloaded kernel archive.
 
 **`script/size`** — Utility script, just prints the file size in arg 1
 

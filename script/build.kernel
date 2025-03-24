@@ -8,11 +8,15 @@ shared_flags=$(sh script/setting shared_flags)
 linker_flags=$(sh script/setting linker_flags)
 rust_flags=$(sh script/setting rust_flags)
 
+kernel_image=$(sh script/setting kernel_image)
+kernel_export=$(sh script/setting kernel_export)
+
 cd linux
+
 make -j$cpu_cores $make_flags KCPPFLAGS="$shared_flags" KAFLAGS="$shared_flags" LDFLAGS="$linker_flags" RUSTFLAGS="$rust_flags"
 
 cd ..
 
-sudo cp linux/arch/x86/boot/bzImage dist/bootx64.efi
+sudo cp $kernel_image $kernel_export
 
-script/size dist/bootx64.efi
+script/size $kernel_export

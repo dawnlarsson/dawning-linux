@@ -12,7 +12,7 @@ info_name="dawning-linux"
 
 info_full_name="$info_name-$info_version"
 
-sudo sh script/repo.setup
+sudo sh script/setup
 
 echo "CONFIG_LOCALVERSION=\"$info_full_name\"" > artifacts/info
 echo "CONFIG_DEFAULT_HOSTNAME=\"$info_name-box\"" >> artifacts/info
@@ -28,7 +28,7 @@ sh standard/build programs/duck fs/duck
 sudo sh script/get.kernel
 
 sh script/is_file artifacts/.config || \
-        sudo sh script/config any debug limbo desktop
+        sudo sh script/config any arch/x64 debug_none limbo desktop
 
 cd linux
 sudo make allnoconfig
