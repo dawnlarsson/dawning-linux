@@ -3,10 +3,7 @@
 fn core_basename(writer write, string_address input)
 {
         if (input == NULL)
-        {
-                write(str("basename: missing operand\n"));
-                return;
-        }
+                return write(str("basename: missing operand\n"));
 
         path_basename(write, input);
 
@@ -16,10 +13,7 @@ fn core_basename(writer write, string_address input)
 fn core_cat(writer write, string_address input)
 {
         if (input == NULL)
-        {
-                write(str("cat: missing operand\n"));
-                return;
-        }
+                return write(str("cat: missing operand\n"));
 
         bipolar file_descriptor = system_call_2(syscall_open, (positive)input, O_RDONLY);
         if (file_descriptor < 0)
@@ -46,12 +40,15 @@ fn core_cat(writer write, string_address input)
         system_call_1(syscall_close, file_descriptor);
 }
 
+// TODOs:
+// - empty buffer should go to home directory & handle ~
+// - "cd -" aka cd $OLDPWD
 fn core_cd(writer write, string_address buffer)
 {
         if (buffer == NULL)
                 buffer = "/";
 
-        if (system_call_1(syscall_chdir, (positive)buffer) == 0)
+        if (!system_call_1(syscall_chdir, (positive)buffer))
                 return;
 
         write(str("cd: No such directory: "));
@@ -67,12 +64,9 @@ fn core_clear(writer write, string_address buffer)
 fn core_chmod(writer write, string_address buffer)
 {
         if (buffer == NULL)
-        {
-                write(str("chmod: missing operand\n"));
-                return;
-        }
+                return write(str("chmod: missing operand\n"));
 
-        if (system_call_2(syscall_chmod, (positive)buffer, 0777) == 0)
+        if (!system_call_2(syscall_chmod, (positive)buffer, 0777))
                 return;
 
         write(str("chmod: Cannot change permissions: "));
@@ -83,19 +77,13 @@ fn core_chmod(writer write, string_address buffer)
 fn core_cp(writer write, string_address buffer)
 {
         if (buffer == NULL)
-        {
-                write(str("cp: missing operand\n"));
-                return;
-        }
+                return write(str("cp: missing operand\n"));
 
         string_address source = buffer;
         string_address destination = string_first_of(buffer, ' ');
 
         if (destination == NULL)
-        {
-                write(str("cp: missing destination\n"));
-                return;
-        }
+                return write(str("cp: missing destination\n"));
 
         ADDRESS_TO destination = '\0';
         destination++;
@@ -204,6 +192,7 @@ fn core_ls(writer write, string_address buffer)
                                 write(TERM_RESET " ", sizeof(TERM_RESET " "));
 
                                 entries_count++;
+
                                 if (entries_count % max_line_entries == 0)
                                         write(str("\n"));
                         }
@@ -229,12 +218,9 @@ fn core_pwd(writer write, string_address buffer)
 fn core_mkdir(writer write, string_address buffer)
 {
         if (buffer == NULL)
-        {
-                write(str("mkdir: missing operand\n"));
-                return;
-        }
+                return write(str("mkdir: missing operand\n"));
 
-        if (system_call_2(syscall_mkdir, (positive)buffer, 0777) == 0)
+        if (!system_call_2(syscall_mkdir, (positive)buffer, 0777))
                 return;
 
         write(str("mkdir: Cannot create directory: "));
@@ -245,65 +231,45 @@ fn core_mkdir(writer write, string_address buffer)
 fn core_mv(writer write, string_address buffer)
 {
         if (buffer == NULL)
-        {
-                write(str("mv: missing operand\n"));
-                return;
-        }
+                return write(str("mv: missing operand\n"));
 
         string_address source = buffer;
         string_address destination = string_first_of(buffer, ' ');
 
         if (destination == NULL)
-        {
-                write(str("mv: missing destination\n"));
-                return;
-        }
+                return write(str("mv: missing destination\n"));
 
         ADDRESS_TO destination = '\0';
         destination++;
 
-        if (system_call_2(syscall_rename, (positive)source, (positive)destination) != 0)
-        {
-                write(str("mv: Cannot move file: "));
-                write(source, 0);
-                write(str("\n"));
-        }
+        if (!system_call_2(syscall_rename, (positive)source, (positive)destination))
+                return;
+
+        write(str("mv: Cannot move file: "));
+        write(source, 0);
+        write(str("\n"));
 }
 
 fn core_mount(writer write, string_address buffer)
 {
         if (buffer == NULL)
-        {
-                write(str("mount: missing operand\n"));
-                return;
-        }
+                return write(str("mount: missing operand\n"));
 
         string_address source = buffer;
         string_address destination = string_first_of(buffer, ' ');
 
         if (destination == NULL)
-        {
-                write(str("mount: missing destination\n"));
-                return;
-        }
+                return write(str("mount: missing destination\n"));
 
         ADDRESS_TO destination = '\0';
         destination++;
 
-        bipolar result = system_call_5(
-            syscall_mount,
-            (positive)source,
-            (positive)destination,
-            (positive)source,
-            MS_BIND,
-            NULL);
+        if (!system_call_5(syscall_mount, (positive)source, (positive)destination, (positive)source, MS_BIND, NULL))
+                return;
 
-        if (result != 0)
-        {
-                write(str("mount: Cannot mount filesystem: "));
-                write(source, 0);
-                write(str("\n"));
-        }
+        write(str("mount: Cannot mount filesystem: "));
+        write(source, 0);
+        write(str("\n"));
 }
 
 fn core_exit(writer write, string_address buffer)

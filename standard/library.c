@@ -891,14 +891,11 @@ string_address string_last_of(string_address source, p8 character)
         return last;
 }
 
-// ### Writes the string representation of a positive number to a writer
+// ### Takes a positive number and writes out the string representation
 fn positive_to_string(writer write, positive number)
 {
         if (number == 0)
-        {
-                write("0", 1);
-                return;
-        }
+                return write("0", 1);
 
         p8 digits[32];
         positive count = 0;
@@ -913,18 +910,17 @@ fn positive_to_string(writer write, positive number)
                 write(&digits[--count], 1);
 }
 
+// ### Takes a bipolar number and writes out the string representation
 fn bipolar_to_string(writer write, bipolar number)
 {
         if (number > 0)
-        {
-                positive_to_string(write, (positive)number);
-                return;
-        }
+                return positive_to_string(write, (positive)number);
 
         write("-", 1);
         positive_to_string(write, (positive)(-number));
 }
 
+// ### Takes a path and writes out the last directory name
 fn path_basename(writer write, string_address input)
 {
         positive length = string_length(input);
@@ -933,16 +929,14 @@ fn path_basename(writer write, string_address input)
                 length--;
 
         if (length == 1 && input[0] == '/')
-        {
-                write("/", 1);
-                return;
-        }
+                return write("/", 1);
 
-        positive i = length;
-        while (i > 0 && input[i - 1] != '/')
-                i--;
+        positive step = length;
 
-        write(input + i, length - i);
+        while (step > 0 && input[step - 1] != '/')
+                step--;
+
+        write(input + step, length - step);
 }
 
 // for compatibility, makes the linker happy

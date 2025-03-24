@@ -44,12 +44,9 @@ fn mount_filesystems()
                     NULL);
 
                 if (result == 0)
-                        write(TERM_BOLD TERM_GREEN " OK", 0);
-
+                        write(str(TERM_BOLD TERM_GREEN " OK\n" TERM_RESET));
                 else
-                        write(TERM_BOLD TERM_RED " FAILED", 0);
-
-                write(TERM_RESET "\n", 6);
+                        write(str(TERM_BOLD TERM_RED " FAILED\n" TERM_RESET));
 
                 mount++;
         }
@@ -63,20 +60,20 @@ b32 main()
 
         positive process_id = system_call(syscall_fork);
 
-        if (process_id != 0)
+        if (process_id == 0)
         {
-                p8 ADDRESS_TO argv[] = {init_program};
-
-                bipolar result = system_call_2(syscall_execve, (positive)init_program, (positive)argv);
-
-                write(lable "Failed to execute init program", 0);
-                write(str(" (error: "));
-                bipolar_to_string(write, result);
-                write(str(")\n"));
-
-                exit(1);
+                while (1)
+                        sleep(1, 0);
         }
 
-        while (1)
-                sleep(1, 0);
+        p8 ADDRESS_TO argv[] = {init_program};
+
+        bipolar result = system_call_2(syscall_execve, (positive)init_program, (positive)argv);
+
+        write(lable "Failed to execute init program", 0);
+        write(str(" (error: "));
+        bipolar_to_string(write, result);
+        write(str(")\n"));
+
+        return 1;
 }

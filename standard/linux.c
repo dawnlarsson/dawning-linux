@@ -444,6 +444,10 @@
 #define SIGKILL 9
 #define SIGSTOP 20
 
+#define CLONE_CHILD_CLEARTID 0x00200000
+#define CLONE_CHILD_SETTID 0x01000000
+#define SIGCHLD 17
+
 struct linux_dirent64
 {
         p64 d_ino;

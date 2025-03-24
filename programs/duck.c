@@ -13,8 +13,7 @@ fn write(ADDRESS data, positive length)
 
 b32 main()
 {
-        while (1)
-                write(str("quack\n"));
+        write(str("quack\n"));
 
         return 0;
 }

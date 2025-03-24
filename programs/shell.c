@@ -40,37 +40,14 @@ fn write(ADDRESS data, positive length)
         writer_buffer_length += length;
 }
 
-fn exec_command(string_address command, string_address args)
+fn shell_thread_instance()
 {
-        if (command[0] != '/')
-        {
-                write(str("TODO: exec relative paths\n"));
-                return;
-        }
+        write(str("Shell thread\n"));
+}
 
-        positive process_id = system_call(syscall_fork);
-
-        if (process_id < 0)
-        {
-                write(str("Failed to fork (error: "));
-                bipolar_to_string(write, process_id);
-                write(str(")\n"));
-                return;
-        }
-
-        if (process_id == 0)
-        {
-                p8 ADDRESS_TO argv[] = {command};
-
-                bipolar result = system_call_2(syscall_execve, (positive)command, (positive)argv);
-
-                write(str("Failed to execute command (error: "));
-                bipolar_to_string(write, result);
-                write(str(")\n"));
-                exit(1);
-        }
-
-        system_call_1(syscall_wait4, process_id);
+fn shell_execute_command(string_address command, string_address args)
+{
+        return write(str("TODO: path execution\n"));
 }
 
 // Single pass command parser
@@ -104,7 +81,6 @@ fn process_command()
                                 length++;
                                 arguments_buffer = buffer + length;
 
-                                // we don't care about arguments for now
                                 break;
                         }
                 }
@@ -116,20 +92,15 @@ fn process_command()
                 arguments_buffer = NULL;
 
         if (is_executable)
-        {
-                exec_command(buffer, arguments_buffer);
-                return;
-        }
+                return shell_execute_command(buffer, arguments_buffer);
 
         core_command ADDRESS_TO command = core_commands;
 
         while (command->name)
         {
                 if (string_compare(command->name, buffer) == 0)
-                {
-                        command->function(write, arguments_buffer);
-                        return;
-                }
+                        return command->function(write, arguments_buffer);
+
                 command++;
         }
 
