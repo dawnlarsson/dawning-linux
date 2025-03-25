@@ -1,14 +1,25 @@
 # raspberry pi test profile (WIP!!!!!)
 # ARM architecture settings
 
+#> kernel_image linux/arch/arm64/boot/kernel8.img
+#> kernel_export dist/kernel8.img
+#> dist_out config.txt arm_64bit=1 \n enable_uart=1 \n kernel=kernel8.img \n dtoverlay=vc4-kms-v3d \n disable_overscan=1
+
 CONFIG_64BIT=y
 
 CONFIG_ARM=y
 CONFIG_ARM64=y
 CONFIG_ARCH_MULTI_V7=y
+CONFIG_ARCH_MULTI_V8_2=y
 CONFIG_ARCH_BCM=y
 CONFIG_ARCH_BCM2835=y
 CONFIG_ARCH_BCMSTB=y
+
+CONFIG_ARM64_VA_BITS_48=y
+CONFIG_BCM2835_MBOX=y
+CONFIG_BCM2835_POWER=y
+CONFIG_BCM2835_VCHIQ=y
+CONFIG_BCM2835_WDT=y
 
 # Memory settings
 CONFIG_HIGHMEM=y
@@ -74,8 +85,13 @@ CONFIG_BRCM_TRACING=y
 # Display support
 CONFIG_FB_BCM2708=y
 CONFIG_DRM=y
+
+CONFIG_DRM_V3D=y
 CONFIG_DRM_VC4=y
 CONFIG_DRM_VC4_HDMI_CEC=y
+CONFIG_DRM_VC4_HDMI_HDCP=y
+CONFIG_DRM_VC4_HDMI_HDMI=y
+CONFIG_DRM_VC4_HDMI_HDMI0_HDCP=y
 
 # Sound support
 CONFIG_SOUND=y
@@ -104,7 +120,6 @@ CONFIG_HWMON=y
 CONFIG_THERMAL=y
 CONFIG_BCM2835_THERMAL=y
 CONFIG_WATCHDOG=y
-CONFIG_BCM2835_WDT=y
 
 # Power management
 CONFIG_PM=y

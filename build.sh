@@ -22,6 +22,8 @@ sudo sh script/build.fs
 # Download kernel
 sudo sh script/get.kernel
 
+[ -z "$1" ] || sudo sh script/config any $@
+
 sh script/is_file artifacts/.config || \
         sudo sh script/config any arch/x64 debug_none limbo desktop
 

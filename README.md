@@ -21,9 +21,15 @@ the clang C compiler is needed
 
 see what you need to install here: https://docs.kernel.org/process/changes.html
 
-building the distro:
+### building the distro
+Minimal config for x86_x64
 ```
-sudo sh build.sh
+sudo sh build.sh arch/x64 debug_none
+```
+
+Minimal config for raspberry pis (WIP)
+```
+sudo sh build.sh arch/arm.pi debug_none
 ```
 
 if you want to run this in a virtual machine for testing:

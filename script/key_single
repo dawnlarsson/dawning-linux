@@ -1,0 +1,10 @@
+#!/bin/sh
+sh script/is_safe || exit 1
+
+# same as script/key but only returns the first occurrence and don't merge multiple occurrences
+
+key=$1
+
+value=$(grep "#> $key" artifacts/.config | sed "s/#> $key //")
+
+[ -z "$value" ] || echo $value

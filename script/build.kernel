@@ -3,13 +3,13 @@ sh script/is_safe || exit 1
 
 cpu_cores=$(nproc)
 
-make_flags=$(sh script/setting make_flags)
-shared_flags=$(sh script/setting shared_flags)
-linker_flags=$(sh script/setting linker_flags)
-rust_flags=$(sh script/setting rust_flags)
+make_flags=$(sh script/key make_flags)
+shared_flags=$(sh script/key shared_flags)
+linker_flags=$(sh script/key linker_flags)
+rust_flags=$(sh script/key rust_flags)
 
-kernel_image=$(sh script/setting kernel_image)
-kernel_export=$(sh script/setting kernel_export)
+kernel_image=$(sh script/key kernel_image)
+kernel_export=$(sh script/key kernel_export)
 
 cd linux
 
