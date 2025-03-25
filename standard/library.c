@@ -892,32 +892,40 @@ string_address string_last_of(string_address source, p8 character)
 }
 
 // ### Takes a positive number and writes out the string representation
-fn positive_to_string(writer write, positive number)
+string_address positive_to_string(positive number)
 {
+        static p8 digits[33] = {0};
+        digits[0] = '\0';
+
         if (number == 0)
-                return write("0", 1);
-
-        p8 digits[32];
-        positive count = 0;
-
-        while (number > 0 && count < 32)
         {
-                digits[count++] = '0' + (number % 10);
+                digits[1] = '0';
+                digits[2] = '\0';
+                return digits + 1;
+        }
+
+        p8 ADDRESS_TO step = digits + 31;
+        ADDRESS_TO step-- = '\0';
+
+        while (number > 0 && step > digits)
+        {
+                ADDRESS_TO step-- = '0' + (number % 10);
                 number /= 10;
         }
 
-        while (count > 0)
-                write(&digits[--count], 1);
+        return step + 1;
 }
 
 // ### Takes a bipolar number and writes out the string representation
-fn bipolar_to_string(writer write, bipolar number)
+string_address bipolar_to_string(bipolar number)
 {
-        if (number > 0)
-                return positive_to_string(write, (positive)number);
+        if (number >= 0)
+                return positive_to_string((positive)number);
 
-        write("-", 1);
-        positive_to_string(write, (positive)(-number));
+        p8 ADDRESS_TO step = positive_to_string((positive)-number);
+        step[-1] = '-';
+
+        return step - 1;
 }
 
 // ### Takes a path and writes out the last directory name
@@ -1039,6 +1047,38 @@ typedef union vector2
 
 } vector2;
 
+typedef union bipolar2
+{
+        struct
+        {
+                bipolar x, y;
+        };
+
+        struct
+        {
+                bipolar width, height;
+        };
+
+        bipolar axis[2];
+
+} bipolar2;
+
+typedef union positive2
+{
+        struct
+        {
+                positive x, y;
+        };
+
+        struct
+        {
+                positive width, height;
+        };
+
+        positive axis[2];
+
+} positive2;
+
 typedef union vector3
 {
         struct
@@ -1054,6 +1094,38 @@ typedef union vector3
         decimal axis[3];
 
 } vector3;
+
+typedef union bipolar3
+{
+        struct
+        {
+                bipolar x, y, z;
+        };
+
+        struct
+        {
+                bipolar width, height, depth;
+        };
+
+        bipolar axis[3];
+
+} bipolar3;
+
+typedef union positive3
+{
+        struct
+        {
+                positive x, y, z;
+        };
+
+        struct
+        {
+                positive width, height, depth;
+        };
+
+        positive axis[3];
+
+} positive3;
 
 typedef union vector4
 {

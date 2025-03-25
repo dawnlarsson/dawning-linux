@@ -457,6 +457,33 @@ struct linux_dirent64
         p8 d_name[];
 };
 
+positive2 term_size()
+{
+        positive2 size = {80, 24};
+
+        struct
+        {
+                p16 rows;
+                p16 cols;
+                p16 xpixel;
+                p16 ypixel;
+        } data;
+
+        if (!system_call_3(syscall_ioctl, 1, 0x5413, (positive)&data))
+        {
+                size.width = data.cols;
+                size.height = data.rows;
+        }
+
+        return size;
+}
+
+fn term_set_cursor(writer write, positive2 pos)
+{
+        // positive buffer[20] = "\x1B[";
+        // positive ADDRESS_TO step = buffer + 2;
+}
+
 fn sleep(p32 seconds, p32 nanoseconds)
 {
         system_call_2(syscall_nanosleep, seconds, nanoseconds);
