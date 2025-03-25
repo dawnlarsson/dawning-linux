@@ -19,16 +19,16 @@ echo "CONFIG_DEFAULT_HOSTNAME=\"$info_name-box\"" >> artifacts/info
 
 sudo sh script/build.fs
 
-# Compile runtime programs
-sh standard/build programs/init fs/init
-sh standard/build programs/shell fs/shell
-sh standard/build programs/duck fs/duck
-
 # Download kernel
 sudo sh script/get.kernel
 
 sh script/is_file artifacts/.config || \
         sudo sh script/config any arch/x64 debug_none limbo desktop
+
+# Compile runtime programs
+sh standard/build_kernel programs/init fs/init
+sh standard/build_kernel programs/shell fs/shell
+sh standard/build_kernel programs/duck fs/duck
 
 cd linux
 sudo make allnoconfig

@@ -1,0 +1,13 @@
+#!/bin/sh
+sh script/is_safe || exit 1
+
+compiler="clang"
+
+dawning_flags=$(sh script/setting dawning_flags)
+
+$compiler $1.c -o $2 $dawning_flags $suppress
+
+echo "Compiled $1.c to $2"
+sh script/size $2
+
+chmod +x $2

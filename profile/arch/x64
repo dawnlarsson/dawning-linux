@@ -1,6 +1,8 @@
 #> kernel_image linux/arch/x86/boot/bzImage
 #> kernel_export dist/bootx64.efi
 
+CONFIG_64BIT=y
+
 CONFIG_X86_64=y
 CONFIG_X86_32=y
 CONFIG_X86=y

@@ -1,5 +1,8 @@
 # raspberry pi test profile (WIP!!!!!)
 # ARM architecture settings
+
+CONFIG_64BIT=y
+
 CONFIG_ARM=y
 CONFIG_ARM64=y
 CONFIG_ARCH_MULTI_V7=y
