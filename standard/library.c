@@ -427,6 +427,9 @@ typedef typeof(sizeof(0)) sized;
 #define true 1
 #define bool p8
 
+// a thread-local storage variable, unique to each thread
+#define local __thread
+
 // ### String address
 // a pointer to a string in memory, usually the first p8 character of the string
 typedef p8 ADDRESS_TO string_address;
@@ -894,7 +897,7 @@ string_address string_last_of(string_address source, p8 character)
 // ### Takes a positive number and writes out the string representation
 string_address positive_to_string(positive number)
 {
-        static p8 digits[33] = {0};
+        static local p8 digits[33] = {0};
         digits[0] = '\0';
 
         if (number == 0)
