@@ -897,7 +897,7 @@ string_address string_last_of(string_address source, p8 character)
 // ### Takes a positive number and writes out the string representation
 string_address positive_to_string(positive number)
 {
-        static local p8 digits[33] = {0};
+        static p8 digits[33] = {0};
         digits[0] = '\0';
 
         if (number == 0)
