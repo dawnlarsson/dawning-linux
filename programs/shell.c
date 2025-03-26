@@ -113,7 +113,7 @@ b32 main()
         {
                 memory_fill(buffer, 0, MAX_INPUT);
 
-                write(str(PROMPT));
+                write(str(TERM_MAIN_BUFFER TERM_RESET TERM_SHOW_CURSOR PROMPT));
 
                 writer_flush();
 
