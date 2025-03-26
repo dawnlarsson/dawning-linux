@@ -894,17 +894,14 @@ string_address string_last_of(string_address source, p8 character)
 }
 
 // ### Takes a positive number and writes out the string representation
-string_address positive_to_string(positive number)
+fn positive_to_string(writer write, positive number)
 {
-        static p8 digits[33] = {0};
-        digits[0] = '\0';
-
         if (number == 0)
-        {
-                digits[1] = '0';
-                digits[2] = '\0';
-                return digits + 1;
-        }
+                return write("0", 1);
+
+        // No thread safety for you >:) (wip) TODO: fix
+        static p8 digits[32] = {0};
+        digits[0] = '\0';
 
         p8 ADDRESS_TO step = digits + 31;
         ADDRESS_TO step-- = '\0';
@@ -915,19 +912,16 @@ string_address positive_to_string(positive number)
                 number /= 10;
         }
 
-        return step + 1;
+        write(step + 1, digits + 31 - step);
 }
 
-// ### Takes a bipolar number and writes out the string representation
-string_address bipolar_to_string(bipolar number)
+fn bipolar_to_string(writer write, bipolar number)
 {
         if (number >= 0)
-                return positive_to_string((positive)number);
+                return positive_to_string(write, (positive)number);
 
-        p8 ADDRESS_TO step = positive_to_string((positive)-number);
-        step[-1] = '-';
-
-        return step - 1;
+        write("-", 1);
+        positive_to_string(write, (positive)(-number));
 }
 
 // ### Takes a path and writes out the last directory name

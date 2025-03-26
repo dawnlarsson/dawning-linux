@@ -1,3 +1,9 @@
 {
         "editor.tabSize": 8,
+        "files.associations": {
+                "*.def": "c",
+                "bitset": "c",
+                "algorithm": "c",
+                "format": "c"
+        },
 }

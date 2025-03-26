@@ -47,7 +47,7 @@ fn shell_thread_instance(string_address command, string_address arguments)
         bipolar exec_result = system_call_3(syscall_execve, (positive)command, (positive)arguments_list, 0);
 
         write(str("failed with error: "));
-        write(bipolar_to_string(exec_result), 0);
+        bipolar_to_string(write, exec_result);
         write(str("\n"));
 
         writer_flush();
@@ -73,7 +73,7 @@ fn shell_execute_command(string_address command, string_address arguments)
         else
         {
                 write(str("failed with error: "));
-                write(bipolar_to_string(fork_result), 0);
+                bipolar_to_string(write, fork_result);
                 write(str("\n"));
         }
 
