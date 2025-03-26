@@ -133,6 +133,12 @@ typedef __builtin_va_list variable_arguments;
 #define TERM_CYAN ANSI "96m"
 #define TERM_WHITE ANSI "97m"
 
+#define TERM_UP ANSI "A"
+#define TERM_DOWN ANSI "B"
+
+#define TERM_ALT_BUFFER ANSI "?1049h"
+#define TERM_MAIN_BUFFER ANSI "?1049l"
+
 // ### Values that never can be negative
 #define positive_range unsigned
 
@@ -736,7 +742,7 @@ b32 main();
 
 // Platform required implementations
 fn exit(b32 code);
-fn sleep(p32 seconds, p32 nanoseconds);
+fn sleep(positive seconds, positive nanoseconds);
 fn _start();
 
 #if defined(X64)
@@ -924,6 +930,38 @@ fn bipolar_to_string(writer write, bipolar number)
         positive_to_string(write, (positive)(-number));
 }
 
+fn decimal_to_string(writer write, decimal value)
+{
+        if (value < 0)
+        {
+                write("-", 1);
+                value = -value;
+        }
+
+        bipolar integer_part = (bipolar)value;
+        decimal fraction_part = value - integer_part;
+
+        bipolar_to_string(write, integer_part);
+
+        write(".", 1);
+
+        fraction_part *= 1000000;
+        integer_part = (bipolar)fraction_part;
+
+        if (integer_part < 100000)
+                write("0", 1);
+        if (integer_part < 10000)
+                write("0", 1);
+        if (integer_part < 1000)
+                write("0", 1);
+        if (integer_part < 100)
+                write("0", 1);
+        if (integer_part < 10)
+                write("0", 1);
+
+        bipolar_to_string(write, integer_part);
+}
+
 // ### Takes a path and writes out the last directory name
 fn path_basename(writer write, string_address input)
 {
@@ -1012,7 +1050,7 @@ string_address strrchr(string_address source, p8 character)
 #ifndef DAWN_MODERN_C_NO_MATH
 
 #define PI 3.14159265359f
-#define PI_2x (PI * 2.0f)
+#define PI2 6.28318530718f
 #define PI_05x (PI * 0.5f)
 
 #define CONVERSION_CONSTANTS                         \
@@ -1026,6 +1064,29 @@ string_address strrchr(string_address source, p8 character)
 #define AngleRad(value) (value)
 #define AngleDeg(value) ((value) * DegToRad)
 #define AngleTurn(value) ((value) * TurnToRad)
+
+// simpler polynomial error < 0.01
+decimal fast_sin(decimal x)
+{
+        x = x - PI2 * (bipolar)(x / PI2);
+
+        if (x < 0)
+                x += PI2;
+
+        decimal sign = 1.0f;
+
+        if (x > PI)
+        {
+                x -= PI;
+                sign = -1.0f;
+        }
+        if (x > PI / 2)
+        {
+                x = PI - x;
+        }
+
+        return sign * 4.0f * x * (PI - x) / (PI * PI);
+}
 
 typedef union vector2
 {

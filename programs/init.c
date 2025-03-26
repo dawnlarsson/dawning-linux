@@ -1,13 +1,5 @@
 #include "../standard/linux.c"
-
-// TODO: just a placeholder, we are going to buffer the writes in the std
-fn write(ADDRESS data, positive length)
-{
-        if (length == 0)
-                length = string_length(data);
-
-        system_call_3(syscall_write, stdout, (positive)data, length);
-}
+#include "../standard/linux/writer.c"
 
 #define lable TERM_BOLD "[Init]" TERM_RESET " "
 #define init_program "/shell"
@@ -48,6 +40,7 @@ fn mount_filesystems()
                 else
                         write(str(TERM_BOLD TERM_RED " FAILED\n" TERM_RESET));
 
+                writer_flush();
                 mount++;
         }
 }
@@ -74,6 +67,8 @@ b32 main()
         write(str(" (error: "));
         bipolar_to_string(write, result);
         write(str(")\n"));
+
+        writer_flush();
 
         return 1;
 }

@@ -1,44 +1,9 @@
 // A primitive pre-historic shell,
 // it lobs rocks at the kernel and says ouga boga at the user.
 #include "../standard/linux/util.c"
+#include "../standard/linux/writer.c"
 
 #define PROMPT TERM_RESET TERM_BOLD " $ " TERM_RESET
-
-#define MAX_INPUT 4096
-
-p8 buffer[MAX_INPUT];
-positive buffer_length;
-
-p8 writer_buffer[MAX_INPUT];
-positive writer_buffer_length;
-
-fn writer_flush()
-{
-        if (writer_buffer_length == 0)
-                return;
-
-        system_call_3(syscall_write, stdout, (positive)writer_buffer, writer_buffer_length);
-
-        writer_buffer_length = 0;
-}
-
-fn write(ADDRESS data, positive length)
-{
-        if (length == 0)
-                length = string_length(data);
-
-        if (length + writer_buffer_length > MAX_INPUT)
-                writer_flush();
-
-        if (length > MAX_INPUT)
-        {
-                system_call_3(syscall_write, stdout, (positive)data, length);
-                return;
-        }
-
-        memory_copy(writer_buffer + writer_buffer_length, data, length);
-        writer_buffer_length += length;
-}
 
 fn shell_thread_instance(string_address command, string_address arguments)
 {

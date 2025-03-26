@@ -457,6 +457,15 @@ struct linux_dirent64
         p8 d_name[];
 };
 
+fn term_set_cursor(writer write, positive2 pos)
+{
+        write(str(ANSI));
+        positive_to_string(write, pos.y);
+        write(str(";"));
+        positive_to_string(write, pos.x);
+        write(str("H"));
+}
+
 positive2 term_size()
 {
         positive2 size = {80, 24};
@@ -469,7 +478,7 @@ positive2 term_size()
                 p16 ypixel;
         } data;
 
-        if (!system_call_3(syscall_ioctl, 1, 0x5413, (positive)&data))
+        if (!system_call_3(syscall_ioctl, 1, 0x5413, (positive)ADDRESS_OF data))
         {
                 size.width = data.cols;
                 size.height = data.rows;
@@ -478,15 +487,19 @@ positive2 term_size()
         return size;
 }
 
-fn term_set_cursor(writer write, positive2 pos)
+struct timespec
 {
-        // positive buffer[20] = "\x1B[";
-        // positive ADDRESS_TO step = buffer + 2;
-}
+        positive tv_sec;
+        positive tv_nsec;
+};
 
-fn sleep(p32 seconds, p32 nanoseconds)
+// TODO: fixme
+fn sleep(positive seconds, positive nanoseconds)
 {
-        system_call_2(syscall_nanosleep, seconds, nanoseconds);
+        return;
+
+        struct timespec time = {seconds, nanoseconds};
+        system_call_2(syscall_nanosleep, (positive)ADDRESS_OF time, NULL);
 }
 
 fn exit(b32 code)
