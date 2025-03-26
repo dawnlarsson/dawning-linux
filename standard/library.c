@@ -83,7 +83,6 @@
 typedef __builtin_va_list variable_arguments;
 
 #define FLAT __attribute__((flatten))
-#define NO_INLINE __attribute__((noinline))
 #define PURE __attribute__((pure))
 #define NAKED __attribute__((naked))
 #define INLINE __attribute__((always_inline))
@@ -560,7 +559,7 @@ typedef p8 string[];
 // remaining arguments are loaded into the stack, and the stack pointer
 // is moved to the last argument, and the frame pointer is moved to the
 #define fn_asm(name, return_type, arguments...) \
-        static inline NAKED return_type name(arguments)
+        static NAKED return_type name(arguments)
 
 // ### System call
 // invokes operating system functions externally to the program

@@ -1,6 +1,6 @@
 #!/bin/sh
 
-compiler="clang"
+compiler="gcc"
 
 flags_base=" -static -s -flto -nostdlib -nostartfiles -ffreestanding -fno-builtin"
 flags_base+=" -Qn -Wl,--build-id=none -Wl,--gc-sections -Wl,--strip-all -Wl,--strip-debug -Wl,-x -Wl,-s"
