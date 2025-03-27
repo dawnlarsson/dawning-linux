@@ -1,8 +1,5 @@
 #!/bin/sh
 
-# Usage: sh standard/build_module <source_file.c> <output_name>
-
-compiler="gcc"
 kernel_dir="linux"
 
 flags_base=" -static -s -flto -nostdlib -nostartfiles -ffreestanding -fno-builtin"
@@ -23,7 +20,7 @@ module_flags="-fno-common -DKBUILD_BASENAME=\"$2\" -fwhole-program"
 
 output="-o $2.ko"
 
-$compiler $1 $output $flags_base $suppress $includes $defines $module_flags
+gcc $1 $output $flags_base $suppress $includes $defines $module_flags
 
 echo "Compiled kernel module $1 to $2.ko"
 sh script/size $2.ko

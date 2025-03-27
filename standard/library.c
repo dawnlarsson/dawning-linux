@@ -59,6 +59,10 @@
 #define SIMD
 #endif
 
+#if defined(__MODULE__) || defined(DAWN_MODERN_C_KERNEL)
+#define KERNEL_MODE
+#endif
+
 #if defined(X86) || defined(ARM32) || defined(RISCV32) || defined(RISCV64) || defined(ARM64)
 #warning "Unsupported architecture TODO!"
 #endif
@@ -439,6 +443,11 @@ typedef typeof(sizeof(0)) sized;
 // a pointer to a string in memory, usually the first p8 character of the string
 typedef p8 ADDRESS_TO string_address;
 typedef p8 string[];
+
+typedef struct
+{
+        b64 counter;
+} atomic64;
 
 #define string_index(source, index) (ADDRESS_TO((source) + (index)))
 #define string_get(source) (ADDRESS_TO(source))
@@ -988,19 +997,37 @@ ADDRESS memset(ADDRESS destination, b8 value, positive size)
 }
 
 #ifdef DAWN_MODERN_C_COMPATIBILITY
+// tbd: https://pubs.opengroup.org/onlinepubs/9799919799/
 
-typedef p8 u8;
-typedef b8 i8;
-typedef p16 u16;
-typedef b16 i16;
-typedef p32 u32;
-typedef b32 i32;
-typedef p64 u64;
-typedef b64 i64;
-typedef p128 u128;
-typedef b128 i128;
+typedef p8 int8_t;
+typedef p16 int16_t;
+typedef p32 int32_t;
+typedef p64 int64_t;
+
+typedef b8 uint8_t;
+typedef b16 uint16_t;
+typedef b32 uint32_t;
+typedef b64 uint64_t;
+
+// Minimum-width integer types
+typedef p8 int_least8_t;
+typedef p16 int_least16_t;
+typedef p32 int_least32_t;
+typedef p64 int_least64_t;
+
+typedef b8 uint_least8_t;
+typedef b16 uint_least16_t;
+typedef b32 uint_least32_t;
+typedef b64 uint_least64_t;
+
 typedef p64 usize;
 typedef b64 isize;
+
+typedef p64 intptr_t;
+typedef b64 uintptr_t;
+
+typedef atomic64 atomic64_t;
+typedef atomic64_t atomic_long_t;
 
 typedef sized size_t;
 typedef b128 intmax_t;
