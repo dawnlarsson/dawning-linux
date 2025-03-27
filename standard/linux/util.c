@@ -268,7 +268,7 @@ fn core_mount(writer write, string_address buffer)
         ADDRESS_TO destination = '\0';
         destination++;
 
-        if (!system_call_5(syscall_mount, (positive)source, (positive)destination, (positive)source, MS_BIND, NULL))
+        if (!system_call_4(syscall_mount, (positive)source, (positive)destination, (positive)source, MS_BIND))
                 return;
 
         write(str("mount: Cannot mount filesystem: "));

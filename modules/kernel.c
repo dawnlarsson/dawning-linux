@@ -8,15 +8,16 @@
 
 #include "../standard/library.c"
 
-static int __init standard_init_module(void)
+static int __init standard_init_module()
 {
         b32 result = main();
         return result;
 }
 
-static void __exit standard_exit_module(void)
+static void __exit standard_exit_module()
 {
         printk(KERN_ALERT "exiting module\n");
+        return;
 }
 
 module_init(standard_init_module);

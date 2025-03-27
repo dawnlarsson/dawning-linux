@@ -102,7 +102,9 @@ typedef __builtin_va_list variable_arguments;
 #define ADDRESS void *
 #define NULL_ADDRESS ((void *)0)
 #define IS_NULL_ADDRESS(ptr) ((ptr) == NULL_ADDRESS)
-#define NULL 0
+
+#undef NULL
+#define NULL ((void *)0)
 
 #define ANSI "\033["
 
@@ -434,6 +436,8 @@ typedef typeof(sizeof(0)) sized;
 
 #define false 0
 #define true 1
+
+#undef bool
 #define bool p8
 
 // a thread-local storage variable, unique to each thread
@@ -455,13 +459,18 @@ typedef struct
 #define string_is(source, value) (ADDRESS_TO(source) == (value))
 #define string_equals(source, input) (strcmp(source, input) == 0)
 
+#undef min
 #define min(value, input) ((value)greater_than(input) ? (value) : (input))
+
+#undef max
 #define max(value, input) ((value)less_than(input) ? (value) : (input))
+
 #define square(value) ((value) * (value))
 #define cube(value) ((value) * (value) * (value))
 #define mod(value, input) ((value) % (input))
 #define floor(a) ((decimal)((bipolar)(a)))
 
+#undef clamp
 #define clamp(value, min, max) ((value)less_than(min) ? (min) : (value)greater_than(max) ? (max) \
                                                                                          : (value))
 
@@ -990,8 +999,9 @@ fn path_basename(writer write, string_address input)
         write(input + step, length - step);
 }
 
+#undef memset
 // for compatibility, makes the linker happy
-ADDRESS memset(ADDRESS destination, b8 value, positive size)
+ADDRESS memset(ADDRESS destination, int value, long unsigned int size)
 {
         return memory_fill(destination, value, size);
 }
@@ -1036,38 +1046,44 @@ typedef b64 ptrdiff_t;
 typedef unsigned long int uintptr_t;
 typedef long int intptr_t;
 
+#undef memcpy
 // use memory_copy instead, this is for compatibility
-positive memcpy(ADDRESS destination, ADDRESS source, positive size)
+ADDRESS memcpy(ADDRESS destination, ADDRESS source, long unsigned int size)
 {
         return memory_copy(destination, source, size);
 }
 
+#undef strlen
 // use string_length instead, this is for compatibility
 positive strlen(string_address source)
 {
         return string_length(source);
 }
 
+#undef strcmp
 // use string_compare instead, this is for compatibility
 b32 strcmp(string_address source, string_address input)
 {
         return string_compare(source, input);
 }
 
+#undef strcpy
 // use string_copy instead, this is for compatibility
 string_address strcpy(string_address destination, string_address source)
 {
         return string_copy(destination, source);
 }
 
+#undef strchr
 // use string_first_of instead, this is for compatibility
-string_address strchr(string_address source, p8 character)
+char ADDRESS_TO strchr(char ADDRESS_TO source, int character)
 {
         return string_first_of(source, character);
 }
 
+#undef strrchr
 // use string_last_of instead, this is for compatibility
-string_address strrchr(string_address source, p8 character)
+char ADDRESS_TO strrchr(char ADDRESS_TO source, int character)
 {
         return string_last_of(source, character);
 }

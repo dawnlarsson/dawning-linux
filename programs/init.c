@@ -27,13 +27,12 @@ fn mount_filesystems()
                 write(mount->path, 0);
                 write(str("..."));
 
-                bipolar result = system_call_5(
+                bipolar result = system_call_4(
                     syscall_mount,
                     (positive)mount->filesystem,
                     (positive)mount->path,
                     (positive)mount->filesystem,
-                    (positive)mount->mount_flags,
-                    NULL);
+                    (positive)mount->mount_flags);
 
                 if (result == 0)
                         write(str(TERM_BOLD TERM_GREEN " OK\n" TERM_RESET));
