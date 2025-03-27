@@ -1,9 +1,7 @@
 #ifndef DAWN_MODERN_C_KERNEL
 #define DAWN_MODERN_C_KERNEL
 
-#define __MODULE__
-#define _LINUX_MODULE_H
-
+#include <linux/module.h>
 #include <linux/kernel.h>
 
 #include "../standard/library.c"
