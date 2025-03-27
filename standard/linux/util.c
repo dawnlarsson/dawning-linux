@@ -18,7 +18,7 @@ fn core_cat(writer write, string_address input)
         if (input == NULL)
                 return write(str("cat: missing operand\n"));
 
-        bipolar file_descriptor = system_call_2(syscall_open, (positive)input, O_RDONLY);
+        bipolar file_descriptor = system_call_3(syscall_openat, AT_FDCWD, (positive)input, O_RDONLY);
         if (file_descriptor < 0)
         {
                 write(str("cat: Cannot open file: "));
@@ -68,7 +68,7 @@ fn core_chmod(writer write, string_address buffer)
         if (buffer == NULL)
                 return write(str("chmod: missing operand\n"));
 
-        if (!system_call_2(syscall_chmod, (positive)buffer, 0777))
+        if (!system_call_3(syscall_fchmodat, AT_FDCWD, (positive)buffer, 0777))
                 return;
 
         write(str("chmod: Cannot change permissions: "));
@@ -90,7 +90,7 @@ fn core_cp(writer write, string_address buffer)
         ADDRESS_TO destination = '\0';
         destination++;
 
-        bipolar source_fd = system_call_2(syscall_open, (positive)source, O_RDONLY);
+        bipolar source_fd = system_call_3(syscall_openat, AT_FDCWD, (positive)source, O_RDONLY);
         if (source_fd < 0)
         {
                 write(str("cp: Cannot open source file: "));
@@ -99,7 +99,7 @@ fn core_cp(writer write, string_address buffer)
                 return;
         }
 
-        bipolar destination_fd = system_call_2(syscall_open, (positive)destination, O_CREAT | O_WRONLY);
+        bipolar destination_fd = system_call_3(syscall_openat, AT_FDCWD, (positive)destination, O_CREAT | O_WRONLY);
         if (destination_fd < 0)
         {
                 write(str("cp: Cannot open destination file: "));
@@ -150,7 +150,7 @@ fn core_ls(writer write, string_address buffer)
         if (buffer == NULL)
                 buffer = ".";
 
-        bipolar file_descriptor = system_call_2(syscall_open, (positive)buffer, O_RDONLY | O_DIRECTORY);
+        bipolar file_descriptor = system_call_3(syscall_openat, AT_FDCWD, (positive)buffer, O_RDONLY | O_DIRECTORY);
 
         if (file_descriptor < 0)
         {
@@ -224,7 +224,7 @@ fn core_mkdir(writer write, string_address buffer)
         if (buffer == NULL)
                 return write(str("mkdir: missing operand\n"));
 
-        if (!system_call_2(syscall_mkdir, (positive)buffer, 0777))
+        if (!system_call_3(syscall_mkdirat, AT_FDCWD, (positive)buffer, 0777))
                 return;
 
         write(str("mkdir: Cannot create directory: "));
@@ -246,7 +246,7 @@ fn core_mv(writer write, string_address buffer)
         ADDRESS_TO destination = '\0';
         destination++;
 
-        if (!system_call_2(syscall_rename, (positive)source, (positive)destination))
+        if (!system_call_4(syscall_renameat, AT_FDCWD, (positive)source, AT_FDCWD, (positive)destination))
                 return;
 
         write(str("mv: Cannot move file: "));

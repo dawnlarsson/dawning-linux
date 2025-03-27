@@ -1,7 +1,7 @@
 #!/bin/sh
 sh script/is_safe || exit 1
 
-compiler="gcc"
+compiler=$(sh script/key_single compiler)
 
 dawning_flags=$(sh script/key dawning_flags)
 

@@ -24,7 +24,7 @@ fn shell_execute_command(string_address command, string_address arguments)
 {
         writer_flush();
 
-        bipolar fork_result = system_call_1(syscall_fork, 0);
+        bipolar fork_result = system_call_1(syscall_clone, 0);
 
         if (fork_result == 0)
         {

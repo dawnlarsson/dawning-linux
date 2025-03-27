@@ -7,6 +7,9 @@
 
 #> make_flags ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu-
 
+#> compiler aarch64-linux-gnu-gcc
+#> dawning_flags -march=armv8.6-a
+
 # Architecture selection
 CONFIG_64BIT=y
 CONFIG_ARM=y

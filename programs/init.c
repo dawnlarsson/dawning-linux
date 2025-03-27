@@ -50,7 +50,7 @@ b32 main()
 
         mount_filesystems();
 
-        positive process_id = system_call(syscall_fork);
+        positive process_id = system_call(syscall_clone);
 
         if (process_id == 0)
         {

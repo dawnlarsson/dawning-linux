@@ -67,11 +67,9 @@
 #warning "Unsupported architecture TODO!"
 #endif
 
-#if defined(X64)
 #define stdin 0
 #define stdout 1
 #define stderr 2
-#endif
 
 #if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 202311L
 /* C23 does not require the second parameter for va_start. */
@@ -507,6 +505,7 @@ typedef struct
 #define asm_store "mov"
 #define asm_jump "jmp"
 #define asm_branch "je"
+#define asm_syscall "syscall"
 
 #define reg_0 "%rax"
 #define reg_1 "%rdi"
@@ -531,7 +530,7 @@ typedef struct
 #define asm_store "str"
 #define asm_jump "bl"
 #define asm_branch "beq"
-#define system_invoke "svc 0"
+#define asm_syscall "svc 0"
 
 #define reg_0 "x0"
 #define reg_1 "x1"
@@ -549,7 +548,7 @@ typedef struct
 #define asm_store "sd"
 #define asm_jump "jalr"
 #define asm_branch "beq"
-#define system_invoke "ecall"
+#define asm_syscall "ecall"
 
 #define reg_0 "a0"
 #define reg_1 "a1"
@@ -573,7 +572,7 @@ typedef struct
 #define add(what, with) ir(asm_add " " what "," with ";")
 #define sub(what, with) ir(asm_sub " " what "," with ";")
 #define system_return ir("ret")
-#define system_invoke ir("syscall")
+#define system_invoke ir(asm_syscall)
 
 #define call(what) ir("call " what ";")
 

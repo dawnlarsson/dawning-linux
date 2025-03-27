@@ -17,11 +17,11 @@
 #if defined(X64)
 #define syscall_read 0
 #define syscall_write 1
-#define syscall_open 2
+#define syscall_open -1 // Deprecated use openat
 #define syscall_close 3
-#define syscall_stat 4
+#define syscall_stat -1 // Deprecated use fstat
 #define syscall_fstat 5
-#define syscall_lstat 6
+#define syscall_lstat -1 // Deprecated use fstat
 #define syscall_poll 7
 #define syscall_lseek 8
 #define syscall_mmap 9
@@ -105,7 +105,7 @@
 #define syscall_unlink 87
 #define syscall_symlink 88
 #define syscall_readlink 89
-#define syscall_chmod 90
+#define syscall_chmod -1 // Deprecated use fchmod
 #define syscall_fchmod 91
 #define syscall_chown 92
 #define syscall_fchown 93
@@ -396,7 +396,7 @@
 #define syscall_removexattrat 466
 #endif
 
-#if defined(aarch64)
+#if defined(ARM64)
 #define syscall_io_setup 0
 #define syscall_io_destroy 1
 #define syscall_io_submit 2
@@ -762,6 +762,8 @@
 #define O_NONBLOCK 0
 #define O_DIRECTORY 0200000
 #define O_CREAT 0100
+
+#define AT_FDCWD -100
 
 #define SIGTRAP 5
 #define SIGKILL 9
