@@ -25,15 +25,6 @@ echo "CONFIG_DEFAULT_HOSTNAME=\"$info_name-box\"" >> artifacts/info
 sudo sh script/build.fs
 
 
-sh script/label USER SPACE PROGRAMS
-
-# Compile runtime programs
-sh standard/build_kernel programs/init fs/init
-sh standard/build_kernel programs/shell fs/shell
-sh standard/build_kernel programs/duck fs/duck
-sh standard/build_kernel programs/edit fs/edit
-
-
 sh script/label KERNEL CONFIGURATION
 
 sudo sh script/get.kernel
@@ -44,10 +35,18 @@ sh script/is_file artifacts/.config || \
         sudo sh script/config any arch/x64 debug_none limbo desktop
 
 cd linux
-sudo make allnoconfig
-sudo sh scripts/kconfig/merge_config.sh -n -m .config ../artifacts/.config
-yes n | make oldconfig -n
+sudo make allnoconfig > /dev/null
+sudo sh scripts/kconfig/merge_config.sh -n -m .config ../artifacts/.config > /dev/null
+yes n | make oldconfig -n > /dev/null
 cd ..
+
+sh script/label USER SPACE BUILD
+
+# Compile runtime programs
+sh standard/build_kernel programs/init fs/init
+sh standard/build_kernel programs/shell fs/shell
+sh standard/build_kernel programs/duck fs/duck
+sh standard/build_kernel programs/edit fs/edit
 
 
 sh script/label KERNEL BUILD

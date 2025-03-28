@@ -1,8 +1,8 @@
 #!/bin/sh
 sh script/is_safe || exit 1
 
-
-echo "Downloading kernel"
+color_reset="\033[0m"
+color_bold="\033[1m"
 
 kernel_extract_dir="linux/" 
 download_artifacts_dir="artifacts/"
@@ -41,7 +41,7 @@ mkdir -p $download_artifacts_dir
 mkdir -p $kernel_extract_dir
 
 extract_kernel() {
-    echo "Checking kernel signature"
+    echo -e $color_bold "Checking kernel signature \n" $color_reset
     gpg2 --locate-keys $trusted_keys
 
     unxz -k $kernel_archive
@@ -51,7 +51,6 @@ extract_kernel() {
     gpg2 --verify $kernel_tarball".sign" $kernel_tarball
 
     tar -xf $kernel_tarball --strip-components=1 -C $kernel_extract_dir
-    echo "Kernel extracted"
 
     rm $kernel_tarball
 }
@@ -60,5 +59,7 @@ sh script/is_file $kernel_archive || \
     wget -O $kernel_archive $kernel_download
 
 extract_kernel
+
+echo
 
 exit 0
