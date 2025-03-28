@@ -213,8 +213,10 @@ fn core_ls(writer write, string_address buffer)
 
 fn core_pwd(writer write, string_address buffer)
 {
-        p8 out_buffer[4096] = {0};
+        p8 out_buffer[4096];
+
         system_call_2(syscall_getcwd, (positive)out_buffer, 4096);
+
         write(out_buffer, 0);
         write(str("\n"));
 }

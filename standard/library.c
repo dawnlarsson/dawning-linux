@@ -468,6 +468,181 @@ typedef struct
 #define clamp(value, min, max) ((value)less_than(min) ? (min) : (value)greater_than(max) ? (max) \
                                                                                          : (value))
 
+#ifndef DAWN_MODERN_C_NO_MATH
+
+#define PI 3.14159265359f
+#define PI2 6.28318530718f
+#define PI_05x (PI * 0.5f)
+
+#define CONVERSION_CONSTANTS                         \
+        constexpr decimal RadToDeg = 180.0f / PI;    \
+        constexpr decimal RadToTurn = 0.5f / PI;     \
+        constexpr decimal DegToRad = PI / 180.0f;    \
+        constexpr decimal DegToTurn = 0.5f / 180.0f; \
+        constexpr decimal TurnToRad = PI / 0.5f;     \
+        constexpr decimal TurnToDeg = 180.0f / 0.5f
+
+#define AngleRad(value) (value)
+#define AngleDeg(value) ((value) * DegToRad)
+#define AngleTurn(value) ((value) * TurnToRad)
+
+// simpler polynomial error < 0.01
+decimal fast_sin(decimal x)
+{
+        x = x - PI2 * (bipolar)(x / PI2);
+
+        if (x < 0)
+                x += PI2;
+
+        decimal sign = 1.0f;
+
+        if (x > PI)
+        {
+                x -= PI;
+                sign = -1.0f;
+        }
+        if (x > PI / 2)
+        {
+                x = PI - x;
+        }
+
+        return sign * 4.0f * x * (PI - x) / (PI * PI);
+}
+
+typedef union vector2
+{
+        struct
+        {
+                decimal x, y;
+        };
+
+        struct
+        {
+                decimal width, height;
+        };
+
+        decimal axis[2];
+
+} vector2;
+
+typedef union bipolar2
+{
+        struct
+        {
+                bipolar x, y;
+        };
+
+        struct
+        {
+                bipolar width, height;
+        };
+
+        bipolar axis[2];
+
+} bipolar2;
+
+typedef union positive2
+{
+        struct
+        {
+                positive x, y;
+        };
+
+        struct
+        {
+                positive width, height;
+        };
+
+        positive axis[2];
+
+} positive2;
+
+typedef union vector3
+{
+        struct
+        {
+                decimal x, y, z;
+        };
+
+        struct
+        {
+                decimal width, height, depth;
+        };
+
+        decimal axis[3];
+
+} vector3;
+
+typedef union bipolar3
+{
+        struct
+        {
+                bipolar x, y, z;
+        };
+
+        struct
+        {
+                bipolar width, height, depth;
+        };
+
+        bipolar axis[3];
+
+} bipolar3;
+
+typedef union positive3
+{
+        struct
+        {
+                positive x, y, z;
+        };
+
+        struct
+        {
+                positive width, height, depth;
+        };
+
+        positive axis[3];
+
+} positive3;
+
+typedef union vector4
+{
+        struct
+        {
+                decimal x, y, z, w;
+        };
+
+        struct
+        {
+                decimal width, height, depth, time;
+        };
+
+        decimal axis[4];
+
+} vector4;
+
+typedef vector4 quaternion;
+
+typedef union matrix2
+{
+        decimal axis[2][2];
+        vector2 colum[2];
+} matrix2;
+
+typedef union matrix3
+{
+        decimal axis[3][3];
+        vector3 colum[3];
+} matrix3;
+
+typedef union matrix4
+{
+        decimal axis[4][4];
+        vector4 colum[4];
+} matrix4;
+
+#endif // DAWN_MODERN_C_NO_MATH
+
 //
 // these are 1:1 with nasm syntax, so you can easily convert nasm code to this format
 //
@@ -1000,6 +1175,15 @@ fn path_basename(writer write, string_address input)
         write(input + step, length - step);
 }
 
+fn term_set_cursor(writer write, positive2 pos)
+{
+        write(str(ANSI));
+        positive_to_string(write, pos.y);
+        write(str(";"));
+        positive_to_string(write, pos.x);
+        write(str("H"));
+}
+
 #undef memset
 // for compatibility, makes the linker happy
 ADDRESS memset(ADDRESS destination, int value, long unsigned int size)
@@ -1090,180 +1274,5 @@ char ADDRESS_TO strrchr(char ADDRESS_TO source, int character)
 }
 
 #endif // DAWN_MODERN_C_COMPATIBILITY
-
-#ifndef DAWN_MODERN_C_NO_MATH
-
-#define PI 3.14159265359f
-#define PI2 6.28318530718f
-#define PI_05x (PI * 0.5f)
-
-#define CONVERSION_CONSTANTS                         \
-        constexpr decimal RadToDeg = 180.0f / PI;    \
-        constexpr decimal RadToTurn = 0.5f / PI;     \
-        constexpr decimal DegToRad = PI / 180.0f;    \
-        constexpr decimal DegToTurn = 0.5f / 180.0f; \
-        constexpr decimal TurnToRad = PI / 0.5f;     \
-        constexpr decimal TurnToDeg = 180.0f / 0.5f
-
-#define AngleRad(value) (value)
-#define AngleDeg(value) ((value) * DegToRad)
-#define AngleTurn(value) ((value) * TurnToRad)
-
-// simpler polynomial error < 0.01
-decimal fast_sin(decimal x)
-{
-        x = x - PI2 * (bipolar)(x / PI2);
-
-        if (x < 0)
-                x += PI2;
-
-        decimal sign = 1.0f;
-
-        if (x > PI)
-        {
-                x -= PI;
-                sign = -1.0f;
-        }
-        if (x > PI / 2)
-        {
-                x = PI - x;
-        }
-
-        return sign * 4.0f * x * (PI - x) / (PI * PI);
-}
-
-typedef union vector2
-{
-        struct
-        {
-                decimal x, y;
-        };
-
-        struct
-        {
-                decimal width, height;
-        };
-
-        decimal axis[2];
-
-} vector2;
-
-typedef union bipolar2
-{
-        struct
-        {
-                bipolar x, y;
-        };
-
-        struct
-        {
-                bipolar width, height;
-        };
-
-        bipolar axis[2];
-
-} bipolar2;
-
-typedef union positive2
-{
-        struct
-        {
-                positive x, y;
-        };
-
-        struct
-        {
-                positive width, height;
-        };
-
-        positive axis[2];
-
-} positive2;
-
-typedef union vector3
-{
-        struct
-        {
-                decimal x, y, z;
-        };
-
-        struct
-        {
-                decimal width, height, depth;
-        };
-
-        decimal axis[3];
-
-} vector3;
-
-typedef union bipolar3
-{
-        struct
-        {
-                bipolar x, y, z;
-        };
-
-        struct
-        {
-                bipolar width, height, depth;
-        };
-
-        bipolar axis[3];
-
-} bipolar3;
-
-typedef union positive3
-{
-        struct
-        {
-                positive x, y, z;
-        };
-
-        struct
-        {
-                positive width, height, depth;
-        };
-
-        positive axis[3];
-
-} positive3;
-
-typedef union vector4
-{
-        struct
-        {
-                decimal x, y, z, w;
-        };
-
-        struct
-        {
-                decimal width, height, depth, time;
-        };
-
-        decimal axis[4];
-
-} vector4;
-
-typedef vector4 quaternion;
-
-typedef union matrix2
-{
-        decimal axis[2][2];
-        vector2 colum[2];
-} matrix2;
-
-typedef union matrix3
-{
-        decimal axis[3][3];
-        vector3 colum[3];
-} matrix3;
-
-typedef union matrix4
-{
-        decimal axis[4][4];
-        vector4 colum[4];
-} matrix4;
-
-#endif // DAWN_MODERN_C_NO_MATH
 
 #endif // DAWN_MODERN_C

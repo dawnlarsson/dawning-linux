@@ -782,15 +782,6 @@ struct linux_dirent64
         p8 d_name[];
 };
 
-fn term_set_cursor(writer write, positive2 pos)
-{
-        write(str(ANSI));
-        positive_to_string(write, pos.y);
-        write(str(";"));
-        positive_to_string(write, pos.x);
-        write(str("H"));
-}
-
 positive2 term_size()
 {
         positive2 size = {80, 24};
