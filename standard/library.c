@@ -63,10 +63,6 @@
 #define KERNEL_MODE
 #endif
 
-#if defined(X86) || defined(ARM32) || defined(RISCV32) || defined(RISCV64) || defined(ARM64)
-#warning "Unsupported architecture TODO!"
-#endif
-
 #define stdin 0
 #define stdout 1
 #define stderr 2
@@ -526,11 +522,11 @@ typedef struct
 #endif
 
 #elif defined(ARM64)
-#define asm_copy "ldr"
-#define asm_store "str"
-#define asm_jump "bl"
+#define asm_copy "mov"
+#define asm_jump "b"
 #define asm_branch "beq"
 #define asm_syscall "svc 0"
+#define asm_store "str"
 
 #define reg_0 "x0"
 #define reg_1 "x1"
@@ -581,8 +577,14 @@ typedef struct
 // and ending at reg_6, if there are more arguments than registers, the
 // remaining arguments are loaded into the stack, and the stack pointer
 // is moved to the last argument, and the frame pointer is moved to the
+#if defined(ARM64)
+#define fn_asm(name, return_type, arguments...) \
+        static return_type name(arguments)
+
+#else
 #define fn_asm(name, return_type, arguments...) \
         static NAKED return_type name(arguments)
+#endif
 
 // ### System call
 // invokes operating system functions externally to the program
