@@ -114,7 +114,7 @@ typedef __builtin_va_list variable_arguments;
         pub returned_type name(args)
 
 #define api_type(name, type, default) \
-        WEAK pub type name = default;
+        pub type name = default;
 
 #endif // LIBRARY_API
 
