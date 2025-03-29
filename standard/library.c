@@ -100,6 +100,24 @@ typedef __builtin_va_list variable_arguments;
 #undef NULL
 #define NULL ((void *)0)
 
+#ifdef LIBRARY_API
+
+#define api_function(name, returned_type, default, args...) \
+        WEAK pub returned_type name(args) { return default; }
+
+#define api_type(name, type, default) \
+        WEAK pub type name = default;
+
+#else
+
+#define api_function(name, returned_type, default, args...) \
+        pub returned_type name(args)
+
+#define api_type(name, type, default) \
+        WEAK pub type name = default;
+
+#endif // LIBRARY_API
+
 #define ANSI "\033["
 
 #define TERM_CLEAR_SCREEN ANSI "2J" ANSI "H"
