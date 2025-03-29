@@ -15,10 +15,17 @@
 #ifndef DAWN_MODERN_C
 #define DAWN_MODERN_C
 
-#if defined(__linux__)
+#if defined(__linux__) || defined(__unix__)
 #define LINUX
+#define UNIX
 #elif defined(__APPLE__)
-#define MACOS
+#define APPLE
+#include <TargetConditionals.h>
+#if defined(TARGET_OS_IPHONE) && !TARGET_OS_IPHONE
+#define MACOS (1)
+#else
+#define IOS (1)
+#endif
 #elif defined(_WIN32)
 #define WINDOWS
 #elif defined(__IOS__)
@@ -957,34 +964,24 @@ fn exit(b32 code);
 fn sleep(positive seconds, positive nanoseconds);
 fn _start();
 
+// ### Get CPU time (Time Stamp Counter)
+// returns: the current CPU time
+p64 get_cpu_time()
+{
 #if defined(X64)
-// ### Get CPU time (Time Stamp Counter)
-// returns: the current CPU time
-p64 get_cpu_time()
-{
-        p32 hi, lo;
-        ir("rdtsc" : "=a"(lo), "=d"(hi));
-        return ((p64)hi << 32) | lo;
-}
+        p32 high, low;
+        ir("rdtsc" : "=a"(low), "=d"(high));
+        return ((p64)high << 32) | low;
 #elif defined(ARM64)
-// ### Get CPU time (Time Stamp Counter)
-// returns: the current CPU time
-p64 get_cpu_time()
-{
         p64 result;
         ir("mrs %0, cntvct_el0" : "=r"(result));
         return result;
-}
 #elif defined(RISCV64)
-// ### Get CPU time (Time Stamp Counter)
-// returns: the current CPU time
-p64 get_cpu_time()
-{
         p64 result;
         ir("rdtime %0" : "=r"(result));
         return result;
-}
 #endif
+}
 
 // ### Fill a memory block with the same value
 // fills a memory block with the same value

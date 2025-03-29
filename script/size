@@ -1,7 +1,9 @@
 #!/bin/sh
 
-# Simply prints arg 1 file size in bytes, KB and MB
-# usage: /standard/scripts/size <file>
+if [ "$(uname)" = "Darwin" ]; then
+    size=$(stat -f %z "$1")
+else
+    size=$(stat -c %s "$1")
+fi
 
-size=$(stat -c %s $1)
 echo "$size bytes ($(echo "scale=2; $size / 1024" | bc) KB, $(echo "scale=2; $size / 1024 / 1024" | bc) MB)"
