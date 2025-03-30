@@ -16,58 +16,58 @@
 #define DAWN_MODERN_C
 
 #if defined(__linux__) || defined(__unix__)
-#define LINUX
-#define UNIX
+#define LINUX 1
+#define UNIX 1
 #elif defined(__APPLE__)
-#define APPLE
+#define APPLE 1
 #include <TargetConditionals.h>
 #if defined(TARGET_OS_IPHONE) && !TARGET_OS_IPHONE
-#define MACOS (1)
+#define MACOS 1
 #else
-#define IOS (1)
+#define IOS 1
 #endif
 #elif defined(_WIN32)
-#define WINDOWS
+#define WINDOWS 1
 #elif defined(__IOS__)
-#define IOS
+#define IOS 1
 #elif defined(__ANDROID__)
-#define ANDROID
+#define ANDROID 1
 #endif
 
 #if defined(__x86_64__) || defined(_M_X64)
-#define X64
+#define X64 1
 #define BITS 64
 #elif defined(__i386) || defined(_M_IX86)
-#define X86
+#define X86 1
 #define BITS 32
 #elif defined(__aarch64__) || defined(_M_ARM64)
-#define ARM64
+#define ARM64 1
 #define BITS 64
 #elif defined(__arm__) || defined(_M_ARM)
-#define ARM32
+#define ARM32 1
 #define BITS 32
 #elif defined(__riscv)
 #if __riscv_xlen == 64
-#define RISCV64
+#define RISCV64 1
 #define BITS 64
 #elif __riscv_xlen == 32
-#define RISCV32
+#define RISCV32 1
 #define BITS 32
 #endif
 #elif defined(__PPC64__)
-#define PPC64
+#define PPC64 1
 #define BITS 64
 #elif defined(__s390x__)
-#define S390X
+#define S390X 1
 #define BITS 64
 #endif
 
 #if defined(__SSE__) || defined(__ARM_NEON)
-#define SIMD
+#define SIMD 1
 #endif
 
 #if defined(__MODULE__) || defined(DAWN_MODERN_C_KERNEL)
-#define KERNEL_MODE
+#define KERNEL_MODE 1
 #endif
 
 #define stdin 0
@@ -1068,6 +1068,19 @@ string_address string_copy(string_address destination, string_address source)
         return start;
 }
 
+// ### Copy string segment with a maximum length
+string_address string_copy_max(string_address destination, string_address source, positive length)
+{
+        string_address start = destination;
+
+        while (length-- && string_get(source))
+                string_set(destination++, string_get(source++));
+
+        string_set(destination, '\0');
+
+        return start;
+}
+
 // ### Find first character in string segment
 // returns: address of the first occurrence of the character
 // returns: NULL if the character is not found
@@ -1272,6 +1285,13 @@ b32 strcmp(string_address source, string_address input)
 string_address strcpy(string_address destination, string_address source)
 {
         return string_copy(destination, source);
+}
+
+#undef strncpy
+// use string_copy_max instead, this is for compatibility
+string_address strncpy(string_address destination, string_address source, positive length)
+{
+        return string_copy_max(destination, source, length);
 }
 
 #undef strchr
