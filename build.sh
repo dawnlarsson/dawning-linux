@@ -36,8 +36,8 @@ sh script/is_file artifacts/.config || \
 
 cd linux
 sudo make allnoconfig > /dev/null
-sh scripts/kconfig/merge_config.sh -n -m .config ../artifacts/.config > /dev/null
-sudo make oldconfig -n > /dev/null
+sh scripts/kconfig/merge_config.sh -m .config ../artifacts/.config > /dev/null
+sudo make olddefconfig > /dev/null
 cd ..
 
 sh script/label USER SPACE BUILD
