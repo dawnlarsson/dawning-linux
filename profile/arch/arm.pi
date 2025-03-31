@@ -1,14 +1,16 @@
 # raspberry pi test profile (WIP!!!!!)
 # ARM architecture settings
+
+#> compiler aarch64-linux-gnu-gcc
+
 #> kernel_image linux/arch/arm64/boot/Image
 #> kernel_export dist/kernel8.img
 
-#> dist_out config.txt arm_64bit=1 \n enable_uart=1 \n kernel=kernel8.img \n dtoverlay=vc4-kms-v3d \n disable_overscan=1
-
 #> make_flags ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu-
 
-#> compiler aarch64-linux-gnu-gcc
 #> dawning_flags -march=armv8.6-a
+
+#> dist_out config.txt arm_64bit=1 \n enable_uart=1 \n kernel=kernel8.img \n dtoverlay=vc4-kms-v3d \n disable_overscan=1
 
 # Architecture selection
 CONFIG_64BIT=y
@@ -38,7 +40,6 @@ CONFIG_ARM64_DEBUG_PRIORITY_MASKING=y
 # BCM specific options
 CONFIG_BCM2835_MBOX=y
 CONFIG_BCM2835_POWER=y
-CONFIG_BCM2835_THERMAL=y
 CONFIG_BCM2835_VCHIQ=y
 CONFIG_BCM2835_WDT=y
 CONFIG_BCM2835_GPIO=y
@@ -49,8 +50,6 @@ CONFIG_BCM_VCIO=y
 # Memory management
 CONFIG_HIGHMEM=y
 CONFIG_VMALLOC_SIZE=512
-CONFIG_ZONE_DMA=y
-CONFIG_ZONE_DMA32=y
 
 # Device Tree support
 CONFIG_OF=y
@@ -66,7 +65,6 @@ CONFIG_OF_OVERLAY=y
 
 # Raspberry Pi specific features
 CONFIG_RASPBERRYPI_FIRMWARE=y
-CONFIG_RASPBERRYPI_POWER=y
 
 # Serial ports
 CONFIG_SERIAL_8250=y
@@ -197,10 +195,8 @@ CONFIG_THERMAL_GOV_STEP_WISE=y
 CONFIG_THERMAL_GOV_USER_SPACE=y
 CONFIG_BCM2835_THERMAL=y
 CONFIG_WATCHDOG=y
-CONFIG_BCM2835_WDT=y
 
 # Power management
-CONFIG_PM=y
 CONFIG_PM_SLEEP=y
 CONFIG_PM_RUNTIME=y
 CONFIG_SUSPEND=y
@@ -229,13 +225,6 @@ CONFIG_RTC_DRV_DS1307=y
 # Boot command line and parameters
 CONFIG_CMDLINE="console=ttyAMA0,115200 console=tty1 root=/dev/mmcblk0p2 rootfstype=ext4 elevator=deadline rootwait"
 CONFIG_CMDLINE_FROM_BOOTLOADER=y
-
-# Additional filesystems for better compatibility
-CONFIG_EXFAT_FS=y
-CONFIG_NTFS_FS=y
-CONFIG_F2FS_FS=y
-CONFIG_HFS_FS=y
-CONFIG_HFSPLUS_FS=y
 
 # Hardware-accelerated crypto
 CONFIG_CRYPTO_DEV_BCM2835=y

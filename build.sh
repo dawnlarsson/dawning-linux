@@ -34,10 +34,12 @@ sudo sh script/get.kernel
 sh script/is_file artifacts/.config || \
         sudo sh script/config any arch/x64 debug_none limbo desktop
 
+make_flags=$(sh script/key make_flags)
+
 cd linux
-sudo make allnoconfig > /dev/null
-sh scripts/kconfig/merge_config.sh -m .config ../artifacts/.config > /dev/null
-sudo make olddefconfig > /dev/null
+sudo make allnoconfig $make_flags > /dev/null
+sh scripts/kconfig/merge_config.sh -m .config ../artifacts/.config $make_flags > /dev/null
+sudo make olddefconfig $make_flags > /dev/null
 cd ..
 
 sh script/label USER SPACE BUILD
