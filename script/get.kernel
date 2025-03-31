@@ -44,13 +44,13 @@ mkdir -p $kernel_extract_dir
 
 extract_kernel() {
     echo $color_bold "Checking kernel signature \n" $color_reset
-    gpg2 --locate-keys $trusted_keys
+    gpg --locate-keys $trusted_keys
 
     unxz -k $kernel_archive
 
     echo "$kernel_pgp" > $kernel_tarball".sign"
 
-    gpg2 --verify $kernel_tarball".sign" $kernel_tarball
+    gpg --verify $kernel_tarball".sign" $kernel_tarball
 
     tar -xf $kernel_tarball --strip-components=1 -C $kernel_extract_dir
 

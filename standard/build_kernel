@@ -8,8 +8,8 @@ compiler=$(sh script/key_single compiler)
 
 dawning_flags=$(sh script/key dawning_flags)
 
-echo -e $color_bold
-echo -e "    Compiling  $1.c  ->  $2" $color_reset
+echo $color_bold
+echo "    Compiling  $1.c  ->  $2" $color_reset
 
 $compiler $1.c -o $2 $dawning_flags $suppress
 
