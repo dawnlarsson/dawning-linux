@@ -1069,6 +1069,7 @@ string_address string_copy(string_address destination, string_address source)
 }
 
 // ### Copy string segment with a maximum length
+// traditional: strncpy
 string_address string_copy_max(string_address destination, string_address source, positive length)
 {
         string_address start = destination;

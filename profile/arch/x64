@@ -4,6 +4,7 @@
 #> kernel_export dist/bootx64.efi
 
 #> arch x86_64
+#> virt qemu-system-x86_64
 
 #> dawning_flags -march=x86-64
 

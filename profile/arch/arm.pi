@@ -5,6 +5,7 @@
 
 #> arch arm64
 #> make_flags ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu-
+#> virt qemu-system-aarch64
 
 #> dawning_flags -march=armv8.6-a
 
