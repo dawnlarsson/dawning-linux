@@ -1,0 +1,24 @@
+#!/bin/sh
+sh script/is_safe || exit 1
+
+key=$1
+
+# takes all keys with the same name, but treats them as different keys
+# each key is a diffrent file, where the next token is the file name/path
+# and the rest is the file content
+# format is: #> dist_out <filename> <content>
+# and is looked after in the artifacts/.config file
+
+value=$(grep "#> $key" artifacts/.config | sed "s/#> $key //")
+echo $value
+
+[ -z "$value" ] || echo $value
+
+for i in $value; done
+
+        filename=$(echo $i | cut -d ' ' -f 1)
+
+        content=$(echo $i | cut -d ' ' -f 2-)
+
+        echo $content > $filename
+done

@@ -36,6 +36,8 @@ sh script/is_file artifacts/.config || \
 
 make_flags=$(sh script/key make_flags)
 
+# sh script/key_gen dist_out
+
 cd linux
 sudo make allnoconfig $make_flags > /dev/null
 sh scripts/kconfig/merge_config.sh -m .config ../artifacts/.config $make_flags > /dev/null
