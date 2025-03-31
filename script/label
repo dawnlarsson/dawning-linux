@@ -10,7 +10,12 @@ color_white="\033[0;37m"
 color_reset="\033[0m"
 color_bold="\033[1m"
 
-echo -e $color_cyan $color_bold
-echo -e "    $@"
-echo -e "_____________________________________________________________________________"
-echo -e $color_reset
+e=""
+if [ "$(uname)" = "Linux" ]; then
+    e="-e "
+fi
+
+echo $e $color_cyan $color_bold
+echo $e "    $@"
+echo $e "_____________________________________________________________________________"
+echo $e $color_reset

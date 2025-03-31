@@ -14,6 +14,15 @@ info_full_name="$info_name-$info_version"
 
 sh script/label REPOSITORY SETUP
 
+if [ "$(id -u)" != "0" ]; then
+        sh script/label Error
+        echo "Build must be run with root!" 1>&2
+        echo
+        exit 1
+fi
+
+echo "Building $info_full_name"
+
 sudo sh script/setup
 
 

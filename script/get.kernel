@@ -1,6 +1,8 @@
 #!/bin/sh
 sh script/is_safe || exit 1
 
+set -e
+
 color_reset="\033[0m"
 color_bold="\033[1m"
 
@@ -41,7 +43,7 @@ mkdir -p $download_artifacts_dir
 mkdir -p $kernel_extract_dir
 
 extract_kernel() {
-    echo -e $color_bold "Checking kernel signature \n" $color_reset
+    echo $color_bold "Checking kernel signature \n" $color_reset
     gpg2 --locate-keys $trusted_keys
 
     unxz -k $kernel_archive
@@ -56,7 +58,7 @@ extract_kernel() {
 }
 
 sh script/is_file $kernel_archive || \
-    wget -O $kernel_archive $kernel_download
+    curl -L $kernel_download -o $kernel_archive
 
 extract_kernel
 
