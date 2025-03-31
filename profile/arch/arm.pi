@@ -1,11 +1,9 @@
-# raspberry pi test profile (WIP!!!!!)
-# ARM architecture settings
-
 #> compiler aarch64-linux-gnu-gcc
 
 #> kernel_image linux/arch/arm64/boot/Image
 #> kernel_export dist/kernel8.img
 
+#> arch arm64
 #> make_flags ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu-
 
 #> dawning_flags -march=armv8.6-a

@@ -1,7 +1,12 @@
+#> compiler x86_64-linux-gnu-gcc
+
 #> kernel_image linux/arch/x86/boot/bzImage
 #> kernel_export dist/bootx64.efi
 
-#> compiler x86_64-linux-gnu-gcc
+#> arch x86_64
+
+#> dawning_flags -march=x86-64
+
 
 CONFIG_64BIT=y
 
