@@ -13,7 +13,7 @@ fn writer_flush()
         if (writer_buffer_length == 0)
                 return;
 
-        system_call_3(syscall_write, stdout, (positive)writer_buffer, writer_buffer_length);
+        system_call_3(syscall(write), stdout, (positive)writer_buffer, writer_buffer_length);
 
         writer_buffer_length = 0;
 }
@@ -28,7 +28,7 @@ fn write(ADDRESS data, positive length)
 
         if (length > MAX_INPUT)
         {
-                system_call_3(syscall_write, stdout, (positive)data, length);
+                system_call_3(syscall(write), stdout, (positive)data, length);
                 return;
         }
 

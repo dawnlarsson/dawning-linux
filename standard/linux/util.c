@@ -18,7 +18,7 @@ fn core_cat(writer write, string_address input)
         if (input == NULL)
                 return write(str("cat: missing operand\n"));
 
-        bipolar file_descriptor = system_call_3(syscall_openat, AT_FDCWD, (positive)input, O_RDONLY);
+        bipolar file_descriptor = system_call_3(syscall(openat), AT_FDCWD, (positive)input, O_RDONLY);
         if (file_descriptor < 0)
         {
                 write(str("cat: Cannot open file: "));
@@ -31,7 +31,7 @@ fn core_cat(writer write, string_address input)
 
         while (1)
         {
-                bipolar bytes_read = system_call_3(syscall_read, file_descriptor, (positive)buffer, page_size);
+                bipolar bytes_read = system_call_3(syscall(read), file_descriptor, (positive)buffer, page_size);
 
                 if (bytes_read <= 0)
                         break;
@@ -39,7 +39,7 @@ fn core_cat(writer write, string_address input)
                 write(buffer, bytes_read);
         }
 
-        system_call_1(syscall_close, file_descriptor);
+        system_call_1(syscall(close), file_descriptor);
 }
 
 // TODOs:
@@ -50,7 +50,7 @@ fn core_cd(writer write, string_address buffer)
         if (buffer == NULL)
                 buffer = "/";
 
-        if (!system_call_1(syscall_chdir, (positive)buffer))
+        if (!system_call_1(syscall(chdir), (positive)buffer))
                 return;
 
         write(str("cd: No such directory: "));
@@ -68,7 +68,7 @@ fn core_chmod(writer write, string_address buffer)
         if (buffer == NULL)
                 return write(str("chmod: missing operand\n"));
 
-        if (!system_call_3(syscall_fchmodat, AT_FDCWD, (positive)buffer, 0777))
+        if (!system_call_3(syscall(fchmodat), AT_FDCWD, (positive)buffer, 0777))
                 return;
 
         write(str("chmod: Cannot change permissions: "));
@@ -90,7 +90,7 @@ fn core_cp(writer write, string_address buffer)
         ADDRESS_TO destination = '\0';
         destination++;
 
-        bipolar source_fd = system_call_3(syscall_openat, AT_FDCWD, (positive)source, O_RDONLY);
+        bipolar source_fd = system_call_3(syscall(openat), AT_FDCWD, (positive)source, O_RDONLY);
         if (source_fd < 0)
         {
                 write(str("cp: Cannot open source file: "));
@@ -99,7 +99,7 @@ fn core_cp(writer write, string_address buffer)
                 return;
         }
 
-        bipolar destination_fd = system_call_3(syscall_openat, AT_FDCWD, (positive)destination, O_CREAT | O_WRONLY);
+        bipolar destination_fd = system_call_3(syscall(openat), AT_FDCWD, (positive)destination, O_CREAT | O_WRONLY);
         if (destination_fd < 0)
         {
                 write(str("cp: Cannot open destination file: "));
@@ -112,16 +112,16 @@ fn core_cp(writer write, string_address buffer)
 
         while (1)
         {
-                bipolar bytes_read = system_call_3(syscall_read, source_fd, (positive)out_buffer, page_size);
+                bipolar bytes_read = system_call_3(syscall(read), source_fd, (positive)out_buffer, page_size);
 
                 if (bytes_read <= 0)
                         break;
 
-                system_call_3(syscall_write, destination_fd, (positive)out_buffer, bytes_read);
+                system_call_3(syscall(write), destination_fd, (positive)out_buffer, bytes_read);
         }
 
-        system_call_1(syscall_close, source_fd);
-        system_call_1(syscall_close, destination_fd);
+        system_call_1(syscall(close), source_fd);
+        system_call_1(syscall(close), destination_fd);
 }
 
 fn core_echo(writer write, string_address buffer)
@@ -136,7 +136,7 @@ fn core_exec(writer write, string_address buffer)
 {
         p8 ADDRESS_TO argv[] = {buffer};
 
-        system_call_2(syscall_execve, (positive)buffer, (positive)argv);
+        system_call_2(syscall(execve), (positive)buffer, (positive)argv);
 }
 
 // - Blue: Directories
@@ -150,7 +150,7 @@ fn core_ls(writer write, string_address buffer)
         if (buffer == NULL)
                 buffer = ".";
 
-        bipolar file_descriptor = system_call_3(syscall_openat, AT_FDCWD, (positive)buffer, O_RDONLY | O_DIRECTORY);
+        bipolar file_descriptor = system_call_3(syscall(openat), AT_FDCWD, (positive)buffer, O_RDONLY | O_DIRECTORY);
 
         if (file_descriptor < 0)
         {
@@ -166,7 +166,7 @@ fn core_ls(writer write, string_address buffer)
 
         while (1)
         {
-                bipolar bytes_read = system_call_3(syscall_getdents64, file_descriptor, (positive)out_buffer, page_size);
+                bipolar bytes_read = system_call_3(syscall(getdents64), file_descriptor, (positive)out_buffer, page_size);
 
                 if (bytes_read <= 0)
                         break;
@@ -208,14 +208,14 @@ fn core_ls(writer write, string_address buffer)
         if (entries_count % max_line_entries != 0)
                 write(str("\n"));
 
-        system_call_1(syscall_close, file_descriptor);
+        system_call_1(syscall(close), file_descriptor);
 }
 
 fn core_pwd(writer write, string_address buffer)
 {
         p8 out_buffer[4096];
 
-        system_call_2(syscall_getcwd, (positive)out_buffer, 4096);
+        system_call_2(syscall(getcwd), (positive)out_buffer, 4096);
 
         write(out_buffer, 0);
         write(str("\n"));
@@ -226,7 +226,7 @@ fn core_mkdir(writer write, string_address buffer)
         if (buffer == NULL)
                 return write(str("mkdir: missing operand\n"));
 
-        if (!system_call_3(syscall_mkdirat, AT_FDCWD, (positive)buffer, 0777))
+        if (!system_call_3(syscall(mkdirat), AT_FDCWD, (positive)buffer, 0777))
                 return;
 
         write(str("mkdir: Cannot create directory: "));
@@ -248,7 +248,7 @@ fn core_mv(writer write, string_address buffer)
         ADDRESS_TO destination = '\0';
         destination++;
 
-        if (!system_call_4(syscall_renameat, AT_FDCWD, (positive)source, AT_FDCWD, (positive)destination))
+        if (!system_call_4(syscall(renameat), AT_FDCWD, (positive)source, AT_FDCWD, (positive)destination))
                 return;
 
         write(str("mv: Cannot move file: "));
@@ -270,7 +270,7 @@ fn core_mount(writer write, string_address buffer)
         ADDRESS_TO destination = '\0';
         destination++;
 
-        if (!system_call_4(syscall_mount, (positive)source, (positive)destination, (positive)source, MS_BIND))
+        if (!system_call_4(syscall(mount), (positive)source, (positive)destination, (positive)source, MS_BIND))
                 return;
 
         write(str("mount: Cannot mount filesystem: "));
