@@ -765,7 +765,7 @@
 #define syscall_macos_arm64_chown 0x10
 #define syscall_macos_arm64_break 0x11 // Deprecated
 #define syscall_macos_arm64_getfsstat 0x12
-#define syscall_macos_arm64_lseek 0x13 // Deprecated
+// #define syscall_macos_arm64_lseek 0x13 // Deprecated
 #define syscall_macos_arm64_getpid 0x14
 // #define syscall_macos_arm64_mount 0x15 // Deprecated
 // #define syscall_macos_arm64_unmount 0x16 // Deprecated
@@ -785,7 +785,7 @@
 #define syscall_macos_arm64_sync 0x24
 #define syscall_macos_arm64_kill 0x25
 #define syscall_macos_arm64_getppid 0x27
-#define syscall_macos_arm64_lstat 0x28
+// #define syscall_macos_arm64_lstat 0x28
 #define syscall_macos_arm64_dup 0x29
 #define syscall_macos_arm64_pipe 0x2a
 #define syscall_macos_arm64_getegid 0x2b
@@ -807,16 +807,16 @@
 #define syscall_macos_arm64_execve 0x3b
 #define syscall_macos_arm64_umask 0x3c
 #define syscall_macos_arm64_chroot 0x3d
-#define syscall_macos_arm64_fstat 0x3e       // Deprecated
+// #define syscall_macos_arm64_fstat 0x3e       // Deprecated
 #define syscall_macos_arm64_reserved_0 0x3f  // Reserved
 #define syscall_macos_arm64_getpagesize 0x40 // Deprecated
 #define syscall_macos_arm64_msync 0x41
 #define syscall_macos_arm64_vfork 0x42
-#define syscall_macos_arm64_vread 0x43   // Deprecated
-#define syscall_macos_arm64_vwrite 0x44  // Deprecated
-#define syscall_macos_arm64_sbrk 0x45    // Deprecated
-#define syscall_macos_arm64_sstk 0x46    // Deprecated
-#define syscall_macos_arm64_mmap 0x47    // Deprecated
+#define syscall_macos_arm64_vread 0x43  // Deprecated
+#define syscall_macos_arm64_vwrite 0x44 // Deprecated
+#define syscall_macos_arm64_sbrk 0x45   // Deprecated
+#define syscall_macos_arm64_sstk 0x46   // Deprecated
+// #define syscall_macos_arm64_mmap 0x47    // Deprecated
 #define syscall_macos_arm64_vadvise 0x48 // Deprecated
 #define syscall_macos_arm64_munmap 0x49
 #define syscall_macos_arm64_mprotect 0x4a
@@ -844,18 +844,18 @@
 #define syscall_macos_arm64_setpriority 0x60
 #define syscall_macos_arm64_socket 0x61
 #define syscall_macos_arm64_connect 0x62
-#define syscall_macos_arm64_accept 0x63 // Deprecated
+// #define syscall_macos_arm64_accept 0x63 // Deprecated
 #define syscall_macos_arm64_getpriority 0x64
-#define syscall_macos_arm64_send 0x65      // Deprecated
-#define syscall_macos_arm64_receive 0x66   // Deprecated
-#define syscall_macos_arm64_sigreturn 0x67 // Deprecated
+#define syscall_macos_arm64_send 0x65    // Deprecated
+#define syscall_macos_arm64_receive 0x66 // Deprecated
+// #define syscall_macos_arm64_sigreturn 0x67 // Deprecated
 #define syscall_macos_arm64_bind 0x68
 #define syscall_macos_arm64_setsockopt 0x69
 #define syscall_macos_arm64_listen 0x6a
-#define syscall_macos_arm64_vtimes 0x6b  // Deprecated
-#define syscall_macos_arm64_sigvec 0x6c  // Deprecated
-#define syscall_macos_arm64_recvmsg 0x6d // Deprecated
-#define syscall_macos_arm64_vtrace 0x6e  // Deprecated
+#define syscall_macos_arm64_vtimes 0x6b // Deprecated
+#define syscall_macos_arm64_sigvec 0x6c // Deprecated
+// #define syscall_macos_arm64_recvmsg 0x6d // Deprecated
+#define syscall_macos_arm64_vtrace 0x6e // Deprecated
 #define syscall_macos_arm64_sigsuspend 0x6f4
 #define syscall_macos_arm64_gettimeofday 0x74
 #define syscall_macos_arm64_getrusage 0x75
@@ -866,12 +866,12 @@
 #define syscall_macos_arm64_settimeofday 0x7a
 #define syscall_macos_arm64_fchown 0x7b
 #define syscall_macos_arm64_fchmod 0x7c
-#define syscall_macos_arm64_recvfrom 0x7d // Deprecated
+// #define syscall_macos_arm64_recvfrom 0x7d // Deprecated
 #define syscall_macos_arm64_setreuid 0x7e
 #define syscall_macos_arm64_setregid 0x7f
 #define syscall_macos_arm64_rename 0x80
-#define syscall_macos_arm64_truncate 0x81  // Deprecated
-#define syscall_macos_arm64_ftruncate 0x82 // Deprecated
+// #define syscall_macos_arm64_truncate 0x81  // Deprecated
+// #define syscall_macos_arm64_ftruncate 0x82 // Deprecated
 #define syscall_macos_arm64_flock 0x83
 #define syscall_macos_arm64_mkfifo 0x84
 #define syscall_macos_arm64_sendto 0x85
@@ -882,22 +882,22 @@
 #define syscall_macos_arm64_utimes 0x8a
 #define syscall_macos_arm64_futimes 0x8b
 #define syscall_macos_arm64_adjtime 0x8c
-#define syscall_macos_arm64_getpeername 0x8d // Deprecated
+// #define syscall_macos_arm64_getpeername 0x8d // Deprecated
 #define syscall_macos_arm64_gethostid 0x8e
 #define syscall_macos_arm64_sethostid 0x8f // Deprecated
-#define syscall_macos_arm64_getrlimit 0x90 // Deprecated
-#define syscall_macos_arm64_setrlimit 0x91 // Deprecated
-#define syscall_macos_arm64_killpg 0x92    // Deprecated
+// #define syscall_macos_arm64_getrlimit 0x90 // Deprecated
+// #define syscall_macos_arm64_setrlimit 0x91 // Deprecated
+#define syscall_macos_arm64_killpg 0x92 // Deprecated
 #define syscall_macos_arm64_setsid 0x93
-#define syscall_macos_arm64_setquota 0x94    // Deprecated
-#define syscall_macos_arm64_qquota 0x95      // Deprecated
-#define syscall_macos_arm64_getsockname 0x96 // Deprecated
+#define syscall_macos_arm64_setquota 0x94 // Deprecated
+#define syscall_macos_arm64_qquota 0x95   // Deprecated
+// #define syscall_macos_arm64_getsockname 0x96 // Deprecated
 #define syscall_macos_arm64_getpgid 0x97
 #define syscall_macos_arm64_setprivexec 0x98
 #define syscall_macos_arm64_pread 0x99
 #define syscall_macos_arm64_pwrite 0x9a
 #define syscall_macos_arm64_nfssvc 0x9b
-#define syscall_macos_arm64_getdirentries 0x9c // Deprecated
+// #define syscall_macos_arm64_getdirentries 0x9c // Deprecated
 #define syscall_macos_arm64_statfs 0x9d
 #define syscall_macos_arm64_fstatfs 0x9e
 #define syscall_macos_arm64_unmount 0x9f
@@ -933,7 +933,7 @@
 #define syscall_macos_arm64_lstat 0xbe
 #define syscall_macos_arm64_pathconf 0xbf
 #define syscall_macos_arm64_fpathconf 0xc0
-#define syscall_macos_arm64_getfsstat 0xc1 // Deprecated
+// #define syscall_macos_arm64_getfsstat 0xc1 // Deprecated
 #define syscall_macos_arm64_getrlimit 0xc2
 #define syscall_macos_arm64_setrlimit 0xc3
 #define syscall_macos_arm64_getdirentries 0xc4

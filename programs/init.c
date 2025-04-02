@@ -28,7 +28,7 @@ fn mount_filesystems()
                 write(str("..."));
 
                 bipolar result = system_call_4(
-                    syscall_mount,
+                    syscall(mount),
                     (positive)mount->filesystem,
                     (positive)mount->path,
                     (positive)mount->filesystem,
@@ -46,11 +46,11 @@ fn mount_filesystems()
 
 b32 main()
 {
-        system_call(syscall_setsid);
+        system_call(syscall(setsid));
 
         mount_filesystems();
 
-        positive process_id = system_call(syscall_clone);
+        positive process_id = system_call(syscall(clone));
 
         if (process_id == 0)
         {
@@ -60,7 +60,7 @@ b32 main()
 
         p8 ADDRESS_TO argv[] = {init_program};
 
-        bipolar result = system_call_2(syscall_execve, (positive)init_program, (positive)argv);
+        bipolar result = system_call_2(syscall(execve), (positive)init_program, (positive)argv);
 
         write(lable "Failed to execute init program", 0);
         write(str(" (error: "));

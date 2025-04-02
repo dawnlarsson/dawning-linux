@@ -9,7 +9,7 @@ fn shell_thread_instance(string_address command, string_address arguments)
 {
         string_address arguments_list[] = {command, arguments, NULL};
 
-        bipolar exec_result = system_call_3(syscall_execve, (positive)command, (positive)arguments_list, 0);
+        bipolar exec_result = system_call_3(syscall(execve), (positive)command, (positive)arguments_list, 0);
 
         write(str("failed with error: "));
         bipolar_to_string(write, exec_result);
@@ -24,7 +24,7 @@ fn shell_execute_command(string_address command, string_address arguments)
 {
         writer_flush();
 
-        bipolar fork_result = system_call_1(syscall_clone, 0);
+        bipolar fork_result = system_call_1(syscall(clone), 0);
 
         if (fork_result == 0)
         {
@@ -33,7 +33,7 @@ fn shell_execute_command(string_address command, string_address arguments)
         else if (fork_result > 0)
         {
                 positive status = 0;
-                bipolar wait_result = system_call_4(syscall_wait4, fork_result, (positive)ADDRESS_OF status, 0, 0);
+                bipolar wait_result = system_call_4(syscall(wait4), fork_result, (positive)ADDRESS_OF status, 0, 0);
         }
         else
         {
@@ -106,7 +106,7 @@ fn process_command()
 
 b32 main()
 {
-        system_call(syscall_setsid);
+        system_call(syscall(setsid));
         system_call_2(2, (positive) "/dev/console", O_RDWR | O_NOCTTY);
 
         while (1)
@@ -117,7 +117,7 @@ b32 main()
 
                 writer_flush();
 
-                buffer_length = system_call_3(syscall_read, 0, (positive)buffer, MAX_INPUT);
+                buffer_length = system_call_3(syscall(read), 0, (positive)buffer, MAX_INPUT);
 
                 if (buffer_length > MAX_INPUT)
                         buffer_length = MAX_INPUT;
