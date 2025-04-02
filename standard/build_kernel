@@ -1,15 +1,16 @@
 #!/bin/sh
 sh script/is_safe || exit 1
 
-color_reset="\033[0m"
-color_bold="\033[1m"
+ANSI=$'\033['
+RESET=$ANSI"0m"
+BOLD=$ANSI"1m"
 
 compiler=$(sh script/key_single compiler)
 
 dawning_flags=$(sh script/key dawning_flags)
 
-echo $color_bold
-echo "    Compiling  $1.c  ->  $2" $color_reset
+echo $BOLD
+echo "    Compiling  $1.c  ->  $2" $RESET
 
 $compiler $1.c -o $2 $dawning_flags $suppress
 

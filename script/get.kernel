@@ -9,8 +9,9 @@ fi
 
 set -e
 
-color_reset="\033[0m"
-color_bold="\033[1m"
+ANSI=$'\033['
+RESET=$ANSI"0m"
+BOLD=$ANSI"1m"
 
 kernel_extract_dir="linux/" 
 download_artifacts_dir="artifacts/"
@@ -49,7 +50,7 @@ mkdir -p $download_artifacts_dir
 mkdir -p $kernel_extract_dir
 
 extract_kernel() {
-    echo $color_bold "Checking kernel signature \n" $color_reset
+    echo $BOLD "Checking kernel signature \n" $RESET
     gpg --locate-keys $trusted_keys
 
     unxz -k $kernel_archive

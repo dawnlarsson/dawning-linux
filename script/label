@@ -1,16 +1,19 @@
 #!/bin/sh
 
-color_green="\033[0;32m"
-color_red="\033[0;31m"
-color_yellow="\033[0;33m"
-color_blue="\033[0;34m"
-color_purple="\033[0;35m"
-color_cyan="\033[0;36m"
-color_white="\033[0;37m"
-color_reset="\033[0m"
-color_bold="\033[1m"
+ANSI=$'\033['
 
-echo $color_cyan $color_bold
+RESET=$ANSI"0m"
+BOLD=$ANSI"1m"
+
+RED=$ANSI"91m"
+GREEN=$ANSI"92m"
+YELLOW=$ANSI"93m"
+BLUE=$ANSI"94m"
+MAGENTA=$ANSI"95m"
+CYAN=$ANSI"96m"
+WHITE=$ANSI"97m"
+
+echo $CYAN $BOLD
 echo "    $@"
 echo "_____________________________________________________________________________"
-echo $color_reset
+echo $RESET
