@@ -1,7 +1,7 @@
 #ifndef DAWN_MODERN_C_PLATFORM_MACOS
 #define DAWN_MODERN_C_PLATFORM_MACOS
 
-#ifdef ARM64
+#if defined(ARM64)
 
 #define syscall_indirect 0x0
 #define syscall_exit 0x1

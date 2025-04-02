@@ -6,3 +6,4 @@
 /fs/
 /linux/
 .vscode/settings.json
+.DS_Store

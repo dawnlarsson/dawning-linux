@@ -14,6 +14,12 @@ info_full_name="$info_name-$info_version"
 
 sh script/label REPOSITORY SETUP
 
+if [ "$(uname)" = "Darwin" ]; then
+        alias nproc="sysctl -n hw.physicalcpu"
+        alias make="gmake"
+        alias cp="cp -X"
+fi
+
 if [ "$(id -u)" != "0" ]; then
         sh script/label Error
         echo "Build must be run with root!" 1>&2

@@ -1,6 +1,12 @@
 #!/bin/sh
 sh script/is_safe || exit 1
 
+if [ "$(uname)" = "Darwin" ]; then
+        alias nproc="sysctl -n hw.physicalcpu"
+        alias make="gmake"
+        alias cp="cp -X"
+fi
+
 set -e
 
 color_reset="\033[0m"

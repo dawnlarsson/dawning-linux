@@ -7,8 +7,6 @@
 #> make_flags ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu-
 #> virt qemu-system-aarch64
 
-#> dawning_flags -march=armv8.6-a
-
 #> dist_out config.txt arm_64bit=1 \n enable_uart=1 \n kernel=kernel8.img \n dtoverlay=vc4-kms-v3d \n disable_overscan=1
 
 # Architecture selection

@@ -38,6 +38,10 @@ sh build.run.sh
 ```
 but, you need https://www.qemu.org/
 
+### Macos building
+testing... you need gcc cross build compilers:
+https://github.com/messense/homebrew-macos-cross-toolchains
+
 ### Profile based build & configuration
 **`profile/*`** — Compartmentalized kernel configuration files. 
 these are merged before building the kernel, and they are selectively chosen based on your
