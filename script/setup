@@ -1,5 +1,4 @@
 #!/bin/sh
-sh script/is_safe || exit 1
-
+source script/common
 
 mkdir -p artifacts fs dist

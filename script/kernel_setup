@@ -1,24 +1,10 @@
 #!/bin/sh
-sh script/is_safe || exit 1
-
-if [ "$(uname)" = "Darwin" ]; then
-        alias nproc="sysctl -n hw.physicalcpu"
-        alias make="gmake"
-        alias cp="cp -X"
-fi
-
-set -e
-
-ANSI=$'\033['
-RESET=$ANSI"0m"
-BOLD=$ANSI"1m"
+source script/common
 
 kernel_extract_dir="linux/" 
 download_artifacts_dir="artifacts/"
 keys_dir=$download_artifacts_dir"keys/"
-
 trusted_keys="torvalds@kernel.org gregkh@kernel.org"
-
 kernel_version="6.14"
 kernel_download="https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.14.tar.xz"
 kernel_pgp="
@@ -46,9 +32,6 @@ k1wLp1FVnouFdIBLih2/ROJjTYTWUUWmvQrHYufis0AAb9Mmtjg=
 kernel_tarball=$download_artifacts_dir"linux-$kernel_version.tar"
 kernel_archive=$kernel_tarball".xz"
 
-mkdir -p $download_artifacts_dir
-mkdir -p $kernel_extract_dir
-
 extract_kernel() {
     echo $BOLD "Checking kernel signature \n" $RESET
     gpg --locate-keys $trusted_keys
@@ -64,8 +47,11 @@ extract_kernel() {
     rm $kernel_tarball
 }
 
-sh script/is_file $kernel_archive || \
+is_file $kernel_archive || \
     curl -L $kernel_download -o $kernel_archive
+
+mkdir -p $download_artifacts_dir
+mkdir -p $kernel_extract_dir
 
 extract_kernel
 

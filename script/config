@@ -1,6 +1,5 @@
 #!/bin/sh
-sh script/is_safe || exit 1
-
+source script/common
 
 if [ "$#" -lt 1 ]; then
     echo "Usage: sh genconfig.sh <profile1> [profile2] [profile3] ..."

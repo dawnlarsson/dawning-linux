@@ -1,10 +1,11 @@
 #!/bin/sh
+source script/common
 
-kernel_image=$(sh script/key kernel_image)
-kernel_export=$(sh script/key kernel_export)
+kernel_image=$(key kernel_image)
+kernel_export=$(key kernel_export)
 
-arch=$(sh script/key_single arch)
-virt=$(sh script/key_single virt)
+arch=$(key arch)
+virt=$(key virt)
 
 if [ "$arch" = "x86_64" ]; then
         args=" -enable-kvm -cpu host -smp 4 -m 4G"

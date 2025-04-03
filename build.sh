@@ -1,73 +1,37 @@
 #!/bin/sh
-sh script/is_safe || exit 1
+source script/common
 
-# the version of the release
-# this is <year><month><day>
-# the granularity of the version depends on if it's a major or minor release
-# for example, first release of the year would be "25"
-# the second release of the year would be "25.2" and so on
-# day granularity is used for patch/fix/minor releases
-info_version="25"
-info_name="dawning-linux"
+label REPOSITORY SETUP
+        echo "Building $info_full_name"
+        sudo sh script/setup
 
-info_full_name="$info_name-$info_version"
+label DISTRO INFO
+        echo "CONFIG_LOCALVERSION=\"$info_full_name\"" > artifacts/info
+        echo "CONFIG_DEFAULT_HOSTNAME=\"$info_name-box\"" >> artifacts/info
+        sudo sh script/fs_setup
 
-sh script/label REPOSITORY SETUP
+label KERNEL CONFIGURATION
+        sudo sh script/kernel_setup
+        
+        [ -z "$1" ] || sudo sh script/config any $@
 
-if [ "$(uname)" = "Darwin" ]; then
-        alias nproc="sysctl -n hw.physicalcpu"
-        alias make="gmake"
-        alias cp="cp -X"
-fi
+        is_file artifacts/.config || \
+                sudo sh script/config any arch/x64 debug_none limbo desktop
 
-if [ "$(id -u)" != "0" ]; then
-        sh script/label Error
-        echo "Build must be run with root!" 1>&2
-        echo
-        exit 1
-fi
+        make_flags=$(key make_flags)
 
-echo "Building $info_full_name"
+label KERNEL CONFIG
+        cd linux
+        sudo make allnoconfig $make_flags > /dev/null
+        sh scripts/kconfig/merge_config.sh -m .config ../artifacts/.config $make_flags > /dev/null
+        sudo make olddefconfig $make_flags > /dev/null
+        cd ..
 
-sudo sh script/setup
+label USER SPACE BUILD
+        sh standard/build_kernel programs/init fs/init
+        sh standard/build_kernel programs/shell fs/shell
+        sh standard/build_kernel programs/duck fs/duck
+        sh standard/build_kernel programs/edit fs/edit
 
-
-sh script/label DISTRO INFO
-
-echo "CONFIG_LOCALVERSION=\"$info_full_name\"" > artifacts/info
-echo "CONFIG_DEFAULT_HOSTNAME=\"$info_name-box\"" >> artifacts/info
-
-sudo sh script/build.fs
-
-
-sh script/label KERNEL CONFIGURATION
-
-sudo sh script/get.kernel
-
-[ -z "$1" ] || sudo sh script/config any $@
-
-sh script/is_file artifacts/.config || \
-        sudo sh script/config any arch/x64 debug_none limbo desktop
-
-make_flags=$(sh script/key make_flags)
-
-# sh script/key_gen dist_out
-
-cd linux
-sudo make allnoconfig $make_flags > /dev/null
-sh scripts/kconfig/merge_config.sh -m .config ../artifacts/.config $make_flags > /dev/null
-sudo make olddefconfig $make_flags > /dev/null
-cd ..
-
-sh script/label USER SPACE BUILD
-
-# Compile runtime programs
-sh standard/build_kernel programs/init fs/init
-sh standard/build_kernel programs/shell fs/shell
-sh standard/build_kernel programs/duck fs/duck
-sh standard/build_kernel programs/edit fs/edit
-
-
-sh script/label KERNEL BUILD
-
-sudo sh script/build.kernel
+label KERNEL BUILD
+        sudo sh script/kernel_build

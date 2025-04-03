@@ -1,13 +1,8 @@
 #!/bin/sh
-sh script/is_safe || exit 1
+source script/common
 
-ANSI=$'\033['
-RESET=$ANSI"0m"
-BOLD=$ANSI"1m"
-
-compiler=$(sh script/key_single compiler)
-
-dawning_flags=$(sh script/key dawning_flags)
+compiler=$(key compiler)
+dawning_flags=$(key dawning_flags)
 
 echo $BOLD
 echo "    Compiling  $1.c  ->  $2" $RESET
@@ -15,6 +10,6 @@ echo "    Compiling  $1.c  ->  $2" $RESET
 $compiler $1.c -o $2 $dawning_flags $suppress
 
 echo
-sh script/size $2
+size $2
 
 chmod +x $2
