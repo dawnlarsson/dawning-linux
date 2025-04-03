@@ -668,116 +668,15 @@ typedef union matrix4
 
 #endif // DAWN_MODERN_C_NO_MATH
 
-//
-// these are 1:1 with nasm syntax, so you can easily convert nasm code to this format
-//
-// Define data in memory as b8 (bipolar 8-bit / byte)
-// in nasm: db
-#define b8_asm(...) asm volatile(".byte " #__VA_ARGS__ "\n")
-
-// Define data in memory as b16 (bipolar 16-bit / word)
-// in nasm: dw
-#define b16_asm(...) asm volatile(".word " #__VA_ARGS__ "\n")
-
-// Define data in memory as b32 (bipolar 32-bit / double word)
-// in nasm: dd
-#define b32_asm(...) asm volatile(".long " #__VA_ARGS__ "\n")
-
-// Define data in memory as b64 (bipolar 64-bit / quad word)
-// in nasm: dq
-#define b64_asm(...) asm volatile(".quad " #__VA_ARGS__ "\n")
-
-// behold, the only sane and consistent named assembly instructions cross architectures
-#define asm_add "add"
-#define asm_sub "sub"
-
-// Register mapping
-#ifdef X64
-
-#define asm_copy_ "mov"
-#define asm_copy_64 "movq"
-#define asm_copy_32 "movl"
-
-#define asm_store "mov"
-#define asm_jump "jmp"
-#define asm_branch "je"
-#define asm_syscall "syscall"
-
-#define reg_0 "%rax"
-#define reg_1 "%rdi"
-#define reg_2 "%rsi"
-#define reg_3 "%rdx"
-#define reg_4 "%rcx"
-#define reg_5 "%r8"
-#define reg_6 "%r9"
-#define tem_0 "%r10"
-#define tem_1 "%r11"
-#define stack_pointer "%rsp"
-#define frame_pointer "%rbp"
-
-#if defined(X64)
-#define asm_copy asm_copy_64
-#else
-#define asm_copy asm_copy_32
-#endif
-
-#elif defined(ARM64)
-#define asm_copy "mov"
-#define asm_jump "b"
-#define asm_branch "beq"
-#define asm_syscall "svc 0"
-#define asm_store "str"
-
-#define reg_0 "x0"
-#define reg_1 "x1"
-#define reg_2 "x2"
-#define reg_3 "x3"
-#define reg_4 "x4"
-#define reg_5 "x5"
-#define reg_6 "x6"
-#define tem_0 "x9"
-#define tem_1 "x10"
-#define stack_pointer "sp"
-#define frame_pointer "x29"
-#elif defined(RISCV64)
-#define asm_copy "ld"
-#define asm_store "sd"
-#define asm_jump "jalr"
-#define asm_branch "beq"
-#define asm_syscall "ecall"
-
-#define reg_0 "a0"
-#define reg_1 "a1"
-#define reg_2 "a2"
-#define reg_3 "a3"
-#define reg_4 "a4"
-#define reg_5 "a5"
-#define reg_6 "a6"
-#define tem_0 "t0"
-#define tem_1 "t1"
-#define stack_pointer "sp"
-#define frame_pointer "s0"
-#endif
-
 #define ir(asm_args...) \
         asm volatile(asm_args)
 
-#define copy(where, from) ir(asm_copy " " where "," from ";")
-#define jump(where) ir(asm_jump " " where ";")
-#define branch(where) ir(asm_branch " " where ";")
-#define add(what, with) ir(asm_add " " what "," with ";")
-#define sub(what, with) ir(asm_sub " " what "," with ";")
-#define system_return ir("ret")
-#define system_invoke ir(asm_syscall)
+#define b8_data(...) asm volatile(".byte " #__VA_ARGS__ "\n")
+#define b16_data(...) asm volatile(".word " #__VA_ARGS__ "\n")
+#define b32_data(...) asm volatile(".long " #__VA_ARGS__ "\n")
+#define b64_data(...) asm volatile(".quad " #__VA_ARGS__ "\n")
 
-#define call(what) ir("call " what ";")
-
-// Arguments passed to fn_asm functions are loaded into registers by C
-// each argument is sequentially loaded into registers, starting from reg_0
-// and ending at reg_6, if there are more arguments than registers, the
-// remaining arguments are loaded into the stack, and the stack pointer
-// is moved to the last argument, and the frame pointer is moved to the
-#if defined(ARM64)
+#if ARM64
 #define fn_asm(name, return_type, arguments...) \
         static return_type name(arguments)
 
@@ -786,7 +685,91 @@ typedef union matrix4
         static NAKED return_type name(arguments)
 #endif
 
-// system calls
+#undef asm
+
+#if X64
+#define asm(name) asm_x64_##name
+#endif
+
+#if ARM64
+#define asm(name) asm_arm64_##name
+#endif
+
+#if RISCV64
+#define asm(name) asm_riscv64_##name
+#endif
+
+#define asm_x64_add "add"
+#define asm_x64_sub "sub"
+#define asm_x64_copy "mov"
+#define asm_x64_copy_64 "movq"
+#define asm_x64_copy_32 "movl"
+#define asm_x64_store "mov"
+#define asm_x64_jump "jmp"
+#define asm_x64_branch "je"
+#define asm_x64_syscall "syscall"
+#define asm_x64_ret "ret"
+#define asm_x64_reg_0 "%rax"
+#define asm_x64_reg_1 "%rdi"
+#define asm_x64_reg_2 "%rsi"
+#define asm_x64_reg_3 "%rdx"
+#define asm_x64_reg_4 "%rcx"
+#define asm_x64_reg_5 "%r8"
+#define asm_x64_reg_6 "%r9"
+#define asm_x64_temp_0 "%r10"
+#define asm_x64_temp_1 "%r11"
+#define asm_x64_stack_pointer "%rsp"
+#define asm_x64_frame_pointer "%rbp"
+
+#define asm_arm64_add "add"
+#define asm_arm64_sub "sub"
+#define asm_arm64_copy "mov"
+#define asm_arm64_jump "b"
+#define asm_arm64_branch "beq"
+#define asm_arm64_syscall "svc 0"
+#define asm_arm64_store "str"
+#define asm_arm64_ret "ret"
+#define asm_arm64_reg_0 "x0"
+#define asm_arm64_reg_1 "x1"
+#define asm_arm64_reg_2 "x2"
+#define asm_arm64_reg_3 "x3"
+#define asm_arm64_reg_4 "x4"
+#define asm_arm64_reg_5 "x5"
+#define asm_arm64_reg_6 "x6"
+#define asm_arm64_temp_0 "x9"
+#define asm_arm64_temp_1 "x10"
+#define asm_arm64_stack_pointer "sp"
+#define asm_arm64_frame_pointer "x29"
+
+#define asm_riscv64_add "add"
+#define asm_riscv64_sub "sub"
+#define asm_riscv64_copy "ld"
+#define asm_riscv64_store "sd"
+#define asm_riscv64_jump "jalr"
+#define asm_riscv64_branch "beq"
+#define asm_riscv64_syscall "ecall"
+#define asm_riscv64_ret "ret"
+#define asm_riscv64_reg_0 "a0"
+#define asm_riscv64_reg_1 "a1"
+#define asm_riscv64_reg_2 "a2"
+#define asm_riscv64_reg_3 "a3"
+#define asm_riscv64_reg_4 "a4"
+#define asm_riscv64_reg_5 "a5"
+#define asm_riscv64_reg_6 "a6"
+#define asm_riscv64_temp_0 "t0"
+#define asm_riscv64_temp_1 "t1"
+#define asm_riscv64_stack_pointer "sp"
+#define asm_riscv64_frame_pointer "s0"
+
+#define copy(where, from) ir(asm(copy) " " asm(where) "," asm(from) ";")
+#define jump(where) ir(asm(jump) " " asm(where) ";")
+#define branch(where) ir(asm(branch) " " asm(where) ";")
+#define add(what, with) ir(asm(add) " " asm(what) "," asm(with) ";")
+#define sub(what, with) ir(asm(sub) " " asm(what) "," asm(with) ";")
+#define system_return ir(asm(ret))
+#define system_invoke ir(asm(syscall))
+#define call(what) ir("call " asm(what) ";")
+
 #include "syscall.c"
 
 // ### System call
@@ -937,7 +920,7 @@ fn_asm(system_call_6, bipolar, positive syscall, positive argument_1, positive a
         copy(reg_6, reg_5);
 
         // syscall argument
-        copy(tem_0, reg_6);
+        copy(temp_0, reg_6);
 
         system_invoke;
         system_return;
