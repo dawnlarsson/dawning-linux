@@ -2,7 +2,6 @@
 #define DAWN_MODERN_C_PLATFORM_MACOS
 
 #include "library.c"
-#include "syscall.c"
 
 fn exit()
 {

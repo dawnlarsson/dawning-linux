@@ -786,6 +786,9 @@ typedef union matrix4
         static NAKED return_type name(arguments)
 #endif
 
+// system calls
+#include "syscall.c"
+
 // ### System call
 // invokes operating system functions externally to the program
 // returns: status code of the system call

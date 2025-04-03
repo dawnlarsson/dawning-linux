@@ -13,7 +13,6 @@
 #define DAWN_MODERN_C_PLATFORM_LINUX
 
 #include "library.c"
-#include "syscall.c"
 
 #define MS_NONE 0
 #define MS_RDONLY 1
