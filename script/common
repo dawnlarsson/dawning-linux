@@ -14,6 +14,15 @@ MAGENTA=$ANSI"95m"
 CYAN=$ANSI"96m"
 WHITE=$ANSI"97m"
 
+if [ "$(uname)" = "Darwin" ]; then
+        alias nproc="sysctl -n hw.physicalcpu"
+        alias make="gmake"
+        alias cp="cp -X"
+        alias stat_bytes="stat -f %z"
+else
+        alias stat_bytes="stat -c %s"
+fi
+
 label() {
         echo $CYAN $BOLD
         echo "    $@"
@@ -54,15 +63,6 @@ if [ "$(id -u)" != "0" ]; then
         echo "Build must be run with root!" 1>&2
         echo
         exit 1
-fi
-
-if [ "$(uname)" = "Darwin" ]; then
-        alias nproc="sysctl -n hw.physicalcpu"
-        alias make="gmake"
-        alias cp="cp -X"
-        alias stat_bytes="stat -f %z"
-else
-        alias stat_bytes="stat -c %s"
 fi
 
 is_safe
