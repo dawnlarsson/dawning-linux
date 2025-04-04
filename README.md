@@ -7,13 +7,28 @@
 </div>
 <br>
 
-### **Experimental** Linux Distro
+# Vision
 
-co-developed with Dawning-Standard C, an experimental micro runtime library.
-The aim is to lay the groundwork for a flexible core that's entirely self contained in terms of 3rd party dependencies.
+Dawning Linux is built from the ground up with no external runtime dependencies. The **Dawning Standard C** library provides everything needed in a clean, minimal implementation.
 
-There is also going to be a fair bit of architectural differences from the usual mainstream distro setup, 
-filesystem, dependency management, linking & runtime requirements.
+It's a **fundamental reconsideration** of how operating systems and the software that runs on them should be designed, built, and configured. Software has become increasingly complex, dependent on sprawling ecosystems of libraries, and divorced from the hardware it runs on, Dawning Linux takes a different path.
+
+Computing system should be comprehensible, predictable, and free from unnecessary abstractions.
+
+**This is EARLY, this is experimental. It might not workout, but it sure is worth trying.**
+
+## Why Dawning Standard C?
+> Syntax shapes the way you think. Better thinking should be standardized.
+
+Traditional type systems and APIs prioritize implementation details over clear expression of intent.
+
+The Type system is explicit about ranges, memory layouts, and semantic meaning. 
+
+Types like `positive`, `bipolar`, and `decimal` **communicate intention**, not just implementation.
+The improved clarity aims to make systems programming **safer AND faster** by having **lower cognative load** on the programmer. 
+
+
+By carefully re-designing the API and type expression, code can become more effective to think, write and audit.
 
 ## Build
 your build environment needs to be able to preform a normal kernel build, and
