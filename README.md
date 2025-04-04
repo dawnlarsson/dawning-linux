@@ -110,7 +110,7 @@ Rust flags:
 **`script/size`** — Utility script, just prints the file size in arg 1
 
 ### License
-logos, branding, trademarks - Copyright Dawn Larsson 2025
+logos, branding, trademarks - Copyright Dawn Larsson 2022
 
 This repo: Apache License 2.0
 
