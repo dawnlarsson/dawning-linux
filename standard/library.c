@@ -15,6 +15,18 @@
 #ifndef DAWN_MODERN_C
 #define DAWN_MODERN_C
 
+#if defined(__clang__)
+
+#pragma clang diagnostic ignored "-Wmissing-prototypes"
+#pragma clang diagnostic ignored "-Wundef"
+
+#elif defined(__GNUC__) || defined(__GNUG__)
+
+#pragma GCC diagnostic ignored "-Wmissing-prototypes"
+#pragma GCC diagnostic ignored "-Wundef"
+
+#endif
+
 #if defined(__linux__) || defined(__unix__)
 #define LINUX 1
 #define UNIX 1
@@ -493,6 +505,21 @@ typedef struct
 #define clamp(value, min, max) ((value)less_than(min) ? (min) : (value)greater_than(max) ? (max) \
                                                                                          : (value))
 
+// Helper function for writing static strings to a writer with data + length
+// example with:
+//      write(str("Hello, world!\n"));
+// example without:
+//      write("Hello, world!\n", 14); // error prone!
+#define str(string) (string), (sizeof(string))
+
+// Writer functions are intended as flexible outout functions passed to functions as arguments
+// and should be easy for compiler to optimize into a zero cost abstraction
+// if length is zero, the function should write until a null terminator is reached (string_length)
+// writers redused file size, faster, and more flexible
+typedef fn(ADDRESS_TO writer)(ADDRESS data, positive length);
+typedef fn(ADDRESS_TO writer_string)(string_address string);
+typedef fn(ADDRESS_TO writer_string_len)(string_address string, positive length);
+
 #ifndef DAWN_MODERN_C_NO_MATH
 
 #define PI 3.14159265359f
@@ -510,6 +537,8 @@ typedef struct
 #define AngleRad(value) (value)
 #define AngleDeg(value) ((value) * DegToRad)
 #define AngleTurn(value) ((value) * TurnToRad)
+
+#ifndef KERNEL_MODE // for now :3
 
 // simpler polynomial error < 0.01
 decimal fast_sin(decimal x)
@@ -533,6 +562,7 @@ decimal fast_sin(decimal x)
 
         return sign * 4.0f * x * (PI - x) / (PI * PI);
 }
+#endif // KERNEL_MODE
 
 typedef union vector2
 {
@@ -685,18 +715,16 @@ typedef union matrix4
         static NAKED return_type name(arguments)
 #endif
 
-#undef asm
-
 #if X64
-#define asm(name) asm_x64_##name
+#define ASM(name) asm_x64_##name
 #endif
 
 #if ARM64
-#define asm(name) asm_arm64_##name
+#define ASM(name) asm_arm64_##name
 #endif
 
 #if RISCV64
-#define asm(name) asm_riscv64_##name
+#define ASM(name) asm_riscv64_##name
 #endif
 
 #define asm_x64_add "add"
@@ -761,14 +789,247 @@ typedef union matrix4
 #define asm_riscv64_stack_pointer "sp"
 #define asm_riscv64_frame_pointer "s0"
 
-#define copy(where, from) ir(asm(copy) " " asm(where) "," asm(from) ";")
-#define jump(where) ir(asm(jump) " " asm(where) ";")
-#define branch(where) ir(asm(branch) " " asm(where) ";")
-#define add(what, with) ir(asm(add) " " asm(what) "," asm(with) ";")
-#define sub(what, with) ir(asm(sub) " " asm(what) "," asm(with) ";")
-#define system_return ir(asm(ret))
-#define system_invoke ir(asm(syscall))
-#define call(what) ir("call " asm(what) ";")
+#define copy(where, from) ir(ASM(copy) " " ASM(where) "," ASM(from) ";")
+#define jump(where) ir(ASM(jump) " " ASM(where) ";")
+#define branch(where) ir(ASM(branch) " " ASM(where) ";")
+#define add(what, with) ir(ASM(add) " " ASM(what) "," ASM(with) ";")
+#define sub(what, with) ir(ASM(sub) " " ASM(what) "," ASM(with) ";")
+#define system_return ir(ASM(ret))
+#define system_invoke ir(ASM(syscall))
+#define call(what) ir("call " ASM(what) ";")
+
+// ### Fill a memory block with the same value
+// fills a memory block with the same value
+// returns: destination address
+// destination: the memory block to fill
+// traditional: memset
+ADDRESS memory_fill(ADDRESS destination, b8 value, positive size)
+{
+        b8 ADDRESS_TO dest = (b8 ADDRESS_TO)destination;
+
+        while (size--)
+                ADDRESS_TO dest++ = (b8)value;
+
+        return destination;
+}
+
+// ### Fill source memory block with destination memory block
+// copies a memory block from source to destination
+// returns: destination address
+// destination: the memory block to copy to
+// source: the memory block to copy from
+// traditional: memcpy
+ADDRESS memory_copy(ADDRESS destination, ADDRESS source, positive size)
+{
+        b8 ADDRESS_TO dest = (b8 ADDRESS_TO)destination;
+        b8 ADDRESS_TO src = (b8 ADDRESS_TO)source;
+
+        while (size--)
+                ADDRESS_TO dest++ = ADDRESS_TO src++;
+
+        return destination;
+}
+
+// ### Length of string segment in linear memory
+// returns the length of a string terminated by a null character
+// NOT a entire array length
+// a string array can hold more than one string, null terminators
+// are used to separate strings, so where you run strlen is important
+// traditional: strlen
+positive string_length(string_address source)
+{
+        string_address step = source;
+
+        while (string_get(step))
+                step++;
+
+        return step - source;
+}
+
+// ### Compare two string segments
+// returns: 0 - if strings are equal
+// returns: positive number - if first string is greater
+// returns: negative number - if second string is greater
+// traditional: strcmp
+b32 string_compare(string_address source, string_address input)
+{
+        while (string_get(source) && string_get(input))
+        {
+                if (string_get(source) != string_get(input))
+                        break;
+
+                source++;
+                input++;
+        }
+
+        return (b8)string_get(source) - (b8)string_get(input);
+}
+
+// ### Copy string segment
+// copies a string segment from source to destination
+// returns: destination address
+// destination: the memory block to copy to
+// source: the memory block to copy from
+// traditional: strcpy
+string_address string_copy(string_address destination, string_address source)
+{
+        string_address start = destination;
+
+        while (string_get(source))
+                string_set(destination++, string_get(source++));
+
+        string_set(destination, '\0');
+
+        return start;
+}
+
+// ### Copy string segment with a maximum length
+// traditional: strncpy
+string_address string_copy_max(string_address destination, string_address source, positive length)
+{
+        string_address start = destination;
+
+        while (length-- && string_get(source))
+                string_set(destination++, string_get(source++));
+
+        string_set(destination, '\0');
+
+        return start;
+}
+
+// ### Find first character in string segment
+// returns: address of the first occurrence of the character
+// returns: NULL if the character is not found
+// source: the memory block to search
+// character: the character to search for
+// traditional: strchr
+string_address string_first_of(string_address source, p8 character)
+{
+        while (string_get(source))
+        {
+                if (string_get(source) == character)
+                        return source;
+
+                source++;
+        }
+
+        return (string_get(source) == character) ? source : NULL;
+}
+
+// ### Find last character in string segment
+// returns: address of the last occurrence of the character
+// returns: NULL if the character is not found
+// source: the memory block to search
+// character: the character to search for
+// traditional: strrchr
+string_address string_last_of(string_address source, p8 character)
+{
+        string_address last = NULL;
+
+        while (string_get(source))
+        {
+                if (string_get(source) == character)
+                        last = source;
+
+                source++;
+        }
+
+        return last;
+}
+
+// ### Takes a path and writes out the last directory name
+fn path_basename(writer write, string_address input)
+{
+        positive length = string_length(input);
+
+        while (length > 1 && input[length - 1] == '/')
+                length--;
+
+        if (length == 1 && input[0] == '/')
+                return write("/", 1);
+
+        positive step = length;
+
+        while (step > 0 && input[step - 1] != '/')
+                step--;
+
+        write(input + step, length - step);
+}
+
+// ### Takes a positive number and writes out the string representation
+fn positive_to_string(writer write, positive number)
+{
+        if (number == 0)
+                return write("0", 1);
+
+        // No thread safety for you >:) (wip) TODO: fix
+        static p8 digits[32] = {0};
+        digits[0] = '\0';
+
+        p8 ADDRESS_TO step = digits + 31;
+        ADDRESS_TO step-- = '\0';
+
+        while (number > 0 && step > digits)
+        {
+                ADDRESS_TO step-- = '0' + (number % 10);
+                number /= 10;
+        }
+
+        write(step + 1, digits + 31 - step);
+}
+
+fn bipolar_to_string(writer write, bipolar number)
+{
+        if (number >= 0)
+                return positive_to_string(write, (positive)number);
+
+        write("-", 1);
+        positive_to_string(write, (positive)(-number));
+}
+
+fn term_set_cursor(writer write, positive2 pos)
+{
+        write(str(ANSI));
+        positive_to_string(write, pos.y);
+        write(str(";"));
+        positive_to_string(write, pos.x);
+        write(str("H"));
+}
+
+// Userspace land
+#ifndef KERNEL_MODE
+
+fn decimal_to_string(writer write, decimal value)
+{
+        if (value < 0)
+        {
+                write("-", 1);
+                value = -value;
+        }
+
+        bipolar integer_part = (bipolar)value;
+        decimal fraction_part = value - integer_part;
+
+        bipolar_to_string(write, integer_part);
+
+        write(".", 1);
+
+        fraction_part *= 1000000;
+        integer_part = (bipolar)fraction_part;
+
+        if (integer_part < 100000)
+                write("0", 1);
+        if (integer_part < 10000)
+                write("0", 1);
+        if (integer_part < 1000)
+                write("0", 1);
+        if (integer_part < 100)
+                write("0", 1);
+        if (integer_part < 10)
+                write("0", 1);
+
+        bipolar_to_string(write, integer_part);
+}
 
 #include "syscall.c"
 
@@ -926,22 +1187,6 @@ fn_asm(system_call_6, bipolar, positive syscall, positive argument_1, positive a
         system_return;
 }
 
-// Writer functions are intended as flexible outout functions passed to functions as arguments
-// and should be easy for compiler to optimize into a zero cost abstraction
-// if length is zero, the function should write until a null terminator is reached (string_length)
-// writers redused file size, faster, and more flexible
-typedef fn(ADDRESS_TO writer)(ADDRESS data, positive length);
-
-typedef fn(ADDRESS_TO writer_string)(string_address string);
-typedef fn(ADDRESS_TO writer_string_len)(string_address string, positive length);
-
-// Helper function for writing static strings to a writer with data + length
-// example with:
-//      write(str("Hello, world!\n"));
-// example without:
-//      write("Hello, world!\n", 14); // error prone!
-#define str(string) (string), (sizeof(string))
-
 // User required implementations
 b32 main();
 
@@ -967,236 +1212,6 @@ p64 get_cpu_time()
         ir("rdtime %0" : "=r"(result));
         return result;
 #endif
-}
-
-// ### Fill a memory block with the same value
-// fills a memory block with the same value
-// returns: destination address
-// destination: the memory block to fill
-// traditional: memset
-ADDRESS memory_fill(ADDRESS destination, b8 value, positive size)
-{
-        b8 ADDRESS_TO dest = (b8 ADDRESS_TO)destination;
-
-        while (size--)
-                ADDRESS_TO dest++ = (b8)value;
-
-        return destination;
-}
-
-// ### Fill source memory block with destination memory block
-// copies a memory block from source to destination
-// returns: destination address
-// destination: the memory block to copy to
-// source: the memory block to copy from
-// traditional: memcpy
-ADDRESS memory_copy(ADDRESS destination, ADDRESS source, positive size)
-{
-        b8 ADDRESS_TO dest = (b8 ADDRESS_TO)destination;
-        b8 ADDRESS_TO src = (b8 ADDRESS_TO)source;
-
-        while (size--)
-                ADDRESS_TO dest++ = ADDRESS_TO src++;
-
-        return destination;
-}
-
-// ### Length of string segment in linear memory
-// returns the length of a string terminated by a null character
-// NOT a entire array length
-// a string array can hold more than one string, null terminators
-// are used to separate strings, so where you run strlen is important
-// traditional: strlen
-positive string_length(string_address source)
-{
-        string_address step = source;
-
-        while (string_get(step))
-                step++;
-
-        return step - source;
-}
-
-// ### Compare two string segments
-// returns: 0 - if strings are equal
-// returns: positive number - if first string is greater
-// returns: negative number - if second string is greater
-// traditional: strcmp
-b32 string_compare(string_address source, string_address input)
-{
-        while (string_get(source) && string_get(input))
-        {
-                if (string_get(source) != string_get(input))
-                        break;
-
-                source++;
-                input++;
-        }
-
-        return (b8)string_get(source) - (b8)string_get(input);
-}
-
-// ### Copy string segment
-// copies a string segment from source to destination
-// returns: destination address
-// destination: the memory block to copy to
-// source: the memory block to copy from
-// traditional: strcpy
-string_address string_copy(string_address destination, string_address source)
-{
-        string_address start = destination;
-
-        while (string_get(source))
-                string_set(destination++, string_get(source++));
-
-        string_set(destination, '\0');
-
-        return start;
-}
-
-// ### Copy string segment with a maximum length
-// traditional: strncpy
-string_address string_copy_max(string_address destination, string_address source, positive length)
-{
-        string_address start = destination;
-
-        while (length-- && string_get(source))
-                string_set(destination++, string_get(source++));
-
-        string_set(destination, '\0');
-
-        return start;
-}
-
-// ### Find first character in string segment
-// returns: address of the first occurrence of the character
-// returns: NULL if the character is not found
-// source: the memory block to search
-// character: the character to search for
-// traditional: strchr
-string_address string_first_of(string_address source, p8 character)
-{
-        while (string_get(source))
-        {
-                if (string_get(source) == character)
-                        return source;
-
-                source++;
-        }
-
-        return (string_get(source) == character) ? source : NULL;
-}
-
-// ### Find last character in string segment
-// returns: address of the last occurrence of the character
-// returns: NULL if the character is not found
-// source: the memory block to search
-// character: the character to search for
-// traditional: strrchr
-string_address string_last_of(string_address source, p8 character)
-{
-        string_address last = NULL;
-
-        while (string_get(source))
-        {
-                if (string_get(source) == character)
-                        last = source;
-
-                source++;
-        }
-
-        return last;
-}
-
-// ### Takes a positive number and writes out the string representation
-fn positive_to_string(writer write, positive number)
-{
-        if (number == 0)
-                return write("0", 1);
-
-        // No thread safety for you >:) (wip) TODO: fix
-        static p8 digits[32] = {0};
-        digits[0] = '\0';
-
-        p8 ADDRESS_TO step = digits + 31;
-        ADDRESS_TO step-- = '\0';
-
-        while (number > 0 && step > digits)
-        {
-                ADDRESS_TO step-- = '0' + (number % 10);
-                number /= 10;
-        }
-
-        write(step + 1, digits + 31 - step);
-}
-
-fn bipolar_to_string(writer write, bipolar number)
-{
-        if (number >= 0)
-                return positive_to_string(write, (positive)number);
-
-        write("-", 1);
-        positive_to_string(write, (positive)(-number));
-}
-
-fn decimal_to_string(writer write, decimal value)
-{
-        if (value < 0)
-        {
-                write("-", 1);
-                value = -value;
-        }
-
-        bipolar integer_part = (bipolar)value;
-        decimal fraction_part = value - integer_part;
-
-        bipolar_to_string(write, integer_part);
-
-        write(".", 1);
-
-        fraction_part *= 1000000;
-        integer_part = (bipolar)fraction_part;
-
-        if (integer_part < 100000)
-                write("0", 1);
-        if (integer_part < 10000)
-                write("0", 1);
-        if (integer_part < 1000)
-                write("0", 1);
-        if (integer_part < 100)
-                write("0", 1);
-        if (integer_part < 10)
-                write("0", 1);
-
-        bipolar_to_string(write, integer_part);
-}
-
-// ### Takes a path and writes out the last directory name
-fn path_basename(writer write, string_address input)
-{
-        positive length = string_length(input);
-
-        while (length > 1 && input[length - 1] == '/')
-                length--;
-
-        if (length == 1 && input[0] == '/')
-                return write("/", 1);
-
-        positive step = length;
-
-        while (step > 0 && input[step - 1] != '/')
-                step--;
-
-        write(input + step, length - step);
-}
-
-fn term_set_cursor(writer write, positive2 pos)
-{
-        write(str(ANSI));
-        positive_to_string(write, pos.y);
-        write(str(";"));
-        positive_to_string(write, pos.x);
-        write(str("H"));
 }
 
 #undef memset
@@ -1298,3 +1313,5 @@ char ADDRESS_TO strrchr(char ADDRESS_TO source, int character)
 #endif // DAWN_MODERN_C_COMPATIBILITY
 
 #endif // DAWN_MODERN_C
+
+#endif // KERNEL_MODE
