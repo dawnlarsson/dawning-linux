@@ -1,4 +1,5 @@
 #!/bin/sh
+source script/common
 
 kernel_dir="linux"
 
@@ -8,11 +9,11 @@ flags_base="-fno-pic -fno-pie -mcmodel=kernel"
 flags_base+=" -O2 -fomit-frame-pointer -fno-stack-protector"
 flags_base+=" -Qn -Wl,--build-id=none"
 
-#includes="-I$kernel_dir/include"
-#includes+=" -I$kernel_dir/include/uapi"
-#includes+=" -I$kernel_dir/arch/x86/include"
-#includes+=" -I$kernel_dir/arch/x86/include/uapi"
-#includes+=" -I$kernel_dir/arch/x86/include/generated"
+#includes="-Ilinux/include"
+#includes+=" -Ilinux/include/uapi"
+#includes+=" -Ilinux/arch/x86/include"
+#includes+=" -Ilinux/arch/x86/include/uapi"
+#includes+=" -Ilinux/arch/x86/include/generated"
 
 defines="-D__KERNEL__ -DMODULE -DKBUILD_MODNAME=\"$2\""
 

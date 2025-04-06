@@ -33,7 +33,7 @@ kernel_tarball=$download_artifacts_dir"linux-$kernel_version.tar"
 kernel_archive=$kernel_tarball".xz"
 
 extract_kernel() {
-    echo $BOLD "Checking kernel signature \n" $RESET
+    echo $BOLD "Checking kernel signature" $RESET
     gpg --locate-keys $trusted_keys
 
     unxz -k $kernel_archive
@@ -45,6 +45,8 @@ extract_kernel() {
     tar -xf $kernel_tarball --strip-components=1 -C $kernel_extract_dir
 
     rm $kernel_tarball
+
+    echo $BOLD "Kernel extracted to $kernel_extract_dir" $RESET
 }
 
 is_file $kernel_archive || \
@@ -54,7 +56,3 @@ mkdir -p $download_artifacts_dir
 mkdir -p $kernel_extract_dir
 
 extract_kernel
-
-echo
-
-exit 0

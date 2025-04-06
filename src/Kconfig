@@ -1,0 +1,7 @@
+menu "Dawning Linux Extensions"
+    config DAWNING
+        bool "Enable Dawning Linux extensions"
+        default y
+        help
+          Enable the Dawning Kernel features
+endmenu
