@@ -21,6 +21,9 @@ label KERNEL CONFIGURATION
         make_flags=$(key make_flags)
 
 label KERNEL CONFIG
+        cp -r src/ linux/dawning
+        line_add_padded "linux/Kconfig" "source \"dawning/Kconfig\""
+
         cd linux
         sudo make allnoconfig $make_flags > /dev/null
         sh scripts/kconfig/merge_config.sh -m .config ../artifacts/.config $make_flags > /dev/null
