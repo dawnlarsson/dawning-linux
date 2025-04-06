@@ -32,6 +32,11 @@ k1wLp1FVnouFdIBLih2/ROJjTYTWUUWmvQrHYufis0AAb9Mmtjg=
 kernel_tarball=$download_artifacts_dir"linux-$kernel_version.tar"
 kernel_archive=$kernel_tarball".xz"
 
+if [ -d $kernel_extract_dir ]; then
+    echo $BOLD "Kernel already extracted..." $RESET
+    exit 0
+fi
+
 extract_kernel() {
     echo $BOLD "Checking kernel signature" $RESET
     gpg --locate-keys $trusted_keys

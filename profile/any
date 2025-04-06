@@ -6,6 +6,8 @@
 # Any profile, essential for all
 #
 
+CONFIG_DAWNING_CORE=y
+
 CONFIG_INITRAMFS_SOURCE="../fs"
 CONFIG_DEFAULT_INIT="/init"
 

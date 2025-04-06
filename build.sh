@@ -21,8 +21,12 @@ label KERNEL CONFIGURATION
         make_flags=$(key make_flags)
 
 label KERNEL CONFIG
-        cp -r src/ linux/dawning
-        line_add_padded "linux/Kconfig" "source \"dawning/Kconfig\""
+        line_add_padded "linux/Kconfig" "source \"kernel/dawning/Kconfig\""
+        line_add_padded "linux/kernel/Makefile" "obj-y += dawning/"
+
+        if [ ! -d linux/kernel/dawning ]; then
+                sudo ln -s $(pwd)/src linux/kernel/dawning
+        fi
 
         cd linux
         sudo make allnoconfig $make_flags > /dev/null

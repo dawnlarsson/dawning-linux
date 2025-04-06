@@ -1,3 +1,7 @@
 menu "Dawning Linux Extensions"
-
+    config DAWNING_CORE
+        tristate "Dawning Core Functionality"
+        default y
+        help
+          Enable Dawning Linux core features
 endmenu # Dawning Linux Extensions

@@ -5,3 +5,6 @@ source script/common
 # rm -rf artifacts/
 
 rm -rf dist/ fs/ linux/ artifacts/merge.config artifacts/.config artifacts/info
+
+# remove all kernel artifacts in /src
+rm -rf src/*.a src/*.o src/*.o.d src/*.cmd src/*.order

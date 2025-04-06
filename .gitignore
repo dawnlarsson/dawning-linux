@@ -7,3 +7,9 @@
 /linux/
 .vscode/settings.json
 .DS_Store
+
+/src/*.a
+/src/*.o
+/src/*.o.d
+/src/*.cmd
+/src/*.order
