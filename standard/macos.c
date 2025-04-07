@@ -3,9 +3,15 @@
 
 #include "library.c"
 
-fn exit()
+fn sleep(positive seconds, positive nanoseconds)
 {
-        system_call_1(syscall(exit), 0);
+        struct timespec time = {seconds, nanoseconds};
+        system_call_1(syscall(nanosleep), (positive)ADDRESS_OF time);
+}
+
+fn exit(b32 code)
+{
+        system_call_1(syscall(exit), code);
 }
 
 fn start()

@@ -15,19 +15,17 @@
 
 #include "library.c"
 
-// if to build this as a standalone executable
+fn parse_sol(writer write, string_address string, string_address entry)
+{
+}
+
 #ifndef COMPILER_LIB_MODE
 #include "linux.c"
 
 const test_sol = 'main\n\tlog "testing"\n';
 
-fn parse_sol(writer write, string_address string, string_address entry)
-{
-}
-
 b32 main()
 {
-        
         parse_sol(test_sol, "main");
 }
 
