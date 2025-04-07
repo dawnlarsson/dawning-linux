@@ -63,7 +63,7 @@ fn dawn_init_mount()
                         continue;
                 }
 
-                struct vfsmount ADDRESS_TO mnt = do_add_mount(mnt, &mountpoint_path, mount->filesystem, mount->mount_flags);
+                // struct vfsmount ADDRESS_TO mnt = do_add_mount(mnt, &mountpoint_path, mount->filesystem, mount->mount_flags);
 
                 path_put(ADDRESS_OF mountpoint_path);
                 mount++;
