@@ -19,7 +19,6 @@ if [ "$(uname)" = "Darwin" ]; then
         alias make="gmake"
         alias cp="cp -X"
         alias stat_bytes="stat -f %z"
-        alias aarch64-linux-gnu-gcc="gcc" # Fixme
 else
         alias stat_bytes="stat -c %s"
 fi

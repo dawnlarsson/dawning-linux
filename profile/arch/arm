@@ -1,4 +1,4 @@
-#> compiler aarch64-linux-gnu-gcc
+#> compiler gcc
 
 #> kernel_image linux/arch/arm64/boot/Image
 #> kernel_export dist/kernel8.img
