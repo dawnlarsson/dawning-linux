@@ -19,11 +19,13 @@
 
 #pragma clang diagnostic ignored "-Wmissing-prototypes"
 #pragma clang diagnostic ignored "-Wundef"
+#pragma clang diagnostic ignored "-Wstrict-prototypes"
 
 #elif defined(__GNUC__) || defined(__GNUG__)
 
 #pragma GCC diagnostic ignored "-Wmissing-prototypes"
 #pragma GCC diagnostic ignored "-Wundef"
+#pragma GCC diagnostic ignored "-Wstrict-prototypes"
 
 #endif
 
