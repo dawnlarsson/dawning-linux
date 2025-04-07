@@ -28,11 +28,15 @@ label KERNEL CONFIG
                 sudo ln -s $(pwd)/src linux/kernel/dawning
         fi
 
-        cd linux
-        sudo make allnoconfig $make_flags > /dev/null
-        sh scripts/kconfig/merge_config.sh -m .config ../artifacts/.config $make_flags > /dev/null
-        sudo make olddefconfig $make_flags > /dev/null
-        cd ..
+        if is_newer artifacts/.config linux/.config; then
+                cd linux
+                sudo make allnoconfig $make_flags > /dev/null
+                sh scripts/kconfig/merge_config.sh -m .config ../artifacts/.config $make_flags > /dev/null
+                sudo make olddefconfig $make_flags > /dev/null
+                cd ..
+        else
+                echo "No changes"
+        fi
 
 label USER SPACE BUILD
         sh standard/build_kernel programs/init fs/init
