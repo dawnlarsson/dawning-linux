@@ -1,10 +1,9 @@
-#include "../standard/linux/util.c"
-#include "../standard/linux/writer.c"
+#include "../standard/library.c"
 
 b32 main()
 {
-        write(str("quack\n"));
-        writer_flush();
+        log(str("quack\n"));
+        log_flush();
 
         return 0;
 }

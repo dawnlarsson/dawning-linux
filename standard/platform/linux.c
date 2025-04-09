@@ -44,12 +44,6 @@ positive2 term_size()
         return size;
 }
 
-struct timespec
-{
-        positive tv_sec;
-        positive tv_nsec;
-};
-
 // TODO: fixme
 fn sleep(positive seconds, positive nanoseconds)
 {

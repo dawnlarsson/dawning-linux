@@ -1,6 +1,7 @@
 // A primitive pre-historic shell,
 // it lobs rocks at the kernel and says ouga boga at the user.
 #include "../standard/library.c"
+#include "../standard/platform/shell.c"
 
 #define PROMPT TERM_RESET TERM_BOLD " $ " TERM_RESET
 
@@ -26,7 +27,7 @@ fn shell_thread_instance(string_address command, string_address arguments)
 
 fn shell_execute_command(string_address command, string_address arguments)
 {
-        writer_flush();
+        log_flush();
 
         bipolar fork_result = system_call_1(syscall(clone), 0);
 
@@ -41,12 +42,12 @@ fn shell_execute_command(string_address command, string_address arguments)
         }
         else
         {
-                write(str("failed with error: "));
-                bipolar_to_string(write, fork_result);
-                write(str("\n"));
+                log(str("failed with error: "));
+                bipolar_to_string(log, fork_result);
+                log(str("\n"));
         }
 
-        writer_flush();
+        log_flush();
 }
 
 bool shell_builtin(string_address arguments)
@@ -55,13 +56,13 @@ bool shell_builtin(string_address arguments)
 
         while (command->name)
         {
-                if (string_compare(command->name, buffer))
+                if (string_compare(command->name, shell_buffer))
                 {
                         command++;
                         continue;
                 }
 
-                command->function(write, arguments);
+                command->function(log, arguments);
                 return true;
         }
 
@@ -71,27 +72,27 @@ bool shell_builtin(string_address arguments)
 // Single pass command parser
 fn process_command()
 {
-        if (buffer[0] == 0)
+        if (shell_buffer[0] == 0)
                 return;
 
         p32 length = 0;
         bool is_first_section = true;
         string_address arguments_buffer = NULL;
 
-        while (buffer[length] != '\0')
+        while (shell_buffer[length] != '\0')
         {
-                if (buffer[length] != ' ')
+                if (shell_buffer[length] != ' ')
                 {
                         length++;
                         continue;
                 }
 
-                buffer[length] = '\0';
+                shell_buffer[length] = '\0';
 
-                if (buffer[length + 1] != ' ' && buffer[length + 1] != '\0')
+                if (shell_buffer[length + 1] != ' ' && shell_buffer[length + 1] != '\0')
                 {
                         is_first_section = false;
-                        arguments_buffer = buffer + length + 1;
+                        arguments_buffer = shell_buffer + length + 1;
                 }
 
                 break;
@@ -103,9 +104,9 @@ fn process_command()
         if (shell_builtin(arguments_buffer))
                 return;
 
-        write(str("Command not found: "));
-        write(shell_buffer, 0);
-        write(str("\n"));
+        log(str("Command not found: "));
+        log(shell_buffer, 0);
+        log(str("\n"));
 }
 
 b32 main()
@@ -117,9 +118,9 @@ b32 main()
         {
                 memory_fill(shell_buffer, 0, MAX_INPUT);
 
-                write(str(TERM_MAIN_BUFFER TERM_RESET TERM_SHOW_CURSOR PROMPT));
+                log(str(TERM_MAIN_BUFFER TERM_RESET TERM_SHOW_CURSOR PROMPT));
 
-                writer_flush();
+                log_flush();
 
                 shell_buffer_length = system_call_3(syscall(read), 0, (positive)shell_buffer, MAX_INPUT);
 

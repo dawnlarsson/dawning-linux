@@ -1,7 +1,6 @@
-#include "../standard/linux.c"
-#include "../standard/linux/writer.c"
+#include "../standard/library.c"
 
-#define lable TERM_BOLD "[Init]" TERM_RESET " "
+#define label TERM_BOLD "[Init]" TERM_RESET " "
 #define init_program "/shell"
 
 typedef struct
@@ -23,9 +22,9 @@ fn mount_filesystems()
 
         while (mount->filesystem)
         {
-                write(lable "Mounting ", 0);
-                write(mount->path, 0);
-                write(str("..."));
+                log(label "Mounting ", 0);
+                log(mount->path, 0);
+                log(str("..."));
 
                 bipolar result = system_call_4(
                     syscall(mount),
@@ -35,11 +34,11 @@ fn mount_filesystems()
                     (positive)mount->mount_flags);
 
                 if (result == 0)
-                        write(str(TERM_BOLD TERM_GREEN " OK\n" TERM_RESET));
+                        log(str(TERM_BOLD TERM_GREEN " OK\n" TERM_RESET));
                 else
-                        write(str(TERM_BOLD TERM_RED " FAILED\n" TERM_RESET));
+                        log(str(TERM_BOLD TERM_RED " FAILED\n" TERM_RESET));
 
-                writer_flush();
+                log_flush();
                 mount++;
         }
 }
@@ -62,12 +61,12 @@ b32 main()
 
         bipolar result = system_call_2(syscall(execve), (positive)init_program, (positive)argv);
 
-        write(lable "Failed to execute init program", 0);
-        write(str(" (error: "));
-        bipolar_to_string(write, result);
-        write(str(")\n"));
+        log(label "Failed to execute init program", 0);
+        log(str(" (error: "));
+        bipolar_to_string(log, result);
+        log(str(")\n"));
 
-        writer_flush();
+        log_flush();
 
         return 1;
 }

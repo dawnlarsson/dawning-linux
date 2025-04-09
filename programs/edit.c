@@ -1,5 +1,4 @@
-#include "../standard/linux.c"
-#include "../standard/linux/writer.c"
+#include "../standard/library.c"
 
 positive2 res;
 positive2 cursor;
@@ -12,20 +11,20 @@ fn frame()
 
 b32 main()
 {
-        write(str(TERM_CLEAR_SCREEN TERM_HIDE_CURSOR TERM_ALT_BUFFER TERM_RESET));
+        log(str(TERM_CLEAR_SCREEN TERM_HIDE_CURSOR TERM_ALT_BUFFER TERM_RESET));
 
-        writer_flush();
+        log_flush();
 
-        write(str("Decimal/float printing & polynomial sine wave\n\n"));
+        log(str("Decimal/float printing & polynomial sine wave\n\n"));
 
-        decimal_to_string(write, PI);
-        write(str("\n"));
-        decimal_to_string(write, -PI);
-        write(str("\n"));
-        decimal_to_string(write, PI2);
-        write(str("\n"));
-        decimal_to_string(write, -PI2);
-        write(str("\n"));
+        decimal_to_string(log, PI);
+        log(str("\n"));
+        decimal_to_string(log, -PI);
+        log(str("\n"));
+        decimal_to_string(log, PI2);
+        log(str("\n"));
+        decimal_to_string(log, -PI2);
+        log(str("\n"));
 
         decimal time = 0;
 
@@ -33,23 +32,23 @@ b32 main()
         {
                 frame();
 
-                write(str(ANSI "6;1H"));
+                log(str(ANSI "6;1H"));
 
-                write(str("\nsine\n"));
-                decimal_to_string(write, fast_sin(time) * 10);
+                log(str("\nsine\n"));
+                decimal_to_string(log, fast_sin(time) * 10);
 
-                write(str("\n\ncosine\n"));
-                decimal_to_string(write, fast_sin(time + PI2 / 4) * 10);
+                log(str("\n\ncosine\n"));
+                decimal_to_string(log, fast_sin(time + PI2 / 4) * 10);
 
-                write(str("\n\ntan\n"));
-                decimal_to_string(write, fast_sin(time) / fast_sin(time + PI2 / 4));
+                log(str("\n\ntan\n"));
+                decimal_to_string(log, fast_sin(time) / fast_sin(time + PI2 / 4));
 
                 time += 0.00001;
 
-                writer_flush();
+                log_flush();
 
                 // sleep(1, 1);
         }
 
-        write(str(TERM_CLEAR_SCREEN TERM_SHOW_CURSOR TERM_MAIN_BUFFER TERM_RESET));
+        log(str(TERM_CLEAR_SCREEN TERM_SHOW_CURSOR TERM_MAIN_BUFFER TERM_RESET));
 }

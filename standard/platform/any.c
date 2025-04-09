@@ -55,6 +55,12 @@
 #define CLONE_CHILD_SETTID 0x01000000
 #define SIGCHLD 17
 
+struct timespec
+{
+        positive tv_sec;
+        positive tv_nsec;
+};
+
 // Logging ---------------------------------------------------
 
 #define MAX_INPUT 4096
