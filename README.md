@@ -1,17 +1,18 @@
-![Dawning Linux Header (2) (1)](https://github.com/user-attachments/assets/34d502fe-9d6f-4897-ac9f-c20fdec2a92c)
+![Dawning Linux Header (1)](https://github.com/user-attachments/assets/86ff911c-60c1-4af1-930d-910158a55f70)
+
 
 <div align="center">
+  ``
+Eos
+
+The goddess and personification of dawn.
+``
+
   <a href="https://discord.gg/cxRvzUyzG8">Discord<a>
   —
   <a> Docs (TBD) <a>
 </div>
 <br>
-
-```
-Eos - The goddess and personification of dawn.
-```
-
-# Vision
 
 Dawning Eos is built from the ground up with no external runtime dependencies. The **Dawning Standard C** library provides everything needed in a clean, minimal implementation.
 
@@ -21,7 +22,7 @@ Computing system should be comprehensible, predictable, and free from unnecessar
 
 **This is EARLY, this is experimental. It might not workout, but it sure is worth trying.**
 
-## Why Dawning Standard C?
+### Why Dawning Standard C?
 > Syntax shapes the way you think. Better thinking should be standardized.
 
 Traditional type systems and APIs prioritize implementation details over clear expression of intent.
@@ -34,7 +35,7 @@ The improved clarity aims to make systems programming **safer AND faster** by ha
 
 By carefully re-designing the API and type expression, code can become more effective to think, write and audit.
 
-## Build
+### Build
 your build environment needs to be able to preform a normal kernel build, and
 the clang C compiler is needed
 
