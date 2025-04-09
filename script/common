@@ -104,10 +104,9 @@ is_different_age() {
 }
 
 if [ "$(id -u)" != "0" ]; then
-        sh script/label Error
-        echo "Build must be run with root!" 1>&2
+        label $YELLOW WARNING !!!
+        echo "Building must be run with root!" 1>&2
         echo
-        exit 1
 fi
 
 is_safe

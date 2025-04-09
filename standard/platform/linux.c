@@ -12,7 +12,7 @@
 #ifndef DAWN_MODERN_C_PLATFORM_LINUX
 #define DAWN_MODERN_C_PLATFORM_LINUX
 
-#include "library.c"
+#include "../library.c"
 
 struct linux_dirent64
 {
