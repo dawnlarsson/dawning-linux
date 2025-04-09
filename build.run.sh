@@ -15,4 +15,4 @@ if [ "$arch" = "arm64" ]; then
         args=" -machine raspi4b -m 2G -smp 4"
 fi
 
-$virt $args -kernel $kernel_export
+$virt $args -kernel $kernel_export -display sdl

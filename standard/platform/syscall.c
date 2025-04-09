@@ -5,8 +5,6 @@
         can be used standalone or as part of the Dawning C standard library
 
         example usage without of Dawning C:
-                #define LINUX 1
-                #define X64 1
                 syscall(read) // returns syscall_linux_x64_read ( 0 )
 
         Dawn Larsson - Apache-2.0 license
@@ -15,17 +13,17 @@
         www.dawning.dev
 */
 
-#ifdef LINUX
+#if defined(__linux__) || defined(__unix__)
 
-#ifdef X64
+#if defined(__x86_64__) || defined(_M_X64)
 #define syscall(name) syscall_linux_x64_##name
 #endif
 
-#ifdef ARM64
+#if defined(__aarch64__) || defined(_M_ARM64)
 #define syscall(name) syscall_linux_arm64_##name
 #endif
 
-#ifdef RISCV64
+#if defined(__riscv)
 #define syscall(name) syscall_linux_riscv64_##name
 #endif
 
@@ -33,11 +31,11 @@
 
 #ifdef MACOS
 
-#ifdef X64
+#if defined(__x86_64__) || defined(_M_X64)
 #define syscall(name) syscall_macos_x64_##name
 #endif
 
-#ifdef ARM64
+#if defined(__aarch64__) || defined(_M_ARM64)
 #define syscall(name) syscall_macos_arm64_##name
 #endif
 

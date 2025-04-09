@@ -7,11 +7,15 @@
 </div>
 <br>
 
+```
+Eos - The goddess and personification of dawn.
+```
+
 # Vision
 
-Dawning Linux is built from the ground up with no external runtime dependencies. The **Dawning Standard C** library provides everything needed in a clean, minimal implementation.
+Dawning Eos is built from the ground up with no external runtime dependencies. The **Dawning Standard C** library provides everything needed in a clean, minimal implementation.
 
-It's a **fundamental reconsideration** of how operating systems and the software that runs on them should be designed, built, and configured. Software has become increasingly complex, dependent on sprawling ecosystems of libraries, and divorced from the hardware it runs on, Dawning Linux takes a different path.
+It's a **fundamental reconsideration** of how operating systems and the software that runs on them should be designed, built, and configured. Software has become increasingly complex, dependent on sprawling ecosystems of libraries, and divorced from the hardware it runs on, Dawning Eos takes a different path.
 
 Computing system should be comprehensible, predictable, and free from unnecessary abstractions.
 

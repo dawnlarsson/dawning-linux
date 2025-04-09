@@ -11,7 +11,7 @@
 #define DAWN_MODERN_C_KERNEL
 #include "../standard/library.c"
 
-#define log(fmt, ...) \
+#define log_k(fmt, ...) \
         pr_alert("[Dawning] " fmt, ##__VA_ARGS__)
 
 typedef struct
@@ -46,7 +46,7 @@ fn dawn_init_mount()
 
                 if (IS_ERR(mnt))
                 {
-                        log("vfs_kern_mount failed\n");
+                        log_k("vfs_kern_mount failed\n");
                         mount++;
                         continue;
                 }
@@ -58,7 +58,7 @@ fn dawn_init_mount()
 
                 if (err)
                 {
-                        log("kern_path failed\n");
+                        log_k("kern_path failed\n");
                         mount++;
                         continue;
                 }
@@ -72,6 +72,8 @@ fn dawn_init_mount()
 
 p32 __init dawn_start()
 {
+        log_k("Dawning Eos - Kernel Extentions starting...\n");
+
         dawn_init_mount();
 
         return 0;
