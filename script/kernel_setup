@@ -5,27 +5,27 @@ kernel_extract_dir="linux/"
 download_artifacts_dir="artifacts/"
 keys_dir=$download_artifacts_dir"keys/"
 trusted_keys="torvalds@kernel.org gregkh@kernel.org"
-kernel_version="6.14"
-kernel_download="https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.14.tar.xz"
+kernel_version="6.14.1"
+kernel_download="https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.14.1.tar.xz"
 kernel_pgp="
 -----BEGIN PGP SIGNATURE-----
 Comment: This signature is for the .tar version of the archive
-Comment: git archive --format tar --prefix=linux-6.14/ v6.14
+Comment: git archive --format tar --prefix=linux-6.14.1/ v6.14.1
 Comment: git version 2.49.0
 
-iQIzBAABCAAdFiEEZH8oZUiU471FcZm+ONu9yGCSaT4FAmfhdasACgkQONu9yGCS
-aT5MVQ/+O2twsUA9kCSVelVs80Ys/vGrw278h5CLpYoaYsxDhjQWtAqFhiYuYsSf
-fqWeyQJQs55YUcfCJGss4FPqWyxjNGoYVqv+GwJZIv74/kmjE31an+L0k5qEXiz5
-bBzwFKUobGe2UAsNWuCTgoDh7M/Xsdz+MPq9E/7gfvRwEEjKX++scEVnGV3Qy7NS
-oEOzdZpynksmF3OTnzky53XGVoW9Tk6As5r3pYy7F3KHcu/QmWKOIbU6t1+9XN08
-8QvGKdnEwv6Isd7zrg2BP6gdQfwLmP9FJbsrZ5c9XP3zNz2DsEG8H459IucCOmUR
-T3kkBonxSxlMdKRC23Nxmxb7wrzL4sGw8PC2a6iAFH+4glTc+jzvftKHzIPBQeFg
-HC4cSb1j3EEVyv+RnQNEBShY+4ghT0Zofc5k3rSPUYpW9xn0bzFNq1sP7/7nTaYG
-TNDBJrJEQmq4GarKWZ2y11I4mw7l/PBvfQpgxm6ABHfUdl0yPy89SOiBfMw+8b2Y
-mk5AXuO3qdAYqVTXUodWn79Rtno5Zrj7UXMQjoK9LcP1lr1JVvC8I/gDktdBjgqW
-60KkX0tNfIw0TzkcK/ogewBKKKRJJ1VZZOGx+tw/7ShBUpyAEu1boosx6bT88GVN
-k1wLp1FVnouFdIBLih2/ROJjTYTWUUWmvQrHYufis0AAb9Mmtjg=
-=hEZa
+iQIzBAABCAAdFiEEZH8oZUiU471FcZm+ONu9yGCSaT4FAmfziMoACgkQONu9yGCS
+aT7vCxAArowbafcC73ARYIBjkUnxXPScbAv/Xf5Vx7up9jiRFBqAAzOMGCD/tuah
+DwwZ4YwqEFqYIC0loM+Dbuxt8TXTQuGqy+7wIExYleldK8LRnLfHIwNVgHOLoX2e
+mD8pQslLP2KdkhGTDLT001Zdsp6H/Lwfmsn0YMSUj8eLAeCT7nrXwFkxPAJIaQkU
+XYLxjw7Zg2fl0QbomRQPES3kS4hVz1KMzPR+UXUHn7/EuzCqgNoKb7rbr4IV3Kpo
+4apJo9720oH9O8YaM6IWnvfdgzkxdaQczCx8rQL9052c6tt3LxltRNfzf/0MeSpM
+TdZY8Lbka1HsEnEhx1zQ629MdtPNVGM/nq48Pr5J3EDyWZweoVv9zwdrkzD2cbBp
+ZYJnGb8i9SubV2gG/xflcXpj8KxKhzGTettUrKVQ5JzbD/dYRLWyxyQl7fvp9kdd
+Pnios3Z8sC3XPpOd6UvA7LpsnbtPxV4XzEAMQ6ozepaKK8dOOtsFqBSCojgvQhog
+UzCgXEjcZAqm5rcgqkJHFsWUZ7bs8o0NhW4VfpCutCUpp7w9k1lpqm2RKneZs7Rb
+R+EBEUMID4yoXJmR13G68jZY3NAvbLVO4JNhlB5fBIqJzfxRbBTaBFKKfbVLrVzo
+g7kN4L+u19sKtotb1SaVodYcD6EFxHIoNS5dxiZ6jTq+cIwFS0o=
+=iCQX
 -----END PGP SIGNATURE-----
 "
 
