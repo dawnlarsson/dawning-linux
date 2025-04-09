@@ -1,4 +1,4 @@
-#include "../linux.c"
+#include "../library.c"
 
 // kernel page is normaly 4096 bytes
 const positive page_size = 4096;

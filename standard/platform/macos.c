@@ -1,7 +1,7 @@
 #ifndef DAWN_MODERN_C_PLATFORM_MACOS
 #define DAWN_MODERN_C_PLATFORM_MACOS
 
-#include "library.c"
+#include "../library.c"
 
 fn sleep(positive seconds, positive nanoseconds)
 {

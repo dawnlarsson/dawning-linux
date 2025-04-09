@@ -26,7 +26,6 @@
 #pragma GCC diagnostic ignored "-Wmissing-prototypes"
 #pragma GCC diagnostic ignored "-Wundef"
 #pragma GCC diagnostic ignored "-Wstrict-prototypes"
-
 #endif
 
 #if defined(__linux__) || defined(__unix__)
@@ -83,10 +82,6 @@
 #if defined(__MODULE__) || defined(DAWN_MODERN_C_KERNEL)
 #define KERNEL_MODE 1
 #endif
-
-#define stdin 0
-#define stdout 1
-#define stderr 2
 
 #if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 202311L
 /* C23 does not require the second parameter for va_start. */
@@ -473,6 +468,106 @@ typedef typeof(sizeof(0)) sized;
 #undef bool
 #define bool p8
 
+#define ir(asm_args...) \
+        asm volatile(asm_args)
+
+#define b8_data(...) asm volatile(".byte " #__VA_ARGS__ "\n")
+#define b16_data(...) asm volatile(".word " #__VA_ARGS__ "\n")
+#define b32_data(...) asm volatile(".long " #__VA_ARGS__ "\n")
+#define b64_data(...) asm volatile(".quad " #__VA_ARGS__ "\n")
+
+#if ARM64
+#define fn_asm(name, return_type, arguments...) \
+        static return_type name(arguments)
+
+#else
+#define fn_asm(name, return_type, arguments...) \
+        static NAKED return_type name(arguments)
+#endif
+
+#if X64
+#define ASM(name) asm_x64_##name
+#endif
+
+#if ARM64
+#define ASM(name) asm_arm64_##name
+#endif
+
+#if RISCV64
+#define ASM(name) asm_riscv64_##name
+#endif
+
+#define asm_x64_add "add"
+#define asm_x64_sub "sub"
+#define asm_x64_copy "mov"
+#define asm_x64_copy_64 "movq"
+#define asm_x64_copy_32 "movl"
+#define asm_x64_store "mov"
+#define asm_x64_jump "jmp"
+#define asm_x64_branch "je"
+#define asm_x64_syscall "syscall"
+#define asm_x64_ret "ret"
+#define asm_x64_reg_0 "%rax"
+#define asm_x64_reg_1 "%rdi"
+#define asm_x64_reg_2 "%rsi"
+#define asm_x64_reg_3 "%rdx"
+#define asm_x64_reg_4 "%rcx"
+#define asm_x64_reg_5 "%r8"
+#define asm_x64_reg_6 "%r9"
+#define asm_x64_temp_0 "%r10"
+#define asm_x64_temp_1 "%r11"
+#define asm_x64_stack_pointer "%rsp"
+#define asm_x64_frame_pointer "%rbp"
+
+#define asm_arm64_add "add"
+#define asm_arm64_sub "sub"
+#define asm_arm64_copy "mov"
+#define asm_arm64_jump "b"
+#define asm_arm64_branch "beq"
+#define asm_arm64_syscall "svc 0"
+#define asm_arm64_store "str"
+#define asm_arm64_ret "ret"
+#define asm_arm64_reg_0 "x0"
+#define asm_arm64_reg_1 "x1"
+#define asm_arm64_reg_2 "x2"
+#define asm_arm64_reg_3 "x3"
+#define asm_arm64_reg_4 "x4"
+#define asm_arm64_reg_5 "x5"
+#define asm_arm64_reg_6 "x6"
+#define asm_arm64_temp_0 "x9"
+#define asm_arm64_temp_1 "x10"
+#define asm_arm64_stack_pointer "sp"
+#define asm_arm64_frame_pointer "x29"
+
+#define asm_riscv64_add "add"
+#define asm_riscv64_sub "sub"
+#define asm_riscv64_copy "ld"
+#define asm_riscv64_store "sd"
+#define asm_riscv64_jump "jalr"
+#define asm_riscv64_branch "beq"
+#define asm_riscv64_syscall "ecall"
+#define asm_riscv64_ret "ret"
+#define asm_riscv64_reg_0 "a0"
+#define asm_riscv64_reg_1 "a1"
+#define asm_riscv64_reg_2 "a2"
+#define asm_riscv64_reg_3 "a3"
+#define asm_riscv64_reg_4 "a4"
+#define asm_riscv64_reg_5 "a5"
+#define asm_riscv64_reg_6 "a6"
+#define asm_riscv64_temp_0 "t0"
+#define asm_riscv64_temp_1 "t1"
+#define asm_riscv64_stack_pointer "sp"
+#define asm_riscv64_frame_pointer "s0"
+
+#define copy(where, from) ir(ASM(copy) " " ASM(where) "," ASM(from) ";")
+#define jump(where) ir(ASM(jump) " " ASM(where) ";")
+#define branch(where) ir(ASM(branch) " " ASM(where) ";")
+#define add(what, with) ir(ASM(add) " " ASM(what) "," ASM(with) ";")
+#define sub(what, with) ir(ASM(sub) " " ASM(what) "," ASM(with) ";")
+#define system_return ir(ASM(ret))
+#define system_invoke ir(ASM(syscall))
+#define call(what) ir("call " ASM(what) ";")
+
 // a thread-local storage variable, unique to each thread
 #define local __thread
 
@@ -541,7 +636,6 @@ typedef fn(ADDRESS_TO writer_string_len)(string_address string, positive length)
 #define AngleTurn(value) ((value) * TurnToRad)
 
 #ifndef KERNEL_MODE // for now :3
-
 // simpler polynomial error < 0.01
 decimal fast_sin(decimal x)
 {
@@ -699,106 +793,6 @@ typedef union matrix4
 } matrix4;
 
 #endif // DAWN_MODERN_C_NO_MATH
-
-#define ir(asm_args...) \
-        asm volatile(asm_args)
-
-#define b8_data(...) asm volatile(".byte " #__VA_ARGS__ "\n")
-#define b16_data(...) asm volatile(".word " #__VA_ARGS__ "\n")
-#define b32_data(...) asm volatile(".long " #__VA_ARGS__ "\n")
-#define b64_data(...) asm volatile(".quad " #__VA_ARGS__ "\n")
-
-#if ARM64
-#define fn_asm(name, return_type, arguments...) \
-        static return_type name(arguments)
-
-#else
-#define fn_asm(name, return_type, arguments...) \
-        static NAKED return_type name(arguments)
-#endif
-
-#if X64
-#define ASM(name) asm_x64_##name
-#endif
-
-#if ARM64
-#define ASM(name) asm_arm64_##name
-#endif
-
-#if RISCV64
-#define ASM(name) asm_riscv64_##name
-#endif
-
-#define asm_x64_add "add"
-#define asm_x64_sub "sub"
-#define asm_x64_copy "mov"
-#define asm_x64_copy_64 "movq"
-#define asm_x64_copy_32 "movl"
-#define asm_x64_store "mov"
-#define asm_x64_jump "jmp"
-#define asm_x64_branch "je"
-#define asm_x64_syscall "syscall"
-#define asm_x64_ret "ret"
-#define asm_x64_reg_0 "%rax"
-#define asm_x64_reg_1 "%rdi"
-#define asm_x64_reg_2 "%rsi"
-#define asm_x64_reg_3 "%rdx"
-#define asm_x64_reg_4 "%rcx"
-#define asm_x64_reg_5 "%r8"
-#define asm_x64_reg_6 "%r9"
-#define asm_x64_temp_0 "%r10"
-#define asm_x64_temp_1 "%r11"
-#define asm_x64_stack_pointer "%rsp"
-#define asm_x64_frame_pointer "%rbp"
-
-#define asm_arm64_add "add"
-#define asm_arm64_sub "sub"
-#define asm_arm64_copy "mov"
-#define asm_arm64_jump "b"
-#define asm_arm64_branch "beq"
-#define asm_arm64_syscall "svc 0"
-#define asm_arm64_store "str"
-#define asm_arm64_ret "ret"
-#define asm_arm64_reg_0 "x0"
-#define asm_arm64_reg_1 "x1"
-#define asm_arm64_reg_2 "x2"
-#define asm_arm64_reg_3 "x3"
-#define asm_arm64_reg_4 "x4"
-#define asm_arm64_reg_5 "x5"
-#define asm_arm64_reg_6 "x6"
-#define asm_arm64_temp_0 "x9"
-#define asm_arm64_temp_1 "x10"
-#define asm_arm64_stack_pointer "sp"
-#define asm_arm64_frame_pointer "x29"
-
-#define asm_riscv64_add "add"
-#define asm_riscv64_sub "sub"
-#define asm_riscv64_copy "ld"
-#define asm_riscv64_store "sd"
-#define asm_riscv64_jump "jalr"
-#define asm_riscv64_branch "beq"
-#define asm_riscv64_syscall "ecall"
-#define asm_riscv64_ret "ret"
-#define asm_riscv64_reg_0 "a0"
-#define asm_riscv64_reg_1 "a1"
-#define asm_riscv64_reg_2 "a2"
-#define asm_riscv64_reg_3 "a3"
-#define asm_riscv64_reg_4 "a4"
-#define asm_riscv64_reg_5 "a5"
-#define asm_riscv64_reg_6 "a6"
-#define asm_riscv64_temp_0 "t0"
-#define asm_riscv64_temp_1 "t1"
-#define asm_riscv64_stack_pointer "sp"
-#define asm_riscv64_frame_pointer "s0"
-
-#define copy(where, from) ir(ASM(copy) " " ASM(where) "," ASM(from) ";")
-#define jump(where) ir(ASM(jump) " " ASM(where) ";")
-#define branch(where) ir(ASM(branch) " " ASM(where) ";")
-#define add(what, with) ir(ASM(add) " " ASM(what) "," ASM(with) ";")
-#define sub(what, with) ir(ASM(sub) " " ASM(what) "," ASM(with) ";")
-#define system_return ir(ASM(ret))
-#define system_invoke ir(ASM(syscall))
-#define call(what) ir("call " ASM(what) ";")
 
 // ### Fill a memory block with the same value
 // fills a memory block with the same value
@@ -998,6 +992,25 @@ fn term_set_cursor(writer write, positive2 pos)
         write(str("H"));
 }
 
+// ### Get CPU time (Time Stamp Counter)
+// returns: the current CPU time
+p64 get_cpu_time()
+{
+#if defined(X64)
+        p32 high, low;
+        ir("rdtsc" : "=a"(low), "=d"(high));
+        return ((p64)high << 32) | low;
+#elif defined(ARM64)
+        p64 result;
+        ir("mrs %0, cntvct_el0" : "=r"(result));
+        return result;
+#elif defined(RISCV64)
+        p64 result;
+        ir("rdtime %0" : "=r"(result));
+        return result;
+#endif
+}
+
 // Userspace land
 #ifndef KERNEL_MODE
 
@@ -1032,8 +1045,6 @@ fn decimal_to_string(writer write, decimal value)
 
         bipolar_to_string(write, integer_part);
 }
-
-#include "syscall.c"
 
 // ### System call
 // invokes operating system functions externally to the program
@@ -1197,25 +1208,6 @@ fn exit(b32 code);
 fn sleep(positive seconds, positive nanoseconds);
 fn _start();
 
-// ### Get CPU time (Time Stamp Counter)
-// returns: the current CPU time
-p64 get_cpu_time()
-{
-#if defined(X64)
-        p32 high, low;
-        ir("rdtsc" : "=a"(low), "=d"(high));
-        return ((p64)high << 32) | low;
-#elif defined(ARM64)
-        p64 result;
-        ir("mrs %0, cntvct_el0" : "=r"(result));
-        return result;
-#elif defined(RISCV64)
-        p64 result;
-        ir("rdtime %0" : "=r"(result));
-        return result;
-#endif
-}
-
 #undef memset
 // for compatibility, makes the linker happy
 ADDRESS memset(ADDRESS destination, int value, long unsigned int size)
@@ -1314,6 +1306,20 @@ char ADDRESS_TO strrchr(char ADDRESS_TO source, int character)
 
 #endif // DAWN_MODERN_C_COMPATIBILITY
 
-#endif // DAWN_MODERN_C
+#ifndef DAWN_NO_PLATFORM
 
+#include "platform/syscall.c"
+#include "platform/any.c"
+
+#if defined(LINUX)
+#include "platform/linux.c"
+#endif
+
+#if defined(MACOS)
+#include "platform/macos.c"
+#endif
+
+#endif // DAWN_NO_PLATFORM
+
+#endif // DAWN_MODERN_C
 #endif // KERNEL_MODE

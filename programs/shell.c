@@ -1,9 +1,13 @@
 // A primitive pre-historic shell,
 // it lobs rocks at the kernel and says ouga boga at the user.
-#include "../standard/linux/util.c"
-#include "../standard/linux/writer.c"
+#include "../standard/library.c"
 
 #define PROMPT TERM_RESET TERM_BOLD " $ " TERM_RESET
+
+#define MAX_INPUT 4096
+
+p8 shell_buffer[MAX_INPUT];
+positive shell_buffer_length;
 
 fn shell_thread_instance(string_address command, string_address arguments)
 {
@@ -11,11 +15,11 @@ fn shell_thread_instance(string_address command, string_address arguments)
 
         bipolar exec_result = system_call_3(syscall(execve), (positive)command, (positive)arguments_list, 0);
 
-        write(str("failed with error: "));
-        bipolar_to_string(write, exec_result);
-        write(str("\n"));
+        log(str("failed with error: "));
+        bipolar_to_string(log, exec_result);
+        log(str("\n"));
 
-        writer_flush();
+        log_flush();
 
         exit(1);
 }
@@ -93,14 +97,14 @@ fn process_command()
                 break;
         }
 
-        if (buffer[0] == '.' || buffer[0] == '/')
-                return shell_execute_command(buffer, arguments_buffer);
+        if (shell_buffer[0] == '.' || shell_buffer[0] == '/')
+                return shell_execute_command(shell_buffer, arguments_buffer);
 
         if (shell_builtin(arguments_buffer))
                 return;
 
         write(str("Command not found: "));
-        write(buffer, 0);
+        write(shell_buffer, 0);
         write(str("\n"));
 }
 
@@ -111,19 +115,19 @@ b32 main()
 
         while (1)
         {
-                memory_fill(buffer, 0, MAX_INPUT);
+                memory_fill(shell_buffer, 0, MAX_INPUT);
 
                 write(str(TERM_MAIN_BUFFER TERM_RESET TERM_SHOW_CURSOR PROMPT));
 
                 writer_flush();
 
-                buffer_length = system_call_3(syscall(read), 0, (positive)buffer, MAX_INPUT);
+                shell_buffer_length = system_call_3(syscall(read), 0, (positive)shell_buffer, MAX_INPUT);
 
-                if (buffer_length > MAX_INPUT)
-                        buffer_length = MAX_INPUT;
+                if (shell_buffer_length > MAX_INPUT)
+                        shell_buffer_length = MAX_INPUT;
 
-                if (buffer[buffer_length - 1] == '\n')
-                        buffer[buffer_length - 1] = '\0';
+                if (shell_buffer[shell_buffer_length - 1] == '\n')
+                        shell_buffer[shell_buffer_length - 1] = '\0';
 
                 process_command();
         }
