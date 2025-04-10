@@ -5,8 +5,9 @@
 
 fn sleep(positive seconds, positive nanoseconds)
 {
-        struct timespec time = {seconds, nanoseconds};
-        system_call_1(syscall(nanosleep), (positive)ADDRESS_OF time);
+        return;
+        // struct timespec time = {seconds, nanoseconds};
+        // system_call_1(syscall(nanosleep), (positive)ADDRESS_OF time);
 }
 
 fn exit(b32 code)
@@ -17,7 +18,6 @@ fn exit(b32 code)
 fn start()
 {
         b32 result = main();
-
         exit(result);
 }
 

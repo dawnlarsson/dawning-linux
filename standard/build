@@ -10,9 +10,8 @@ flags_base+=" -O2"
 # more agrresive flags
 flags_base+=" -fno-asynchronous-unwind-tables -fomit-frame-pointer -fno-stack-protector"
 
-$compiler $1.c -o $2 $flags_base $suppress
+$compiler $1.c -o $2 $flags_base $suppress -Wl,-e,_start
 
 echo "Compiled $1.c to $2"
-sh script/size $2
 
 chmod +x $2

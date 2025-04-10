@@ -7,7 +7,7 @@ dawning_flags=$(key dawning_flags)
 echo $BOLD
 echo "    Compiling  $1.c  ->  $2" $RESET
 
-$compiler $1.c -o $2 $dawning_flags $suppress
+$compiler $1.c -o $2 $dawning_flags $suppress -Wl,-e,_start
 
 echo
 size $2

@@ -34,9 +34,9 @@
 #elif defined(__APPLE__)
 #define APPLE 1
 #include <TargetConditionals.h>
-#if defined(TARGET_OS_IPHONE) && !TARGET_OS_IPHONE
+#if TARGET_OS_MAC
 #define MACOS 1
-#else
+#elif TARGET_OS_IPHONE
 #define IOS 1
 #endif
 #elif defined(_WIN32)
@@ -105,7 +105,7 @@ typedef __builtin_va_list variable_arguments;
 #define DEAD_END __attribute__((noreturn))
 #define WEAK __attribute__((weak))
 
-#define pub extern __attribute__((visibility("default")))
+#define pub extern __attribute__((visibility("default"))) KEEP
 
 #define ADDRESS_TO *
 #define ADDRESS_OF &
@@ -1206,7 +1206,6 @@ b32 main();
 // Platform required implementations
 fn exit(b32 code);
 fn sleep(positive seconds, positive nanoseconds);
-fn _start();
 
 #undef memset
 // for compatibility, makes the linker happy
