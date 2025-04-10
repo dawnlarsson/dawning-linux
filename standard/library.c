@@ -505,7 +505,6 @@ typedef typeof(sizeof(0)) sized;
 #define asm_x64_store "mov"
 #define asm_x64_jump "jmp"
 #define asm_x64_branch "je"
-#define asm_x64_syscall "syscall"
 #define asm_x64_ret "ret"
 #define asm_x64_reg_0 "%rax"
 #define asm_x64_reg_1 "%rdi"
@@ -518,13 +517,14 @@ typedef typeof(sizeof(0)) sized;
 #define asm_x64_temp_1 "%r11"
 #define asm_x64_stack_pointer "%rsp"
 #define asm_x64_frame_pointer "%rbp"
+#define asm_x64_syscall "syscall"
+#define asm_x64_syscall_slot asm_x64_reg_0
 
 #define asm_arm64_add "add"
 #define asm_arm64_sub "sub"
 #define asm_arm64_copy "mov"
 #define asm_arm64_jump "b"
 #define asm_arm64_branch "beq"
-#define asm_arm64_syscall "svc 0"
 #define asm_arm64_store "str"
 #define asm_arm64_ret "ret"
 #define asm_arm64_reg_0 "x0"
@@ -538,6 +538,14 @@ typedef typeof(sizeof(0)) sized;
 #define asm_arm64_temp_1 "x10"
 #define asm_arm64_stack_pointer "sp"
 #define asm_arm64_frame_pointer "x29"
+
+#if defined(MACOS) && defined(ARM64)
+#define asm_arm64_syscall "svc 0x80"
+#define asm_arm64_syscall_slot "x16"
+#else
+#define asm_arm64_syscall "svc 0"
+#define asm_arm64_syscall_slot "x8"
+#endif
 
 #define asm_riscv64_add "add"
 #define asm_riscv64_sub "sub"
@@ -558,6 +566,7 @@ typedef typeof(sizeof(0)) sized;
 #define asm_riscv64_temp_1 "t1"
 #define asm_riscv64_stack_pointer "sp"
 #define asm_riscv64_frame_pointer "s0"
+#define asm_riscv64_syscall_slot asm_riscv64_reg_0
 
 #define copy(where, from) ir(ASM(copy) " " ASM(where) "," ASM(from) ";")
 #define jump(where) ir(ASM(jump) " " ASM(where) ";")
@@ -1053,7 +1062,7 @@ fn decimal_to_string(writer write, decimal value)
 fn_asm(system_call, bipolar, positive syscall)
 {
         // syscall number
-        copy(reg_0, reg_0);
+        copy(reg_0, syscall_slot);
 
         system_invoke;
         system_return;
@@ -1066,7 +1075,7 @@ fn_asm(system_call, bipolar, positive syscall)
 fn_asm(system_call_1, bipolar, positive syscall, positive argument_1)
 {
         // syscall number
-        copy(reg_1, reg_0);
+        copy(reg_1, syscall_slot);
 
         // syscall argument
         copy(reg_2, reg_1);
@@ -1082,7 +1091,7 @@ fn_asm(system_call_1, bipolar, positive syscall, positive argument_1)
 fn_asm(system_call_2, bipolar, positive syscall, positive argument_1, positive argument_2)
 {
         // syscall number
-        copy(reg_1, reg_0);
+        copy(reg_1, syscall_slot);
 
         // syscall argument
         copy(reg_2, reg_1);
@@ -1101,7 +1110,7 @@ fn_asm(system_call_2, bipolar, positive syscall, positive argument_1, positive a
 fn_asm(system_call_3, bipolar, positive syscall, positive argument_1, positive _startargument_2, positive argument_3)
 {
         // syscall number
-        copy(reg_1, reg_0);
+        copy(reg_1, syscall_slot);
 
         // syscall argument
         copy(reg_2, reg_1);
@@ -1123,7 +1132,7 @@ fn_asm(system_call_3, bipolar, positive syscall, positive argument_1, positive _
 fn_asm(system_call_4, bipolar, positive syscall, positive argument_1, positive argument_2, positive argument_3, positive argument_4)
 {
         // syscall number
-        copy(reg_1, reg_0);
+        copy(reg_1, syscall_slot);
 
         // syscall argument
         copy(reg_2, reg_1);
@@ -1148,7 +1157,7 @@ fn_asm(system_call_4, bipolar, positive syscall, positive argument_1, positive a
 fn_asm(system_call_5, bipolar, positive syscall, positive argument_1, positive argument_2, positive argument_3, positive argument_4, positive argument_5)
 {
         // syscall number
-        copy(reg_1, reg_0);
+        copy(reg_1, syscall_slot);
 
         // syscall argument
         copy(reg_2, reg_1);
@@ -1176,7 +1185,7 @@ fn_asm(system_call_5, bipolar, positive syscall, positive argument_1, positive a
 fn_asm(system_call_6, bipolar, positive syscall, positive argument_1, positive argument_2, positive argument_3, positive argument_4, positive argument_5, positive argument_6)
 {
         // syscall number
-        copy(reg_1, reg_0);
+        copy(reg_1, syscall_slot);
 
         // syscall argument
         copy(reg_2, reg_1);

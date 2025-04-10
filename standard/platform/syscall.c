@@ -36,7 +36,7 @@
 #endif
 
 #if defined(__aarch64__) || defined(_M_ARM64)
-#define syscall(name) syscall_macos_arm64_##name
+#define syscall(name) syscall_macos_arm64_##name | 0x2000000
 #endif
 
 #endif
