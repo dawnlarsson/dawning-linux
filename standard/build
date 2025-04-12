@@ -10,8 +10,19 @@ flags_base+=" -O2"
 # more agrresive flags
 flags_base+=" -fno-asynchronous-unwind-tables -fomit-frame-pointer -fno-stack-protector"
 
-$compiler $1.c -o $2 $flags_base $suppress -Wl,-e,_start
+source_file=$1
+output_file=$2
 
-echo "Compiled $1.c to $2"
+if [ -z "$source_file" ]; then
+        source_file="src/main.c"
+fi
 
-chmod +x $2
+if [ -z "$output_file" ]; then
+        output_file="bin/$(basename $(pwd))"
+fi
+
+$compiler $source_file -o $output_file $flags_base $suppress -Wl,-e,_start
+
+echo "Compiled $source_file to $output_file"
+
+chmod +x $output_file

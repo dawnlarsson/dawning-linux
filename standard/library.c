@@ -1329,5 +1329,6 @@ char ADDRESS_TO strrchr(char ADDRESS_TO source, int character)
 
 #endif // DAWN_NO_PLATFORM
 
-#endif // DAWN_MODERN_C
 #endif // KERNEL_MODE
+
+#endif // DAWN_MODERN_C

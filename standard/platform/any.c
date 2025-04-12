@@ -101,3 +101,14 @@ fn log(ADDRESS data, positive length)
         log_direct(log_writer_buffer, log_writer_buffer_length);
         log_direct(data, length);
 }
+
+// takes any variable and writes it separatly depending on the type
+fn log_any(writer write, ...)
+{
+        variable_arguments arguments;
+        variable_arguments_start(arguments, 0);
+
+        //TBD
+
+        variable_arguments_end(arguments);
+}
