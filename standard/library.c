@@ -83,19 +83,6 @@
 #define KERNEL_MODE 1
 #endif
 
-#if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 202311L
-/* C23 does not require the second parameter for va_start. */
-#define variable_arguments_start(ap, ...) __builtin_va_start(ap, 0)
-#else
-/* Versions before C23 do require the second parameter. */
-#define variable_arguments_start(ap, param) __builtin_va_start(ap, param)
-#endif
-#define variable_arguments_end(ap) __builtin_va_end(ap)
-#define variable_argument(ap, type) __builtin_va_arg(ap, type)
-#define variable_argument_copy(dest, src) __builtin_va_copy(dest, src)
-
-typedef __builtin_va_list variable_arguments;
-
 #define FLAT __attribute__((flatten))
 #define PURE __attribute__((pure))
 #define NAKED __attribute__((naked))
@@ -110,12 +97,120 @@ typedef __builtin_va_list variable_arguments;
 #define ADDRESS_TO *
 #define ADDRESS_OF &
 #define ADDRESS void *
-#define NULL_ADDRESS ((void *)0)
-#define IS_NULL_ADDRESS(ptr) ((ptr) == NULL_ADDRESS)
 
 #undef NULL
-#define NULL ((void *)0)
+#define NULL ((ADDRESS)0)
+#define NULL_ADDRESS NULL
+#define IS_NULL(address) ((address) == NULL)
 
+typedef __builtin_va_list var_args;
+
+#if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 202311L
+// ### Initializes a variable argument list.
+#define var_list(list) __builtin_va_start(list, 0)
+#else
+// ### Initializes a variable argument list.
+// list:        variable argument list to initialize
+// last_param:  last named parameter before variable arguments
+#define var_list(list, last_param) __builtin_va_start(list, last_param)
+#endif
+
+// ### Cleans up a variable argument list.
+// list:        variable argument list to clean up
+#define var_list_end(list) __builtin_va_end(list)
+
+// Retrieves the next argument from a variable argument list.
+// list:        variable argument list
+// type:        type of the argument to retrieve
+#define var_list_get(list, type) __builtin_va_arg(list, type)
+
+// ### Creates a copy of a variable argument list.
+// from:        source variable argument list to copy
+// destination: variable argument list
+#define var_list_copy(from, destination) __builtin_va_copy(destination, from)
+
+// ### Convenience macro to process all variable arguments of a specific type.
+// list:        variable argument list
+// count:       number of arguments to process
+// type:        type of arguments
+// action:      Code block with '_arg' representing each argument
+#define var_list_iter(list, count, type, action) \
+    do { \
+        for (int _i = 0; _i < (count); _i++) { \
+            type _arg = var_list_get(list, type); \
+            action; \
+        } \
+    } while (0)
+
+#define bit_test(bit, address)    (ADDRESS_TO(address) & (1u << (bit)))
+#define bit_set(bit, address)     (ADDRESS_TO(address) |= (1u << (bit)))
+#define bit_clear(bit, address)   (ADDRESS_TO(address) &= ~(1u << (bit)))
+#define bit_flip(bit, address)    (ADDRESS_TO(address) ^= (1u << (bit)))
+#define bit_mask(bit)             (1u << (bit))
+
+#undef container_of
+#define container_of(address, type, member) ({ \
+        const typeof(((type ADDRESS_TO)0)->member) ADDRESS_TO __mptr = (address); \
+        (type ADDRESS_TO)((char ADDRESS_TO)__mptr - offsetof(type, member)); \
+    })
+
+#define struct_from_field(field_address, struct_type, field_name) \
+        container_of(field_address, struct_type, field_name)
+
+#define memory_barrier()           __asm__ __volatile__("" ::: "memory")
+#define memory_read_barrier()      __sync_synchronize()
+#define memory_write_barrier()     __sync_synchronize()
+#define memory_full_barrier()      __sync_synchronize()
+
+#define inline_if_small(max_size) __attribute__((always_inline)) \
+                                __attribute__((optimize("inline-max-size=" #max_size)))
+
+#define likely(x)       __builtin_expect(!!(x), 1)
+#define unlikely(x)     __builtin_expect(!!(x), 0)
+
+#define if_common(cond)   if (likely(cond))
+#define if_rare(cond)     if (unlikely(cond))
+
+#define prefetch_read(addr)  __builtin_prefetch((addr), 0, 3)
+#define prefetch_write(addr) __builtin_prefetch((addr), 1, 3)
+
+#define local_var(type, name) \
+    __attribute__((section(".percpu"))) __typeof__(type) name
+
+#define atomic_add(address, val)       __sync_fetch_and_add(address, val)
+#define atomic_sub(address, val)       __sync_fetch_and_sub(address, val)
+#define atomic_inc(address)            atomic_add(address, 1)
+#define atomic_dec(address)            atomic_sub(address, 1)
+#define atomic_exchange(address, val)  __sync_lock_test_and_set(address, val)
+#define atomic_compare_exchange(address, expected, desired) \
+    __sync_bool_compare_and_swap(address, expected, desired)
+
+#define DEFER_MAX 32
+struct _defer_state {
+    int count;
+    void (ADDRESS_TO funcs[DEFER_MAX])(ADDRESS);
+    ADDRESS args[DEFER_MAX];
+};
+
+#define defer(state) ((state)->count = 0)
+
+#define defer_add(state, func, arg) \
+    do { \
+        if ((state)->count < DEFER_MAX) { \
+            (state)->funcs[(state)->count] = (func); \
+            (state)->args[(state)->count] = (arg); \
+            (state)->count++; \
+        } \
+    } while (0)
+
+#define defer_run(state) \
+    do { \
+        for (int i = (state)->count - 1; i >= 0; i--) { \
+            (state)->funcs[i]((state)->args[i]); \
+        } \
+        (state)->count = 0; \
+    } while (0)
+    
 #ifdef LIBRARY_API
 
 #define api_function(name, returned_type, default, args...) \
@@ -1054,6 +1149,17 @@ fn decimal_to_string(writer write, decimal value)
 
         bipolar_to_string(write, integer_part);
 }
+
+fn string_format(writer write, string_address format, ...)
+{
+        var_args arguments;
+        var_list(arguments, 0);
+
+        //TBD
+
+        var_list_end(arguments);
+}
+
 
 // ### System call
 // invokes operating system functions externally to the program
