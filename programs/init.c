@@ -18,7 +18,7 @@ MountPoints mounts[] = {
 
 fn mount_filesystems()
 {
-        MountPoints ADDRESS_TO mount = mounts;
+        MountPoints address_to mount = mounts;
 
         while (mount->filesystem)
         {
@@ -57,7 +57,7 @@ b32 main()
                         sleep(1, 0);
         }
 
-        p8 ADDRESS_TO argv[] = {init_program};
+        p8 address_to argv[] = {init_program};
 
         bipolar result = system_call_2(syscall(execve), (positive)init_program, (positive)argv);
 

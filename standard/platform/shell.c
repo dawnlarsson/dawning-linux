@@ -87,7 +87,7 @@ fn core_cp(writer write, string_address buffer)
         if (destination == NULL)
                 return write(str("cp: missing destination\n"));
 
-        ADDRESS_TO destination = '\0';
+        address_to destination = '\0';
         destination++;
 
         bipolar source_fd = system_call_3(syscall(openat), AT_FDCWD, (positive)source, O_RDONLY);
@@ -134,7 +134,7 @@ fn core_echo(writer write, string_address buffer)
 
 fn core_exec(writer write, string_address buffer)
 {
-        p8 ADDRESS_TO argv[] = {buffer};
+        p8 address_to argv[] = {buffer};
 
         system_call_2(syscall(execve), (positive)buffer, (positive)argv);
 }
@@ -171,11 +171,11 @@ fn core_ls(writer write, string_address buffer)
                 if (bytes_read <= 0)
                         break;
 
-                p8 ADDRESS_TO step = out_buffer;
+                p8 address_to step = out_buffer;
 
                 while (step < out_buffer + bytes_read)
                 {
-                        struct linux_dirent64 ADDRESS_TO entry = (struct linux_dirent64 ADDRESS_TO)step;
+                        struct linux_dirent64 address_to entry = (struct linux_dirent64 address_to)step;
 
                         if (entry->d_name[0] == '.' && (entry->d_name[1] == '\0' ||
                                                         (entry->d_name[1] == '.' && entry->d_name[2] == '\0')))
@@ -245,7 +245,7 @@ fn core_mv(writer write, string_address buffer)
         if (destination == NULL)
                 return write(str("mv: missing destination\n"));
 
-        ADDRESS_TO destination = '\0';
+        address_to destination = '\0';
         destination++;
 
         if (!system_call_4(syscall(renameat), AT_FDCWD, (positive)source, AT_FDCWD, (positive)destination))
@@ -267,7 +267,7 @@ fn core_mount(writer write, string_address buffer)
         if (destination == NULL)
                 return write(str("mount: missing destination\n"));
 
-        ADDRESS_TO destination = '\0';
+        address_to destination = '\0';
         destination++;
 
         if (!system_call_4(syscall(mount), (positive)source, (positive)destination, (positive)source, MS_BIND))
@@ -285,7 +285,7 @@ fn core_exit(writer write, string_address buffer)
 
 fn core_help(writer write, string_address buffer);
 
-typedef fn(ADDRESS_TO core_command_function)(writer write, string_address buffer);
+typedef fn(address_to core_command_function)(writer write, string_address buffer);
 
 typedef struct
 {
@@ -317,7 +317,7 @@ fn core_help(writer write, string_address buffer)
         write(str("Dawning Shell, WIP, " TERM_RED TERM_BOLD "expect crashes! \n\n" TERM_RESET));
         write(str("Available built-in commands:\n"));
 
-        core_command ADDRESS_TO command = core_commands;
+        core_command address_to command = core_commands;
 
         while (command->name)
         {

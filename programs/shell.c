@@ -38,7 +38,7 @@ fn shell_execute_command(string_address command, string_address arguments)
         else if (fork_result > 0)
         {
                 positive status = 0;
-                bipolar wait_result = system_call_4(syscall(wait4), fork_result, (positive)ADDRESS_OF status, 0, 0);
+                bipolar wait_result = system_call_4(syscall(wait4), fork_result, (positive)address_of status, 0, 0);
         }
         else
         {
@@ -52,7 +52,7 @@ fn shell_execute_command(string_address command, string_address arguments)
 
 bool shell_builtin(string_address arguments)
 {
-        core_command ADDRESS_TO command = core_commands;
+        core_command address_to command = core_commands;
 
         while (command->name)
         {

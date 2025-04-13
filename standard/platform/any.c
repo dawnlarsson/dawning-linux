@@ -68,7 +68,7 @@ struct timespec
 p8 log_writer_buffer[MAX_INPUT];
 positive log_writer_buffer_length;
 
-fn log_direct(ADDRESS data, positive length)
+fn log_direct(address_any data, positive length)
 {
         system_call_3(syscall(write), stdout, (positive)data, length);
 }
@@ -83,7 +83,7 @@ fn log_flush()
         log_writer_buffer_length = 0;
 }
 
-fn log(ADDRESS data, positive length)
+fn log(address_any data, positive length)
 {
         if (length == 0)
                 length = string_length(data);

@@ -29,11 +29,11 @@ MountPoints mounts[] = {
 
 fn dawn_init_mount()
 {
-        MountPoints ADDRESS_TO mount = mounts;
+        MountPoints address_to mount = mounts;
 
         while (mount->filesystem)
         {
-                struct file_system_type ADDRESS_TO fs_type = get_fs_type(mount->filesystem);
+                struct file_system_type address_to fs_type = get_fs_type(mount->filesystem);
 
                 if (!fs_type)
                 {
@@ -41,7 +41,7 @@ fn dawn_init_mount()
                         continue;
                 }
 
-                struct vfsmount ADDRESS_TO mnt = vfs_kern_mount(fs_type, 0, mount->filesystem, NULL);
+                struct vfsmount address_to mnt = vfs_kern_mount(fs_type, 0, mount->filesystem, NULL);
                 put_filesystem(fs_type);
 
                 if (IS_ERR(mnt))
@@ -54,7 +54,7 @@ fn dawn_init_mount()
                 mntput(mnt);
 
                 struct path mountpoint_path;
-                int err = kern_path(mount->path, LOOKUP_DIRECTORY, ADDRESS_OF mountpoint_path);
+                int err = kern_path(mount->path, LOOKUP_DIRECTORY, address_of mountpoint_path);
 
                 if (err)
                 {
@@ -63,9 +63,9 @@ fn dawn_init_mount()
                         continue;
                 }
 
-                // struct vfsmount ADDRESS_TO mnt = do_add_mount(mnt, &mountpoint_path, mount->filesystem, mount->mount_flags);
+                // struct vfsmount address_to mnt = do_add_mount(mnt, &mountpoint_path, mount->filesystem, mount->mount_flags);
 
-                path_put(ADDRESS_OF mountpoint_path);
+                path_put(address_of mountpoint_path);
                 mount++;
         }
 }

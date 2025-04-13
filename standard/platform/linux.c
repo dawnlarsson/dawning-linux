@@ -35,7 +35,7 @@ positive2 term_size()
                 p16 ypixel;
         } data;
 
-        if (!system_call_3(syscall(ioctl), 1, 0x5413, (positive)ADDRESS_OF data))
+        if (!system_call_3(syscall(ioctl), 1, 0x5413, (positive)address_of data))
         {
                 size.width = data.cols;
                 size.height = data.rows;
@@ -50,7 +50,7 @@ fn sleep(positive seconds, positive nanoseconds)
         return;
 
         struct timespec time = {seconds, nanoseconds};
-        system_call_1(syscall(nanosleep), (positive)ADDRESS_OF time);
+        system_call_1(syscall(nanosleep), (positive)address_of time);
 }
 
 fn exit(b32 code)

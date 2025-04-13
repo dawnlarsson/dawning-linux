@@ -94,12 +94,12 @@
 
 #define pub extern __attribute__((visibility("default"))) KEEP
 
-#define ADDRESS_TO *
-#define ADDRESS_OF &
-#define ADDRESS void *
+#define address_to *
+#define address_of &
+#define address_any void *
 
 #undef NULL
-#define NULL ((ADDRESS)0)
+#define NULL ((address_any)0)
 #define NULL_ADDRESS NULL
 #define IS_NULL(address) ((address) == NULL)
 
@@ -142,16 +142,16 @@ typedef __builtin_va_list var_args;
         } \
     } while (0)
 
-#define bit_test(bit, address)    (ADDRESS_TO(address) & (1u << (bit)))
-#define bit_set(bit, address)     (ADDRESS_TO(address) |= (1u << (bit)))
-#define bit_clear(bit, address)   (ADDRESS_TO(address) &= ~(1u << (bit)))
-#define bit_flip(bit, address)    (ADDRESS_TO(address) ^= (1u << (bit)))
+#define bit_test(bit, address)    (address_to(address) & (1u << (bit)))
+#define bit_set(bit, address)     (address_to(address) |= (1u << (bit)))
+#define bit_clear(bit, address)   (address_to(address) &= ~(1u << (bit)))
+#define bit_flip(bit, address)    (address_to(address) ^= (1u << (bit)))
 #define bit_mask(bit)             (1u << (bit))
 
 #undef container_of
 #define container_of(address, type, member) ({ \
-        const typeof(((type ADDRESS_TO)0)->member) ADDRESS_TO __mptr = (address); \
-        (type ADDRESS_TO)((char ADDRESS_TO)__mptr - offsetof(type, member)); \
+        const typeof(((type address_to)0)->member) address_to __mptr = (address); \
+        (type address_to)((char address_to)__mptr - offsetof(type, member)); \
     })
 
 #define struct_from_field(field_address, struct_type, field_name) \
@@ -188,8 +188,8 @@ typedef __builtin_va_list var_args;
 #define DEFER_MAX 32
 struct _defer_state {
     int count;
-    void (ADDRESS_TO funcs[DEFER_MAX])(ADDRESS);
-    ADDRESS args[DEFER_MAX];
+    void (address_to funcs[DEFER_MAX])(address_any);
+    address_any args[DEFER_MAX];
 };
 
 #define defer(state) ((state)->count = 0)
@@ -677,7 +677,7 @@ typedef typeof(sizeof(0)) sized;
 
 // ### String address
 // a pointer to a string in memory, usually the first p8 character of the string
-typedef p8 ADDRESS_TO string_address;
+typedef p8 address_to string_address;
 typedef p8 string[];
 
 typedef struct
@@ -685,10 +685,10 @@ typedef struct
         b64 counter;
 } atomic64;
 
-#define string_index(source, index) (ADDRESS_TO((source) + (index)))
-#define string_get(source) (ADDRESS_TO(source))
-#define string_set(source, value) (ADDRESS_TO(source) = (value))
-#define string_is(source, value) (ADDRESS_TO(source) == (value))
+#define string_index(source, index) (address_to((source) + (index)))
+#define string_get(source) (address_to(source))
+#define string_set(source, value) (address_to(source) = (value))
+#define string_is(source, value) (address_to(source) == (value))
 #define string_equals(source, input) (strcmp(source, input) == 0)
 
 #undef min
@@ -717,9 +717,9 @@ typedef struct
 // and should be easy for compiler to optimize into a zero cost abstraction
 // if length is zero, the function should write until a null terminator is reached (string_length)
 // writers redused file size, faster, and more flexible
-typedef fn(ADDRESS_TO writer)(ADDRESS data, positive length);
-typedef fn(ADDRESS_TO writer_string)(string_address string);
-typedef fn(ADDRESS_TO writer_string_len)(string_address string, positive length);
+typedef fn(address_to writer)(address_any data, positive length);
+typedef fn(address_to writer_string)(string_address string);
+typedef fn(address_to writer_string_len)(string_address string, positive length);
 
 #ifndef DAWN_MODERN_C_NO_MATH
 
@@ -903,12 +903,12 @@ typedef union matrix4
 // returns: destination address
 // destination: the memory block to fill
 // traditional: memset
-ADDRESS memory_fill(ADDRESS destination, b8 value, positive size)
+address_any memory_fill(address_any destination, b8 value, positive size)
 {
-        b8 ADDRESS_TO dest = (b8 ADDRESS_TO)destination;
+        b8 address_to dest = (b8 address_to)destination;
 
         while (size--)
-                ADDRESS_TO dest++ = (b8)value;
+                address_to dest++ = (b8)value;
 
         return destination;
 }
@@ -919,13 +919,13 @@ ADDRESS memory_fill(ADDRESS destination, b8 value, positive size)
 // destination: the memory block to copy to
 // source: the memory block to copy from
 // traditional: memcpy
-ADDRESS memory_copy(ADDRESS destination, ADDRESS source, positive size)
+address_any memory_copy(address_any destination, address_any source, positive size)
 {
-        b8 ADDRESS_TO dest = (b8 ADDRESS_TO)destination;
-        b8 ADDRESS_TO src = (b8 ADDRESS_TO)source;
+        b8 address_to dest = (b8 address_to)destination;
+        b8 address_to src = (b8 address_to)source;
 
         while (size--)
-                ADDRESS_TO dest++ = ADDRESS_TO src++;
+                address_to dest++ = address_to src++;
 
         return destination;
 }
@@ -1066,12 +1066,12 @@ fn positive_to_string(writer write, positive number)
         static p8 digits[32] = {0};
         digits[0] = '\0';
 
-        p8 ADDRESS_TO step = digits + 31;
-        ADDRESS_TO step-- = '\0';
+        p8 address_to step = digits + 31;
+        address_to step-- = '\0';
 
         while (number > 0 && step > digits)
         {
-                ADDRESS_TO step-- = '0' + (number % 10);
+                address_to step-- = '0' + (number % 10);
                 number /= 10;
         }
 
@@ -1324,7 +1324,7 @@ fn sleep(positive seconds, positive nanoseconds);
 
 #undef memset
 // for compatibility, makes the linker happy
-ADDRESS memset(ADDRESS destination, int value, long unsigned int size)
+address_any memset(address_any destination, int value, long unsigned int size)
 {
         return memory_fill(destination, value, size);
 }
@@ -1371,7 +1371,7 @@ typedef long int intptr_t;
 
 #undef memcpy
 // use memory_copy instead, this is for compatibility
-ADDRESS memcpy(ADDRESS destination, ADDRESS source, long unsigned int size)
+address_any memcpy(address_any destination, address_any source, long unsigned int size)
 {
         return memory_copy(destination, source, size);
 }
@@ -1406,14 +1406,14 @@ string_address strncpy(string_address destination, string_address source, positi
 
 #undef strchr
 // use string_first_of instead, this is for compatibility
-char ADDRESS_TO strchr(char ADDRESS_TO source, int character)
+char address_to strchr(char address_to source, int character)
 {
         return string_first_of(source, character);
 }
 
 #undef strrchr
 // use string_last_of instead, this is for compatibility
-char ADDRESS_TO strrchr(char ADDRESS_TO source, int character)
+char address_to strrchr(char address_to source, int character)
 {
         return string_last_of(source, character);
 }
