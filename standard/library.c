@@ -122,7 +122,7 @@ typedef __builtin_va_list var_args;
 // Retrieves the next argument from a variable argument list.
 // list:        variable argument list
 // type:        type of the argument to retrieve
-#define var_list_get(list, type) __builtin_va_arg(list, type)
+#define var_list_get(list, returned_type) __builtin_va_arg(list, returned_type)
 
 // ### Creates a copy of a variable argument list.
 // from:        source variable argument list to copy
@@ -1078,13 +1078,14 @@ fn positive_to_string(writer write, positive number)
         write(step + 1, digits + 31 - step);
 }
 
-fn bipolar_to_string(writer write, bipolar number)
-{
-        if (number >= 0)
-                return positive_to_string(write, (positive)number);
+fn bipolar_to_string(writer write, bipolar number) {
+    if (number >= 0)
+        return positive_to_string(write, (positive)number);
 
-        write("-", 1);
-        positive_to_string(write, (positive)(-number));
+    write("-", 1);
+
+    bipolar abs_number = number * -1;
+    positive_to_string(write, (positive)abs_number);
 }
 
 fn term_set_cursor(writer write, positive2 pos)
@@ -1150,14 +1151,61 @@ fn decimal_to_string(writer write, decimal value)
         bipolar_to_string(write, integer_part);
 }
 
-fn string_format(writer write, string_address format, ...)
-{
-        var_args arguments;
-        var_list(arguments, 0);
+fn string_format(writer write, string_address format, ...) {
+        var_args args;
+        var_list(args, format);
+    
+        positive i = 0;
+        positive segment_start = 0;
+        
+        while (format[i] != '\0')
+        {
+                if (format[i] != '%') {
+                        i++;
+                        continue;
+                }
 
-        //TBD
+                write(format + segment_start, i - segment_start);
 
-        var_list_end(arguments);
+                i++;
+
+                switch (format[i]) {
+                        case 'b': {
+                                // todo: fix, long int breaks here...
+                                int raw_value = var_list_get(args, int);
+                                bipolar value = (bipolar)raw_value;
+                                bipolar_to_string(write, value);
+                                break;
+                        }
+                        case 'p': {
+                                positive value = var_list_get(args, positive);
+                                positive_to_string(write, value);
+                                break;
+                        }
+                        case 'f': {
+                                decimal value = var_list_get(args, decimal);
+                                decimal_to_string(write, value);
+                                break;
+                        }
+                        case 's': {
+                                string_address value = var_list_get(args, string_address);
+                                write(value, 0);
+                                break;
+                        }
+                        case '%':
+                                write("%", 1);
+                                break;
+                        case '\0':
+                                return;
+                }
+
+                i++;
+                segment_start = i;
+        }
+
+        write(format + segment_start, i - segment_start);
+
+        var_list_end(args);
 }
 
 

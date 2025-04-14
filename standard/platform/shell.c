@@ -19,13 +19,9 @@ fn core_cat(writer write, string_address input)
                 return write(str("cat: missing operand\n"));
 
         bipolar file_descriptor = system_call_3(syscall(openat), AT_FDCWD, (positive)input, O_RDONLY);
+
         if (file_descriptor < 0)
-        {
-                write(str("cat: Cannot open file: "));
-                write(input, 0);
-                write(str("\n"));
-                return;
-        }
+                return string_format(write, "cat: Cannot open file: %s\n", input);
 
         p8 buffer[page_size];
 
@@ -53,9 +49,7 @@ fn core_cd(writer write, string_address buffer)
         if (!system_call_1(syscall(chdir), (positive)buffer))
                 return;
 
-        write(str("cd: No such directory: "));
-        write(buffer, 0);
-        write(str("\n"));
+        string_format(write, "cd: No such directory: %s\n", buffer);
 }
 
 fn core_clear(writer write, string_address buffer)
@@ -71,9 +65,7 @@ fn core_chmod(writer write, string_address buffer)
         if (!system_call_3(syscall(fchmodat), AT_FDCWD, (positive)buffer, 0777))
                 return;
 
-        write(str("chmod: Cannot change permissions: "));
-        write(buffer, 0);
-        write(str("\n"));
+        string_format(write, "chmod: Cannot change permissions: %s\n", buffer);
 }
 
 fn core_cp(writer write, string_address buffer)
@@ -91,22 +83,16 @@ fn core_cp(writer write, string_address buffer)
         destination++;
 
         bipolar source_fd = system_call_3(syscall(openat), AT_FDCWD, (positive)source, O_RDONLY);
+        
         if (source_fd < 0)
-        {
-                write(str("cp: Cannot open source file: "));
-                write(source, 0);
-                write(str("\n"));
-                return;
-        }
+                return string_format(write, "cp: Cannot open source file: %s\n", source);
+        
 
         bipolar destination_fd = system_call_3(syscall(openat), AT_FDCWD, (positive)destination, O_CREAT | O_WRONLY);
+        
         if (destination_fd < 0)
-        {
-                write(str("cp: Cannot open destination file: "));
-                write(destination, 0);
-                write(str("\n"));
-                return;
-        }
+                return string_format(write, "cp: Cannot open source file: %s\n", source);
+        
 
         p8 out_buffer[page_size];
 
@@ -153,12 +139,7 @@ fn core_ls(writer write, string_address buffer)
         bipolar file_descriptor = system_call_3(syscall(openat), AT_FDCWD, (positive)buffer, O_RDONLY | O_DIRECTORY);
 
         if (file_descriptor < 0)
-        {
-                write(str("ls: Cannot access '"));
-                write(buffer, 0);
-                write(str("': No such file or directory\n"));
-                return;
-        }
+                return string_format(write, "ls: Cannot access '%s': No such file or directory\n", buffer);
 
         p8 out_buffer[page_size];
 
@@ -217,8 +198,7 @@ fn core_pwd(writer write, string_address buffer)
 
         system_call_2(syscall(getcwd), (positive)out_buffer, 4096);
 
-        write(out_buffer, 0);
-        write(str("\n"));
+        string_format(write, "%s\n", out_buffer);
 }
 
 fn core_mkdir(writer write, string_address buffer)
@@ -229,9 +209,7 @@ fn core_mkdir(writer write, string_address buffer)
         if (!system_call_3(syscall(mkdirat), AT_FDCWD, (positive)buffer, 0777))
                 return;
 
-        write(str("mkdir: Cannot create directory: "));
-        write(buffer, 0);
-        write(str("\n"));
+        string_format(write, "mkdir: Cannot create directory: %s\n", buffer);
 }
 
 fn core_mv(writer write, string_address buffer)
@@ -251,9 +229,7 @@ fn core_mv(writer write, string_address buffer)
         if (!system_call_4(syscall(renameat), AT_FDCWD, (positive)source, AT_FDCWD, (positive)destination))
                 return;
 
-        write(str("mv: Cannot move file: "));
-        write(source, 0);
-        write(str("\n"));
+        string_format(write, "mv: Cannot move file: %s\n", source);
 }
 
 fn core_mount(writer write, string_address buffer)
@@ -273,9 +249,7 @@ fn core_mount(writer write, string_address buffer)
         if (!system_call_4(syscall(mount), (positive)source, (positive)destination, (positive)source, MS_BIND))
                 return;
 
-        write(str("mount: Cannot mount filesystem: "));
-        write(source, 0);
-        write(str("\n"));
+        string_format(write, "mount: Cannot mount filesystem: %s\n", source);
 }
 
 fn core_exit(writer write, string_address buffer)
@@ -314,17 +288,13 @@ core_command core_commands[] = {
 
 fn core_help(writer write, string_address buffer)
 {
-        write(str("Dawning Shell, WIP, " TERM_RED TERM_BOLD "expect crashes! \n\n" TERM_RESET));
-        write(str("Available built-in commands:\n"));
+        string_format(write, "Dawning Shell, WIP, " TERM_RED TERM_BOLD "expect crashes! \n\n" TERM_RESET "Available built-in commands:\n");
 
         core_command address_to command = core_commands;
 
         while (command->name)
         {
-                write(str(" - " TERM_BOLD));
-                write(command->name, 0);
-                write(str(TERM_RESET "\n"));
-
+                string_format(write, TERM_BOLD " -  %s" TERM_RESET "\n", command->name);
                 command++;
         }
 

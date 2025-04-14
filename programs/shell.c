@@ -16,10 +16,7 @@ fn shell_thread_instance(string_address command, string_address arguments)
 
         bipolar exec_result = system_call_3(syscall(execve), (positive)command, (positive)arguments_list, 0);
 
-        log(str("failed with error: "));
-        bipolar_to_string(log, exec_result);
-        log(str("\n"));
-
+        string_format(log, "failed with error: %b\n", exec_result);
         log_flush();
 
         exit(1);
@@ -42,9 +39,7 @@ fn shell_execute_command(string_address command, string_address arguments)
         }
         else
         {
-                log(str("failed with error: "));
-                bipolar_to_string(log, fork_result);
-                log(str("\n"));
+                string_format(log, "failed with error: %b\n", fork_result);
         }
 
         log_flush();
@@ -104,9 +99,7 @@ fn process_command()
         if (shell_builtin(arguments_buffer))
                 return;
 
-        log(str("Command not found: "));
-        log(shell_buffer, 0);
-        log(str("\n"));
+        string_format(log, "Command not found: %s\n", shell_buffer);
 }
 
 b32 main()

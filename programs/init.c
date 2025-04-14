@@ -22,10 +22,6 @@ fn mount_filesystems()
 
         while (mount->filesystem)
         {
-                log(label "Mounting ", 0);
-                log(mount->path, 0);
-                log(str("..."));
-
                 bipolar result = system_call_4(
                     syscall(mount),
                     (positive)mount->filesystem,
@@ -34,9 +30,9 @@ fn mount_filesystems()
                     (positive)mount->mount_flags);
 
                 if (result == 0)
-                        log(str(TERM_BOLD TERM_GREEN " OK\n" TERM_RESET));
+                        string_format(log, label "Mounting %s to %s " TERM_BOLD TERM_GREEN "OK" TERM_RESET "\n", mount->filesystem, mount->path);
                 else
-                        log(str(TERM_BOLD TERM_RED " FAILED\n" TERM_RESET));
+                        string_format(log, label "Mounting %s to %s " TERM_BOLD TERM_RED "FAILED" TERM_RESET "\n", mount->filesystem, mount->path);
 
                 log_flush();
                 mount++;
@@ -61,10 +57,7 @@ b32 main()
 
         bipolar result = system_call_2(syscall(execve), (positive)init_program, (positive)argv);
 
-        log(label "Failed to execute init program", 0);
-        log(str(" (error: "));
-        bipolar_to_string(log, result);
-        log(str(")\n"));
+        string_format(log, label "Failed to execute init program: %s  error: %b\n", init_program, result);
 
         log_flush();
 
