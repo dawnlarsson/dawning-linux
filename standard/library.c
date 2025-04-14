@@ -1195,6 +1195,34 @@ fn string_format(writer write, string_address format, ...) {
                         case '%':
                                 write("%", 1);
                                 break;
+                        
+                        // Optional user extensions 0 - 9
+                        // if up to 9 is needed open a pr!
+                        #ifdef string_format_extension_0
+                        case '0': {
+                                string_format_extension_0(write, args);
+                                break;
+                        }
+                        #endif
+                        #ifdef string_format_extension_1
+                        case '1': {
+                                string_format_extension_1(write, args);
+                                break;
+                        }
+                        #endif
+                        #ifdef string_format_extension_2
+                        case '2': {
+                                string_format_extension_2(write, args);
+                                break;
+                        }
+                        #endif
+                        #ifdef string_format_extension_3
+                        case '3': {
+                                string_format_extension_3(write, args);
+                                break;
+                        }
+                        #endif
+                        
                         case '\0':
                                 return;
                 }
