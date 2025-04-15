@@ -54,7 +54,7 @@ fn core_cd(writer write, string_address buffer)
 
 fn core_clear(writer write, string_address buffer)
 {
-        write(TERM_CLEAR_SCREEN, sizeof(TERM_CLEAR_SCREEN));
+        write(str(TERM_CLEAR_SCREEN));
 }
 
 fn core_chmod(writer write, string_address buffer)

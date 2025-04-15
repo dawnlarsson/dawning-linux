@@ -253,7 +253,7 @@ struct _defer_state {
 #define TERM_CYAN_DARK ANSI "36m"
 #define TERM_WHITE_DARK ANSI "37m"
 
-#define TERM_BLACK ANSI "90m"
+#define TERM_GREY ANSI "90m"
 #define TERM_RED ANSI "91m"
 #define TERM_GREEN ANSI "92m"
 #define TERM_YELLOW ANSI "93m"
