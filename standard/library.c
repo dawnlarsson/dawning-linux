@@ -98,10 +98,10 @@
 #define address_of &
 #define address_any void *
 
-#undef NULL
-#define NULL ((address_any)0)
-#define NULL_ADDRESS NULL
-#define IS_NULL(address) ((address) == NULL)
+#undef null
+#define null ((address_any)0)
+#define null_ADDRESS null
+#define IS_null(address) ((address) == null)
 
 typedef __builtin_va_list var_args;
 
@@ -687,8 +687,9 @@ typedef struct
 
 #define string_index(source, index) (address_to((source) + (index)))
 #define string_get(source) (address_to(source))
-#define string_set(source, value) (address_to(source) = (value))
+#define string_set(source, value) (address_to(source) = value)
 #define string_is(source, value) (address_to(source) == (value))
+#define string_not(source, value) (address_to(source) != (value))
 #define string_equals(source, input) (strcmp(source, input) == 0)
 
 #undef min
@@ -940,7 +941,7 @@ positive string_length(string_address source)
 {
         string_address step = source;
 
-        while (string_get(step))
+        while string_get(step)
                 step++;
 
         return step - source;
@@ -955,14 +956,14 @@ b32 string_compare(string_address source, string_address input)
 {
         while (string_get(source) && string_get(input))
         {
-                if (string_get(source) != string_get(input))
+                if string_not(source, address_to input)
                         break;
 
                 source++;
                 input++;
         }
 
-        return (b8)string_get(source) - (b8)string_get(input);
+        return string_get(source) - string_get(input);
 }
 
 // ### Copy string segment
@@ -975,7 +976,7 @@ string_address string_copy(string_address destination, string_address source)
 {
         string_address start = destination;
 
-        while (string_get(source))
+        while string_get(source)
                 string_set(destination++, string_get(source++));
 
         string_set(destination, '\0');
@@ -999,36 +1000,36 @@ string_address string_copy_max(string_address destination, string_address source
 
 // ### Find first character in string segment
 // returns: address of the first occurrence of the character
-// returns: NULL if the character is not found
+// returns: null if the character is not found
 // source: the memory block to search
 // character: the character to search for
 // traditional: strchr
 string_address string_first_of(string_address source, p8 character)
 {
-        while (string_get(source))
+        while string_get(source)
         {
-                if (string_get(source) == character)
+                if string_is(source, character)
                         return source;
 
                 source++;
         }
 
-        return (string_get(source) == character) ? source : NULL;
+        return (string_get(source) == character) ? source : null;
 }
 
 // ### Find last character in string segment
 // returns: address of the last occurrence of the character
-// returns: NULL if the character is not found
+// returns: null if the character is not found
 // source: the memory block to search
 // character: the character to search for
 // traditional: strrchr
 string_address string_last_of(string_address source, p8 character)
 {
-        string_address last = NULL;
+        string_address last = null;
 
-        while (string_get(source))
+        while string_get(source)
         {
-                if (string_get(source) == character)
+                if string_is(source, character)
                         last = source;
 
                 source++;
@@ -1037,24 +1038,62 @@ string_address string_last_of(string_address source, p8 character)
         return last;
 }
 
-// ### Takes a path and writes out the last directory name
-fn path_basename(writer write, string_address input)
+// preforms a single cut forwards
+// a cut is a null terminator inserted where the cut is found
+// this returns the address AFTER the cut
+// effectively splitting the string into two parts
+string_address string_cut(string_address string, b8 cut_symbol) 
 {
-        positive length = string_length(input);
+        string_address step = string;
 
-        while (length > 1 && input[length - 1] == '/')
-                length--;
+        while string_get(step)
+        {
+                step++;
 
-        if (length == 1 && input[0] == '/')
-                return write("/", 1);
+                if string_not(step, cut_symbol)
+                        continue;
+                
+                if string_is(step + 1, '\0')
+                        return null;
 
-        positive step = length;
+                string_set(step, '\0');
 
-        while (step > 0 && input[step - 1] != '/')
-                step--;
+                return step;
+        }
 
-        write(input + step, length - step);
+        return null;
 }
+
+// performs several cuts depending on number of arguments, each argument
+// will be written to at the start of the cut string
+/* TBD
+string_address string_split(string_address string, b8 cut_symbol, ...)
+{
+        var_args args;
+        var_list(args, string);
+
+        string_address step = string;
+
+        while (1)
+        {
+                step = string_cut(step, cut_symbol);
+
+                if (step == null)
+                        break;
+        
+                string_address split_step = var_list_get(args, string_address);
+
+                if (split_step == null)
+                        break;
+
+                address_to split_step = (string_address)split_step;
+        }
+        
+        var_list_end(args);
+
+        return step;
+}
+*/
 
 // ### Takes a positive number and writes out the string representation
 fn positive_to_string(writer write, positive number)
@@ -1088,39 +1127,10 @@ fn bipolar_to_string(writer write, bipolar number) {
     positive_to_string(write, (positive)abs_number);
 }
 
-fn term_set_cursor(writer write, positive2 pos)
-{
-        write(str(ANSI));
-        positive_to_string(write, pos.y);
-        write(str(";"));
-        positive_to_string(write, pos.x);
-        write(str("H"));
-}
-
-// ### Get CPU time (Time Stamp Counter)
-// returns: the current CPU time
-p64 get_cpu_time()
-{
-#if defined(X64)
-        p32 high, low;
-        ir("rdtsc" : "=a"(low), "=d"(high));
-        return ((p64)high << 32) | low;
-#elif defined(ARM64)
-        p64 result;
-        ir("mrs %0, cntvct_el0" : "=r"(result));
-        return result;
-#elif defined(RISCV64)
-        p64 result;
-        ir("rdtime %0" : "=r"(result));
-        return result;
-#endif
-}
-
-// Userspace land
-#ifndef KERNEL_MODE
-
 fn decimal_to_string(writer write, decimal value)
 {
+        #ifndef KERNEL_MODE // Temporary
+
         if (value < 0)
         {
                 write("-", 1);
@@ -1149,6 +1159,7 @@ fn decimal_to_string(writer write, decimal value)
                 write("0", 1);
 
         bipolar_to_string(write, integer_part);
+        #endif
 }
 
 fn string_format(writer write, string_address format, ...) {
@@ -1182,11 +1193,13 @@ fn string_format(writer write, string_address format, ...) {
                                 positive_to_string(write, value);
                                 break;
                         }
+                        #ifndef KERNEL_MODE // Temporary
                         case 'f': {
                                 decimal value = var_list_get(args, decimal);
                                 decimal_to_string(write, value);
                                 break;
                         }
+                        #endif
                         case 's': {
                                 string_address value = var_list_get(args, string_address);
                                 write(value, 0);
@@ -1236,6 +1249,55 @@ fn string_format(writer write, string_address format, ...) {
         var_list_end(args);
 }
 
+// ### Takes a path and writes out the last directory name
+fn path_basename(writer write, string_address input)
+{
+        positive length = string_length(input);
+
+        while (length > 1 && input[length - 1] == '/')
+                length--;
+
+        if (length == 1 && input[0] == '/')
+                return write("/", 1);
+
+        positive step = length;
+
+        while (step > 0 && input[step - 1] != '/')
+                step--;
+
+        write(input + step, length - step);
+}
+
+fn term_set_cursor(writer write, positive2 pos)
+{
+        write(str(ANSI));
+        positive_to_string(write, pos.y);
+        write(str(";"));
+        positive_to_string(write, pos.x);
+        write(str("H"));
+}
+
+// ### Get CPU time (Time Stamp Counter)
+// returns: the current CPU time
+p64 get_cpu_time()
+{
+#if defined(X64)
+        p32 high, low;
+        ir("rdtsc" : "=a"(low), "=d"(high));
+        return ((p64)high << 32) | low;
+#elif defined(ARM64)
+        p64 result;
+        ir("mrs %0, cntvct_el0" : "=r"(result));
+        return result;
+#elif defined(RISCV64)
+        p64 result;
+        ir("rdtime %0" : "=r"(result));
+        return result;
+#endif
+}
+
+// Userspace land
+#ifndef KERNEL_MODE
 
 // ### System call
 // invokes operating system functions externally to the program

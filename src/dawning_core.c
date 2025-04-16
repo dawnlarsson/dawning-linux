@@ -24,7 +24,7 @@ typedef struct
 MountPoints mounts[] = {
     {"proc", "/proc", MNT_INTERNAL},
     {"sysfs", "/sys", MNT_INTERNAL},
-    {NULL, NULL},
+    {null, null},
 };
 
 fn dawn_init_mount()
@@ -41,7 +41,7 @@ fn dawn_init_mount()
                         continue;
                 }
 
-                struct vfsmount address_to mnt = vfs_kern_mount(fs_type, 0, mount->filesystem, NULL);
+                struct vfsmount address_to mnt = vfs_kern_mount(fs_type, 0, mount->filesystem, null);
                 put_filesystem(fs_type);
 
                 if (IS_ERR(mnt))

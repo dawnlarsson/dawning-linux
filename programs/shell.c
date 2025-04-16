@@ -12,7 +12,7 @@ positive shell_buffer_length;
 
 fn shell_thread_instance(string_address command, string_address arguments)
 {
-        string_address arguments_list[] = {command, arguments, NULL};
+        string_address arguments_list[] = {command, arguments, null};
 
         bipolar exec_result = system_call_3(syscall(execve), (positive)command, (positive)arguments_list, 0);
 
@@ -72,7 +72,7 @@ fn process_command()
 
         p32 length = 0;
         bool is_first_section = true;
-        string_address arguments_buffer = NULL;
+        string_address arguments_buffer = null;
 
         while (shell_buffer[length] != '\0')
         {

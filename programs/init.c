@@ -13,7 +13,7 @@ typedef struct
 MountPoints mounts[] = {
     {"proc", "/proc", MS_NONE},
     {"sysfs", "/sys", MS_NONE},
-    {NULL, NULL},
+    {null, null},
 };
 
 fn mount_filesystems()
