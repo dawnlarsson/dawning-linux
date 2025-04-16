@@ -1053,10 +1053,12 @@ string_address string_cut(string_address string, b8 cut_symbol)
                 if string_not(step, cut_symbol)
                         continue;
                 
-                if string_is(step + 1, '\0')
-                        return null;
-
                 string_set(step, '\0');
+
+                step++;
+
+                if string_is(step, '\0')
+                        return null;
 
                 return step;
         }
@@ -1273,11 +1275,7 @@ fn path_basename(writer write, string_address input)
 
 fn term_set_cursor(writer write, positive2 pos)
 {
-        write(str(ANSI));
-        positive_to_string(write, pos.y);
-        write(str(";"));
-        positive_to_string(write, pos.x);
-        write(str("H"));
+        string_format(write, ANSI "%p;%pH", pos.y, pos.x);
 }
 
 // ### Get CPU time (Time Stamp Counter)

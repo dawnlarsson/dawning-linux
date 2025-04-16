@@ -65,7 +65,7 @@ line_has() {
         return $?
 }
 
-line_add_padded() {
+line_add() {
         line_has "$1" "$2" && return 0
         echo "$2" >> "$1"
 }

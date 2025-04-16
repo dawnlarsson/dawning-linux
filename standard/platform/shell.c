@@ -79,7 +79,7 @@ fn core_cp(writer write, string_address input)
         bipolar source_file_descriptor = system_call_3(syscall(openat), AT_FDCWD, (positive)input, O_RDONLY);
 
         if (source_file_descriptor < 0)
-                return string_format(write, "cat: Cannot open file: %s\n", input);
+                return string_format(write, "cp: Cannot open file: %s\n", input);
                 
         
         bipolar destination_fd = system_call_3(syscall(openat), AT_FDCWD, (positive)destination, O_CREAT | O_WRONLY);
@@ -169,7 +169,7 @@ fn core_ls(writer write, string_address input)
                         else
                                 write(str(TERM_YELLOW));
 
-                        string_format(write, " %s" TERM_RESET, entry->d_name);
+                        string_format(write, "%s " TERM_RESET, entry->d_name);
 
                         entries_count++;
 
