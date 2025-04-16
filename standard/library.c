@@ -1166,21 +1166,24 @@ fn string_format(writer write, string_address format, ...) {
         var_args args;
         var_list(args, format);
     
-        positive i = 0;
-        positive segment_start = 0;
+        string_address segment_start = format;
+        positive index = 0;
         
-        while (format[i] != '\0')
+        while string_get(format)
         {
-                if (format[i] != '%') {
-                        i++;
+                if string_not(format, '%') {
+                        format++;
+                        index++;
                         continue;
                 }
 
-                write(format + segment_start, i - segment_start);
+                if(index > 0)
+                        write(segment_start, format - segment_start);
 
-                i++;
+                format++;
+                index = 0;
 
-                switch (format[i]) {
+                switch string_get(format) {
                         case 'b': {
                                 // todo: fix, long int breaks here...
                                 int raw_value = var_list_get(args, int);
@@ -1240,11 +1243,11 @@ fn string_format(writer write, string_address format, ...) {
                                 return;
                 }
 
-                i++;
-                segment_start = i;
+                format++;
+                segment_start = format;
         }
 
-        write(format + segment_start, i - segment_start);
+        write(segment_start, format - segment_start);
 
         var_list_end(args);
 }
