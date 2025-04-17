@@ -103,6 +103,9 @@
 #define null_ADDRESS null
 #define IS_null(address) ((address) == null)
 
+// null terminator
+#define end '\0'
+
 typedef __builtin_va_list var_args;
 
 #if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 202311L
@@ -979,7 +982,7 @@ string_address string_copy(string_address destination, string_address source)
         while string_get(source)
                 string_set(destination++, string_get(source++));
 
-        string_set(destination, '\0');
+        string_set(destination, end);
 
         return start;
 }
@@ -993,7 +996,7 @@ string_address string_copy_max(string_address destination, string_address source
         while (length-- && string_get(source))
                 string_set(destination++, string_get(source++));
 
-        string_set(destination, '\0');
+        string_set(destination, end);
 
         return start;
 }
@@ -1053,11 +1056,11 @@ string_address string_cut(string_address string, b8 cut_symbol)
                 if string_not(step, cut_symbol)
                         continue;
                 
-                string_set(step, '\0');
+                string_set(step, end);
 
                 step++;
 
-                if string_is(step, '\0')
+                if string_is(step, end)
                         return null;
 
                 return step;
@@ -1105,10 +1108,10 @@ fn positive_to_string(writer write, positive number)
 
         // No thread safety for you >:) (wip) TODO: fix
         static p8 digits[32] = {0};
-        digits[0] = '\0';
+        digits[0] = end;
 
         p8 address_to step = digits + 31;
-        address_to step-- = '\0';
+        address_to step-- = end;
 
         while (number > 0 && step > digits)
         {
@@ -1241,7 +1244,7 @@ fn string_format(writer write, string_address format, ...) {
                         }
                         #endif
                         
-                        case '\0':
+                        case end:
                                 return;
                 }
 

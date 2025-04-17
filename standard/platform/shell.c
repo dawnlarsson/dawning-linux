@@ -80,7 +80,6 @@ fn core_cp(writer write, string_address input)
 
         if (source_file_descriptor < 0)
                 return string_format(write, "cp: Cannot open file: %s\n", input);
-                
         
         bipolar destination_fd = system_call_3(syscall(openat), AT_FDCWD, (positive)destination, O_CREAT | O_WRONLY);
         
@@ -153,8 +152,8 @@ fn core_ls(writer write, string_address input)
                 {
                         struct linux_dirent64 address_to entry = (struct linux_dirent64 address_to)step;
 
-                        if (entry->d_name[0] == '.' && (entry->d_name[1] == '\0' ||
-                                                        (entry->d_name[1] == '.' && entry->d_name[2] == '\0')))
+                        if (entry->d_name[0] == '.' && (entry->d_name[1] == end ||
+                                                        (entry->d_name[1] == '.' && entry->d_name[2] == end)))
                         {
                                 step += entry->d_reclen;
                                 continue;
