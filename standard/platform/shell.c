@@ -75,32 +75,32 @@ fn core_cp(writer write, string_address input)
         
         string_address destination = string_cut(input, ' ');
 
-        bipolar source_file_descriptor = system_call_3(syscall(openat), AT_FDCWD, (positive)input, O_RDONLY);
+        bipolar source_file = system_call_3(syscall(openat), AT_FDCWD, (positive)input, O_RDONLY);
 
-        if (source_file_descriptor < 0)
-                return string_format(write, "cp: Cannot open file: %s\n", input);
-        
-        bipolar destination_fd = system_call_3(syscall(openat), AT_FDCWD, (positive)destination, O_CREAT | O_WRONLY);
-        
-        if (destination_fd < 0)
+        if (source_file < 0)
                 return string_format(write, "cp: Cannot open source file: %s\n", input);
         
-
-        p8 out_buffer[page_size];
-
-        while (1)
-        {
-                bipolar bytes_read = system_call_3(syscall(read), source_file_descriptor, (positive)out_buffer, page_size);
-
-                if (bytes_read <= 0)
-                        break;
-
-                system_call_3(syscall(write), destination_fd, (positive)out_buffer, bytes_read);
+        bipolar dest_file = system_call_4(syscall(openat), AT_FDCWD, (positive)destination, 
+                                        O_CREAT | O_WRONLY | O_TRUNC, 0666);
+        
+        if (dest_file < 0) {
+                system_call_1(syscall(close), source_file);
+                return string_format(write, "cp: Cannot create destination file: %s\n", destination);
         }
 
-        system_call_1(syscall(close), source_file_descriptor);
-        system_call_1(syscall(close), destination_fd);
+        p8 buffer[page_size];
 
+        while (1) {
+                bipolar bytes_read = system_call_3(syscall(read), source_file, (positive)buffer, page_size);
+                
+                if (bytes_read <= 0)
+                        break;
+                
+                system_call_3(syscall(write), dest_file, (positive)buffer, bytes_read);
+        }
+
+        system_call_1(syscall(close), source_file);
+        system_call_1(syscall(close), dest_file);
 }
 
 fn core_echo(writer write, string_address input)

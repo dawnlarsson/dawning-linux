@@ -16,6 +16,7 @@
 #define O_DIRECTORY 0200000
 #define O_CREAT 0100
 #define AT_FDCWD -100
+#define O_TRUNC 01000
 
 #define MS_NONE 0
 #define MS_RDONLY 1
