@@ -188,32 +188,6 @@ typedef __builtin_va_list var_args;
 #define atomic_compare_exchange(address, expected, desired) \
     __sync_bool_compare_and_swap(address, expected, desired)
 
-#define DEFER_MAX 32
-struct _defer_state {
-    int count;
-    void (address_to funcs[DEFER_MAX])(address_any);
-    address_any args[DEFER_MAX];
-};
-
-#define defer(state) ((state)->count = 0)
-
-#define defer_add(state, func, arg) \
-    do { \
-        if ((state)->count < DEFER_MAX) { \
-            (state)->funcs[(state)->count] = (func); \
-            (state)->args[(state)->count] = (arg); \
-            (state)->count++; \
-        } \
-    } while (0)
-
-#define defer_run(state) \
-    do { \
-        for (int i = (state)->count - 1; i >= 0; i--) { \
-            (state)->funcs[i]((state)->args[i]); \
-        } \
-        (state)->count = 0; \
-    } while (0)
-    
 #ifdef LIBRARY_API
 
 #define api_function(name, returned_type, default, args...) \
@@ -694,6 +668,9 @@ typedef struct
 #define string_is(source, value) (address_to(source) == (value))
 #define string_not(source, value) (address_to(source) != (value))
 #define string_equals(source, input) (strcmp(source, input) == 0)
+
+#define string_set_if(source, check, value) \
+    ((source) == (check) ? ((source) = (value), true) : false)
 
 #undef min
 #define min(value, input) ((value)greater_than(input) ? (value) : (input))

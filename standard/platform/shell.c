@@ -73,7 +73,6 @@ fn core_cp(writer write, string_address input)
         if (input == null)
                 return write(str("cp: missing operand\n"));
         
-        string_address source = input;
         string_address destination = string_cut(input, ' ');
 
         bipolar source_file_descriptor = system_call_3(syscall(openat), AT_FDCWD, (positive)input, O_RDONLY);
@@ -84,7 +83,7 @@ fn core_cp(writer write, string_address input)
         bipolar destination_fd = system_call_3(syscall(openat), AT_FDCWD, (positive)destination, O_CREAT | O_WRONLY);
         
         if (destination_fd < 0)
-                return string_format(write, "cp: Cannot open source file: %s\n", source);
+                return string_format(write, "cp: Cannot open source file: %s\n", input);
         
 
         p8 out_buffer[page_size];
@@ -210,16 +209,15 @@ fn core_mv(writer write, string_address input)
         if (input == null)
                 return write(str("mv: missing operand\n"));
 
-        string_address source = input;
         string_address destination = string_cut(input, ' ');
 
         if (destination == null)
                 return write(str("mv: missing destination\n"));
 
-        if (!system_call_4(syscall(renameat), AT_FDCWD, (positive)source, AT_FDCWD, (positive)destination))
+        if (!system_call_4(syscall(renameat), AT_FDCWD, (positive)input, AT_FDCWD, (positive)destination))
                 return;
 
-        string_format(write, "mv: Cannot move file: %s\n", source);
+        string_format(write, "mv: Cannot move file: %s\n", input);
 }
 
 fn core_mount(writer write, string_address input)
@@ -227,16 +225,15 @@ fn core_mount(writer write, string_address input)
         if (input == null)
                 return write(str("mount: missing operand\n"));
 
-        string_address source = input;
         string_address destination = string_cut(input, ' ');
 
         if (destination == null)
                 return write(str("mount: missing destination\n"));
 
-        if (!system_call_4(syscall(mount), (positive)source, (positive)destination, (positive)source, MS_BIND))
+        if (!system_call_4(syscall(mount), (positive)input, (positive)destination, (positive)input, MS_BIND))
                 return;
 
-        string_format(write, "mount: Cannot mount filesystem: %s\n", source);
+        string_format(write, "mount: Cannot mount filesystem: %s\n", input);
 }
 
 fn core_exit(writer write, string_address input)

@@ -62,13 +62,11 @@ bool shell_builtin(string_address arguments)
         return false;
 }
 
-// process_command v2
 fn process()
 {
         string_address step = string_cut(shell_buffer, ' ');
 
-        if(shell_buffer[input_length - 1] == '\n')
-                shell_buffer[input_length - 1] = end;
+        string_set_if(shell_buffer[input_length], '\n', end);
 
         if (string_is(shell_buffer, '.') || string_is(shell_buffer, '/'))
                 return shell_execute_command(shell_buffer, step);
@@ -90,9 +88,9 @@ b32 main()
 
                 log_direct(str(TERM_MAIN_BUFFER TERM_RESET TERM_SHOW_CURSOR PROMPT));
 
-                input_length = system_call_3(syscall(read), 0, (positive)shell_buffer, MAX_INPUT);
+                input_length = system_call_3(syscall(read), 0, (positive)shell_buffer, MAX_INPUT) - 1;
 
-                process();
+                if(input_length) process();
 
                 log_flush();
         }
