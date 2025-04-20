@@ -92,7 +92,7 @@ fn core_cp(writer write, string_address input)
 
         while (1) {
                 bipolar bytes_read = system_call_3(syscall(read), source_file, (positive)buffer, page_size);
-                
+
                 if (bytes_read <= 0)
                         break;
                 
@@ -184,15 +184,6 @@ fn core_ls(writer write, string_address input)
         system_call_1(syscall(close), file_descriptor);
 }
 
-fn core_pwd(writer write, string_address input)
-{
-        p8 out_buffer[4096];
-
-        system_call_2(syscall(getcwd), (positive)out_buffer, 4096);
-
-        string_format(write, "%s\n", out_buffer);
-}
-
 fn core_mkdir(writer write, string_address input)
 {
         if (input == null)
@@ -236,9 +227,31 @@ fn core_mount(writer write, string_address input)
         string_format(write, "mount: Cannot mount filesystem: %s\n", input);
 }
 
+fn core_pwd(writer write, string_address input)
+{
+        p8 out_buffer[4096];
+
+        system_call_2(syscall(getcwd), (positive)out_buffer, 4096);
+
+        string_format(write, "%s\n", out_buffer);
+}
+
 fn core_exit(writer write, string_address input)
 {
         exit(0);
+}
+
+fn core_touch(writer write, string_address input)
+{
+        if (input == null)
+                return write(str("touch: missing operand\n"));
+
+        bipolar file_descriptor = system_call_4(syscall(openat), AT_FDCWD, (positive)input, O_CREAT | O_WRONLY | O_TRUNC, 0666);
+
+        if (file_descriptor < 0)
+                return string_format(write, "touch: Cannot create file: %s\n", input);
+
+        system_call_1(syscall(close), file_descriptor);
 }
 
 fn core_help(writer write, string_address input);
@@ -252,22 +265,23 @@ typedef struct
 } core_command;
 
 core_command core_commands[] = {
-    {"basename", core_basename},
-    {"cat", core_cat},
-    {"cd", core_cd},
-    {"clear", core_clear},
-    {"cp", core_cp},
-    {"chmod", core_chmod},
-    {"echo", core_echo},
-    {"exec", core_exec},
-    {"exit", core_exit},
-    {"ls", core_ls},
-    {"mkdir", core_mkdir},
-    {"mv", core_mv},
-    {"mount", core_mount},
-    {"pwd", core_pwd},
-    {"help", core_help},
-    {null, null},
+        {"basename", core_basename},
+        {"cat", core_cat},
+        {"cd", core_cd},
+        {"clear", core_clear},
+        {"cp", core_cp},
+        {"chmod", core_chmod},
+        {"echo", core_echo},
+        {"exec", core_exec},
+        {"exit", core_exit},
+        {"ls", core_ls},
+        {"mkdir", core_mkdir},
+        {"mv", core_mv},
+        {"mount", core_mount},
+        {"pwd", core_pwd},
+        {"touch", core_touch},
+        {"help", core_help},
+        {null, null},
 };
 
 fn core_help(writer write, string_address input)

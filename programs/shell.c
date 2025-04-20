@@ -9,13 +9,29 @@
 p8 shell_buffer[MAX_INPUT];
 positive input_length;
 
+writer shell_output = log;
+positive shell_output_file;
+
+fn redirect_writer(address_any data, positive length)
+{
+        if(!shell_output_file) {
+                string_format(shell_output, "Redirection error file not open\n");
+                return;
+        }
+
+        if (length == 0)
+                length = string_length(data);
+
+        system_call_3(syscall(write), shell_output_file, (positive)data, length);
+}
+
 fn shell_thread_instance(string_address command, string_address arguments)
 {
         string_address arguments_list[] = {command, arguments, null};
 
         bipolar exec_result = system_call_3(syscall(execve), (positive)command, (positive)arguments_list, 0);
 
-        string_format(log, "failed with error: %b\n", exec_result);
+        string_format(shell_output, "failed with error: %b\n", exec_result);
         log_flush();
 
         exit(1);
@@ -36,7 +52,7 @@ fn shell_execute_command(string_address command, string_address arguments)
                 bipolar wait_result = system_call_4(syscall(wait4), fork_result, (positive)address_of status, 0, 0);
         } else
         {
-                string_format(log, "failed with error: %b\n", fork_result);
+                string_format(shell_output, "failed with error: %b\n", fork_result);
         
         }
 
@@ -55,7 +71,7 @@ bool shell_builtin(string_address arguments)
                         continue;
                 }
 
-                command->function(log, arguments);
+                command->function(shell_output, arguments);
                 return true;
         }
 
@@ -64,9 +80,28 @@ bool shell_builtin(string_address arguments)
 
 fn process()
 {
-        string_address step = string_cut(shell_buffer, ' ');
-
         string_set_if(shell_buffer[input_length], '\n', end);
+
+        string_address redirect = string_find(shell_buffer, " >>");
+
+        if(redirect)
+        {
+                memory_fill(redirect, end, 4);
+                redirect += 4;
+
+                if string_is(redirect, end)
+                        return string_format(shell_output, "Missing file name for redirection\n");
+                
+                bipolar file_descriptor = system_call_4(syscall(openat), AT_FDCWD, (positive)redirect, O_WRONLY | O_APPEND | O_CREAT, 0666);
+
+                if (file_descriptor < 0)
+                        return string_format(shell_output, "Cannot open file for redirection: %s\n", redirect);
+                
+                shell_output = redirect_writer;
+                shell_output_file = file_descriptor;
+        }
+
+        string_address step = string_cut(shell_buffer, ' ');
 
         if (string_is(shell_buffer, '.') || string_is(shell_buffer, '/'))
                 return shell_execute_command(shell_buffer, step);
@@ -74,7 +109,7 @@ fn process()
         if (shell_builtin(step))
                 return;
         
-        string_format(log, "Command not found: '%s'\n", shell_buffer);
+        string_format(shell_output, "Command not found: '%s'\n", shell_buffer);
 }
 
 b32 main()
@@ -93,5 +128,11 @@ b32 main()
                 if(input_length) process();
 
                 log_flush();
+
+                if (shell_output_file)
+                        system_call_1(syscall(close), shell_output_file);
+
+                shell_output = log;
+                shell_output_file = 0;
         }
 }

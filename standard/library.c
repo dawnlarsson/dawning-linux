@@ -1046,6 +1046,37 @@ string_address string_cut(string_address string, b8 cut_symbol)
         return null;
 }
 
+// returns the the start address of the first occurrence input, null if not found
+string_address string_find(string_address string, string_address input)
+{
+        string_address step = string;
+        string_address step_input = input;
+
+        while string_get(step)
+        {
+                if string_not(step, string_get(step_input))
+                        step++;
+                
+                string_address find = step;
+
+                while string_get(step_input)
+                {
+                        if string_not(step, string_get(step_input))
+                                break;
+
+                        step++;
+                        step_input++;
+                }
+
+                if string_is(step_input, end)
+                        return find;
+                
+                step_input = input;
+        }
+
+        return null;
+}
+
 // performs several cuts depending on number of arguments, each argument
 // will be written to at the start of the cut string
 /* TBD

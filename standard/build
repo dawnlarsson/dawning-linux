@@ -22,6 +22,8 @@ if [ -z "$output_file" ]; then
         output_file="bin/$(basename $(pwd))"
 fi
 
+mkdir -p bin
+
 $compiler $source_file -o $output_file $flags_base $suppress -Wl,-e,_start
 
 echo "Compiled $source_file to $output_file"
