@@ -28,10 +28,10 @@ b32 main()
 
         string_format(log, TERM_BOLD "Generating docs  %s\n" TERM_RESET, cwd);
 
-        core_mkdir(log, "docs");
+        dawn_shell_mkdir(log, "docs");
 
         string_format(log, "Generating index.html\n");
-        core_touch(log, "docs/index.html");
+        dawn_shell_touch(log, "docs/index.html");
         
 
         log_flush();

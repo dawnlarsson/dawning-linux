@@ -1,9 +1,10 @@
 #include "../library.c"
 
-// kernel page is normaly 4096 bytes
 const positive page_size = 4096;
 
-fn core_basename(writer write, string_address input)
+bool dawn_shell_styles = true;
+
+fn dawn_shell_basename(writer write, string_address input)
 {
         if (input == null)
                 return write(str("basename: missing operand\n"));
@@ -13,7 +14,7 @@ fn core_basename(writer write, string_address input)
         write(str("\n"));
 }
 
-fn core_cat(writer write, string_address input)
+fn dawn_shell_cat(writer write, string_address input)
 {
         if (input == null)
                 return write(str("cat: missing operand\n"));
@@ -41,7 +42,7 @@ fn core_cat(writer write, string_address input)
 // TODOs:
 // - empty buffer should go to home directory & handle ~
 // - "cd -" aka cd $OLDPWD
-fn core_cd(writer write, string_address input)
+fn dawn_shell_cd(writer write, string_address input)
 {
         if (input == null)
                 input = "/";
@@ -52,12 +53,12 @@ fn core_cd(writer write, string_address input)
         string_format(write, "cd: No such directory: %s\n", input);
 }
 
-fn core_clear(writer write, string_address input)
+fn dawn_shell_clear(writer write, string_address input)
 {
         write(str(TERM_CLEAR_SCREEN));
 }
 
-fn core_chmod(writer write, string_address input)
+fn dawn_shell_chmod(writer write, string_address input)
 {
         if (input == null)
                 return write(str("chmod: missing operand\n"));
@@ -68,7 +69,7 @@ fn core_chmod(writer write, string_address input)
         string_format(write, "chmod: Cannot change permissions: %s\n", input);
 }
 
-fn core_cp(writer write, string_address input)
+fn dawn_shell_cp(writer write, string_address input)
 {
         if (input == null)
                 return write(str("cp: missing operand\n"));
@@ -103,7 +104,7 @@ fn core_cp(writer write, string_address input)
         system_call_1(syscall(close), dest_file);
 }
 
-fn core_echo(writer write, string_address input)
+fn dawn_shell_echo(writer write, string_address input)
 {
         if (input != null)
                 write(input, 0);
@@ -111,7 +112,7 @@ fn core_echo(writer write, string_address input)
         write(str("\n"));
 }
 
-fn core_exec(writer write, string_address input)
+fn dawn_shell_exec(writer write, string_address input)
 {
         p8 address_to argv[] = {input};
 
@@ -122,7 +123,7 @@ fn core_exec(writer write, string_address input)
 // - Cyan: Symbolic links
 // - Default: Regular files
 // - Yellow: Special files (FIFO, sockets, devices, etc.)
-fn core_ls(writer write, string_address input)
+fn dawn_shell_ls(writer write, string_address input)
 {
         const p32 max_line_entries = 8;
 
@@ -158,16 +159,22 @@ fn core_ls(writer write, string_address input)
                                 continue;
                         }
 
-                        if (entry->d_type == DT_DIR)
-                                write(str(TERM_BOLD TERM_BLUE));
-                        else if (entry->d_type == DT_LNK)
-                                write(str(TERM_CYAN));
-                        else if (entry->d_type == DT_REG)
+                        if (dawn_shell_styles)
+                        {
+                                if (entry->d_type == DT_DIR)
+                                        write(str(TERM_BOLD TERM_BLUE));
+                                else if (entry->d_type == DT_LNK)
+                                        write(str(TERM_CYAN));
+                                else if (entry->d_type == DT_REG)
+                                        write(str(TERM_RESET));
+                                else
+                                        write(str(TERM_YELLOW));
+                        }
+                        
+                        string_format(write, "%s ", entry->d_name);
+                        
+                        if (dawn_shell_styles)
                                 write(str(TERM_RESET));
-                        else
-                                write(str(TERM_YELLOW));
-
-                        string_format(write, "%s " TERM_RESET, entry->d_name);
 
                         entries_count++;
 
@@ -184,7 +191,7 @@ fn core_ls(writer write, string_address input)
         system_call_1(syscall(close), file_descriptor);
 }
 
-fn core_mkdir(writer write, string_address input)
+fn dawn_shell_mkdir(writer write, string_address input)
 {
         if (input == null)
                 return write(str("mkdir: missing operand\n"));
@@ -195,7 +202,7 @@ fn core_mkdir(writer write, string_address input)
         string_format(write, "mkdir: Cannot create directory: %s\n", input);
 }
 
-fn core_mv(writer write, string_address input)
+fn dawn_shell_mv(writer write, string_address input)
 {
         if (input == null)
                 return write(str("mv: missing operand\n"));
@@ -211,7 +218,7 @@ fn core_mv(writer write, string_address input)
         string_format(write, "mv: Cannot move file: %s\n", input);
 }
 
-fn core_mount(writer write, string_address input)
+fn dawn_shell_mount(writer write, string_address input)
 {
         if (input == null)
                 return write(str("mount: missing operand\n"));
@@ -227,7 +234,7 @@ fn core_mount(writer write, string_address input)
         string_format(write, "mount: Cannot mount filesystem: %s\n", input);
 }
 
-fn core_pwd(writer write, string_address input)
+fn dawn_shell_pwd(writer write, string_address input)
 {
         p8 out_buffer[4096];
 
@@ -236,12 +243,12 @@ fn core_pwd(writer write, string_address input)
         string_format(write, "%s\n", out_buffer);
 }
 
-fn core_exit(writer write, string_address input)
+fn dawn_shell_exit(writer write, string_address input)
 {
         exit(0);
 }
 
-fn core_touch(writer write, string_address input)
+fn dawn_shell_touch(writer write, string_address input)
 {
         if (input == null)
                 return write(str("touch: missing operand\n"));
@@ -254,41 +261,41 @@ fn core_touch(writer write, string_address input)
         system_call_1(syscall(close), file_descriptor);
 }
 
-fn core_help(writer write, string_address input);
+fn dawn_shell_help(writer write, string_address input);
 
-typedef fn(address_to core_command_function)(writer write, string_address input);
+typedef fn(address_to dawn_shell_command_function)(writer write, string_address input);
 
 typedef struct
 {
         string_address name;
-        core_command_function function;
-} core_command;
+        dawn_shell_command_function function;
+} dawn_shell_command;
 
-core_command core_commands[] = {
-        {"basename", core_basename},
-        {"cat", core_cat},
-        {"cd", core_cd},
-        {"clear", core_clear},
-        {"cp", core_cp},
-        {"chmod", core_chmod},
-        {"echo", core_echo},
-        {"exec", core_exec},
-        {"exit", core_exit},
-        {"ls", core_ls},
-        {"mkdir", core_mkdir},
-        {"mv", core_mv},
-        {"mount", core_mount},
-        {"pwd", core_pwd},
-        {"touch", core_touch},
-        {"help", core_help},
+dawn_shell_command dawn_shell_commands[] = {
+        {"basename", dawn_shell_basename},
+        {"cat", dawn_shell_cat},
+        {"cd", dawn_shell_cd},
+        {"clear", dawn_shell_clear},
+        {"cp", dawn_shell_cp},
+        {"chmod", dawn_shell_chmod},
+        {"echo", dawn_shell_echo},
+        {"exec", dawn_shell_exec},
+        {"exit", dawn_shell_exit},
+        {"ls", dawn_shell_ls},
+        {"mkdir", dawn_shell_mkdir},
+        {"mv", dawn_shell_mv},
+        {"mount", dawn_shell_mount},
+        {"pwd", dawn_shell_pwd},
+        {"touch", dawn_shell_touch},
+        {"help", dawn_shell_help},
         {null, null},
 };
 
-fn core_help(writer write, string_address input)
+fn dawn_shell_help(writer write, string_address input)
 {
         string_format(write, "Dawning Shell, WIP, " TERM_RED TERM_BOLD "expect crashes! \n\n" TERM_RESET "Available built-in commands:\n");
 
-        core_command address_to command = core_commands;
+        dawn_shell_command address_to command = dawn_shell_commands;
 
         while (command->name)
         {

@@ -1,54 +1,58 @@
 #include "../standard/library.c"
+#include "../standard/platform/shell.c"
 
 positive2 res;
+positive2 last_res;
+
 positive2 cursor;
-bool cursor_visible = false;
+positive time;
+
+bool dirty_ui = true;
+
+fn set_cursor(positive x, positive y)
+{
+        cursor.x = x;
+        cursor.y = y;
+        dawn_shell_set_cursor(log, cursor);
+}
+
+fn interface()
+{
+        res = term_size();
+
+        if (res.x != last_res.x || res.y != last_res.y)
+                dirty_ui = true;
+
+        if (!dirty_ui)
+                return;
+
+        dirty_ui = false;
+        last_res = res;
+
+        log_flush();
+
+        dawn_shell_ls(log, ".");
+}
 
 fn frame()
 {
-        res = term_size();
+        // only re-rended when absolutly needed
+        interface();
+
+        // any live editing
 }
 
 b32 main()
 {
+        dawn_shell_styles = false;
         log(str(TERM_CLEAR_SCREEN TERM_HIDE_CURSOR TERM_ALT_BUFFER TERM_RESET));
-
-        log_flush();
-
-        log(str("Decimal/float printing & polynomial sine wave\n\n"));
-
-        decimal_to_string(log, PI);
-        log(str("\n"));
-        decimal_to_string(log, -PI);
-        log(str("\n"));
-        decimal_to_string(log, PI2);
-        log(str("\n"));
-        decimal_to_string(log, -PI2);
-        log(str("\n"));
-
-        decimal time = 0;
 
         while (1)
         {
                 frame();
-
-                log(str(ANSI "6;1H"));
-
-                log(str("\nsine\n"));
-                decimal_to_string(log, fast_sin(time) * 10);
-
-                log(str("\n\ncosine\n"));
-                decimal_to_string(log, fast_sin(time + PI2 / 4) * 10);
-
-                log(str("\n\ntan\n"));
-                decimal_to_string(log, fast_sin(time) / fast_sin(time + PI2 / 4));
-
-                time += 0.00001;
-
                 log_flush();
-
-                // sleep(1, 1);
         }
 
         log(str(TERM_CLEAR_SCREEN TERM_SHOW_CURSOR TERM_MAIN_BUFFER TERM_RESET));
+        log_flush();
 }

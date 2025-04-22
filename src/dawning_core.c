@@ -70,7 +70,7 @@ fn dawn_init_mount()
         }
 }
 
-p32 __init dawn_start()
+b32 __init dawn_start()
 {
         log_k("Dawning Eos - Kernel Extentions starting...\n");
 

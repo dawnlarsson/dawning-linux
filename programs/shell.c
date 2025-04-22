@@ -61,7 +61,7 @@ fn shell_execute_command(string_address command, string_address arguments)
 
 bool shell_builtin(string_address arguments)
 {
-        core_command address_to command = core_commands;
+        dawn_shell_command address_to command = dawn_shell_commands;
 
         while (command->name)
         {

@@ -259,9 +259,9 @@ typedef void fn;
 // memory:      [ 00000000 ]
 // hex:         [ 0x00 ]
 // linguistic:  (zero) to (plus) two hundred fifty-five
-// traditional: char
+// traditional: unsigned char
 // alt:         array of 8 bits
-typedef char p8;
+typedef positive_range char p8;
 #define p8_max 255
 #define p8_min 0
 #define p8_char_max 3
@@ -273,7 +273,7 @@ typedef char p8;
 // memory:      [ 00000000 ]
 // hex:         [ 0x00 ]
 // linguistic:  (minus) one hundred twenty-eight to (plus) one hundred twenty-seven
-// traditional: signed char
+// traditional: char
 // alt:         array of 8 bits
 typedef bipolar_range char b8;
 #define b8_max 127
@@ -287,9 +287,9 @@ typedef bipolar_range char b8;
 // memory:      [ 00000000 | 00000000 ]
 // hex:         [ 0x00 | 0x00 ]
 // linguistic:  (zero) to (plus) sixty-five thousand...
-// traditional:  short
+// traditional: unsigned short
 // alt:         array of 16 bits
-typedef short int p16;
+typedef positive_range short int p16;
 #define p16_max 65535
 #define p16_min 0
 #define p16_char_max 6
@@ -301,7 +301,7 @@ typedef short int p16;
 // memory:      [ 00000000 | 00000000 ]
 // hex:         [ 0x00 | 0x00 ]
 // linguistic:  (minus) thirty-two thousand... to (plus) thirty-two thousand...
-// traditional: signed short
+// traditional: short
 // alt:         array of 16 bits
 typedef bipolar_range short int b16;
 #define b16_max 32767
@@ -315,9 +315,9 @@ typedef bipolar_range short int b16;
 // memory:      [ 00000000 | 00000000 | 00000000 | 00000000 ]
 // hex:         [ 0x00 | 0x00 | 0x00 | 0x00 ]
 // linguistic:  (zero) to (plus) four billion...
-// traditional: int
+// traditional: unsigned int
 // alt:         array of 32 bits
-typedef int p32;
+typedef positive_range int p32;
 #define p32_max 4294967295
 #define p32_min 0
 #define p32_char_max 10
@@ -329,7 +329,7 @@ typedef int p32;
 // memory:      [ 00000000 | 00000000 | 00000000 | 00000000 ]
 // hex:         [ 0x00 | 0x00 | 0x00 | 0x00 ]
 // linguistic:  (minus) two billion... to (plus) two billion...
-// traditional: signed int
+// traditional: int
 // alt:         array of 32 bits
 typedef bipolar_range int b32;
 #define b32_max 2147483647
@@ -343,9 +343,9 @@ typedef bipolar_range int b32;
 // memory:      [ 00000000 | 00000000 | 00000000 | 00000000 | 00000000 | 00000000 | 00000000 | 00000000 ]
 // hex:         [ 0x00 | 0x00 | 0x00 | 0x00 | 0x00 | 0x00 | 0x00 | 0x00 ]
 // linguistic:  (zero) to (plus) eighteen quintillion...
-// traditional: long int
+// traditional: unsigned long int
 // alt:         array of 64 bits
-typedef long int p64;
+typedef positive_range long int p64;
 #define p64_max 18446744073709551615
 #define p64_min 0
 #define p64_char_max 20
@@ -357,7 +357,7 @@ typedef long int p64;
 // memory:      [ 00000000 | 00000000 | 00000000 | 00000000 | 00000000 | 00000000 | 00000000 | 00000000 ]
 // hex:         [ 0x00 | 0x00 | 0x00 | 0x00 | 0x00 | 0x00 | 0x00 | 0x00 ]
 // linguistic:  (minus) nine quintillion... to (plus) nine quintillion...
-// traditional: signed long int
+// traditional: long int
 // alt:         array of 64 bits
 typedef bipolar_range long int b64;
 #define b64_max 9223372036854775807
@@ -371,9 +371,9 @@ typedef bipolar_range long int b64;
 // memory:      2x [ 00000000 | 00000000 | 00000000 | 00000000 | 00000000 | 00000000 | 00000000 | 00000000 ]
 // hex:         2x [ 0x00 | 0x00 | 0x00 | 0x00 | 0x00 | 0x00 | 0x00 | 0x00 ]
 // linguistic:  (zero) to (plus) three hundred forty undecillion...
-// traditional: long long int
+// traditional: unsigned long long int
 // alt:         array of 128 bits
-typedef long long int p128;
+typedef positive_range long long int p128;
 #define p128_max 340282366920938463463374607431768211455
 #define p128_min 0
 #define p128_char_max 39
@@ -385,7 +385,7 @@ typedef long long int p128;
 // memory:      2x [ 00000000 | 00000000 | 00000000 | 00000000 | 00000000 | 00000000 | 00000000 | 00000000 ]
 // hex:         2x [ 0x00 | 0x00 | 0x00 | 0x00 | 0x00 | 0x00 | 0x00 | 0x00 ]
 // linguistic:  (minus) one hundred seventy undecillion... to (plus) one hundred seventy undecillion...
-// traditional: signed long long int
+// traditional: long long int
 // alt:         array of 128 bits
 typedef bipolar_range long long int b128;
 #define b128_max 170141183460469231731687303715884105727
@@ -1077,6 +1077,19 @@ string_address string_find(string_address string, string_address input)
         return null;
 }
 
+fn string_replace_all(string_address string, b8 cut_symbol, b8 replace_symbol)
+{
+        string_address step = string;
+
+        while string_get(step)
+        {
+                if string_is(step, cut_symbol)
+                        string_set(step, replace_symbol);
+
+                step++;
+        }
+}
+
 // performs several cuts depending on number of arguments, each argument
 // will be written to at the start of the cut string
 /* TBD
@@ -1284,7 +1297,7 @@ fn path_basename(writer write, string_address input)
         write(input + step, length - step);
 }
 
-fn term_set_cursor(writer write, positive2 pos)
+fn dawn_shell_set_cursor(writer write, positive2 pos)
 {
         string_format(write, ANSI "%p;%pH", pos.y, pos.x);
 }
@@ -1482,42 +1495,51 @@ address_any memset(address_any destination, int value, long unsigned int size)
 #ifdef DAWN_MODERN_C_COMPATIBILITY
 // tbd: https://pubs.opengroup.org/onlinepubs/9799919799/
 
-typedef p8 int8_t;
-typedef p16 int16_t;
-typedef p32 int32_t;
-typedef p64 int64_t;
+typedef b8 int8_t;
+typedef b16 int16_t;
+typedef b32 int32_t;
+typedef b64 int64_t;
 
-typedef b8 uint8_t;
-typedef b16 uint16_t;
-typedef b32 uint32_t;
-typedef b64 uint64_t;
+typedef p8 uint8_t;
+typedef p16 uint16_t;
+typedef p32 uint32_t;
+typedef p64 uint64_t;
 
-// Minimum-width integer types
-typedef p8 int_least8_t;
-typedef p16 int_least16_t;
-typedef p32 int_least32_t;
-typedef p64 int_least64_t;
+typedef b8 int_least8_t;
+typedef b16 int_least16_t;
+typedef b32 int_least32_t;
+typedef b64 int_least64_t;
 
-typedef b8 uint_least8_t;
-typedef b16 uint_least16_t;
-typedef b32 uint_least32_t;
-typedef b64 uint_least64_t;
+typedef p8 uint_least8_t;
+typedef p16 uint_least16_t;
+typedef p32 uint_least32_t;
+typedef p64 uint_least64_t;
 
-typedef p64 usize;
+typedef b8 int_fast8_t;
+typedef b64 int_fast16_t;
+typedef b64 int_fast32_t;
+typedef b64 int_fast64_t;
+
+typedef p8 uint_fast8_t;
+typedef p64 uint_fast16_t;
+typedef p64 uint_fast32_t;
+typedef p64 uint_fast64_t;
+
 typedef b64 isize;
+typedef p64 usize;
 
-typedef p64 intptr_t;
-typedef b64 uintptr_t;
+typedef b64 intptr_t;
+typedef p64 uintptr_t;
 
 typedef atomic64 atomic64_t;
 typedef atomic64_t atomic_long_t;
 
 typedef sized size_t;
-typedef b128 intmax_t;
-typedef p128 uintmax_t;
+
+typedef b64 intmax_t;
+typedef p64 uintmax_t;
+
 typedef b64 ptrdiff_t;
-typedef unsigned long int uintptr_t;
-typedef long int intptr_t;
 
 #undef memcpy
 // use memory_copy instead, this is for compatibility

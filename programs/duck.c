@@ -2,8 +2,7 @@
 
 b32 main()
 {
-        log(str("quack\n"));
-        log_flush();
+        log_direct(str("quack\n"));
 
         return 0;
 }
