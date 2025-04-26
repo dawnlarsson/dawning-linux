@@ -5,27 +5,27 @@ kernel_extract_dir="linux/"
 download_artifacts_dir="artifacts/"
 keys_dir=$download_artifacts_dir"keys/"
 trusted_keys="torvalds@kernel.org gregkh@kernel.org"
-kernel_version="6.14.3"
-kernel_download="https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.14.3.tar.xz"
+kernel_version="6.14.4"
+kernel_download="https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.14.4.tar.xz"
 kernel_pgp="
 -----BEGIN PGP SIGNATURE-----
 Comment: This signature is for the .tar version of the archive
-Comment: git archive --format tar --prefix=linux-6.14.3/ v6.14.3
+Comment: git archive --format tar --prefix=linux-6.14.4/ v6.14.4
 Comment: git version 2.49.0
 
-iQIzBAABCAAdFiEEZH8oZUiU471FcZm+ONu9yGCSaT4FAmgErz4ACgkQONu9yGCS
-aT7ioA/+K6K1VdNvnBee4AWt9G0CmzlvllTiWt2YfFrNaIMpNWQcVxlxRmnQNLJh
-YuICFfR06EyYjuTNCN3t+0AqkP4TIXQ+VA0+PiL1CHHNyRK6aiaeFMRnOSBbEDra
-qH2iwp8CPYwPjvbwJWIkwp1IlFurb2N4XP+1pz6FrZmSSbnUteCoVKJy0gSvNhWh
-yFYqYKzGJuKguAtmlmz7CNddUwj2ZG8C0gpEePYMRpifM21PDLARZlWcs5OIH77A
-boGxB+mbPSkZrOrusYqFbEw8Z5XhcSgqUZLYsA4dz5PYIoNbJVsvmRsEh2UhY8P8
-f3XiOSN3Klyx+QVv8st/WVSBkSjodJqdk6CW4M66yTAmpcDfsu3COZzhPWOcaeue
-M6IXAdxYuO2z8GZa3m8AA6g9z0XmSwhHKfQKQv5DiqqITQoSzTsE3ofGsk8jylkd
-3UsBZ0x5F2QnntWQjinCvSHFiuhp7EOOVrjeYYQoVtuVRWipmzlR1w1MChpLHb+F
-G1/FIrCnw/wfagT+VKz7UGnwH7n9On2pbhPloY4Rhg7t7+l8oxxuY1qMD5yJgCKd
-O9a3WgtIuM1eyF8YENalM9/bsJVPnj972bLB1XkYWSeqqB+6hSkcd/fUSh9I1REl
-7gXS0IIsxr8JZIw5VbQWsEoUpFFr0ytH0m9B1S/lTkN6wx5PBMU=
-=YnUF
+iQIzBAABCAAdFiEEZH8oZUiU471FcZm+ONu9yGCSaT4FAmgLTXoACgkQONu9yGCS
+aT4HLQ/9G7N5wHAGgq70fONViUxzOXwhJoy3uJRMxPTyBdYWSdCgY/HLKk/ZyDxT
+JnohqmR8qjE0uGXYHVN39prL8vnQa5kgm6rW80jbXu3gmE+xnKen0CsHUyM3B1iu
+P/yPcroy5K1z17YUuZ4jeO1spD3jg9RjcoL3yjVIjmE0I9wUOW/tWglBbm5k4a0l
+6TIx01TJaP3jNj9mFeNivxURpGruc+Vd5/MAY79l+VvKBPeC14XN8be2dtst5q2X
+Ch3dii67rI8SBVeHF0zSsINNf1JxFHlBveKqnGmxwtPa3dF4SD0Mo9yjRP/81iNg
+EySMXmVJ8e5oNz3w5LHvK69WdOWAPY/W8UPC2Zbc1pZ0p/SS1e5ry0FYWwpCteIN
+1XFYypQIW6UM5+FuBvOLAikRkdlWoqV9UwGWHinu7j5cxtKiasGNV3sMwjQeANbn
+iovABh3pZLJVGskF5UMtN95FW+qA5PD7mrsFzBo4mR9pb2Q6A6z9O6eGMkoJyZzw
+NxvU1vEFBwG7tTw7VKVnznT3gmr3oc0valm4Vc9uWz+ltgRToQmpjTV7S/Jfsh52
+10Q4fDgDidukQvWGy1H8SE6RcU9itSOKKhqqjJ5FMebCHpv/xqIuax4fpy3oBpLU
+R8UHFpk1efbnjvNfwLQUcBtzzBpRPQ5tcpeChJf7zj9gp00tfwQ=
+=PuA2
 -----END PGP SIGNATURE-----
 "
 

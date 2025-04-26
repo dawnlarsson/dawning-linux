@@ -34,6 +34,12 @@ b32 main()
 
     html_push("body", "");
 
+    file lib = file_new("../library.c", FILE_READ);
+    
+    if(file_load(address_of lib) == null)
+        log_direct(str("Failed to load library.c\n"));
+
+    //log(lib.data, 30);
 
     html_pop("body");
     html_pop("html");
