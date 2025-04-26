@@ -92,7 +92,7 @@ fn process()
                 if string_is(redirect, end)
                         return string_format(shell_output, "Missing file name for redirection\n");
                 
-                bipolar file_descriptor = system_call_4(syscall(openat), AT_FDCWD, (positive)redirect, O_WRONLY | O_APPEND | O_CREAT, 0666);
+                bipolar file_descriptor = system_call_4(syscall(openat), AT_FDCWD, (positive)redirect, FILE_READ | FILE_APPEND | FILE_CREATE, 0666);
 
                 if (file_descriptor < 0)
                         return string_format(shell_output, "Cannot open file for redirection: %s\n", redirect);
@@ -115,7 +115,7 @@ fn process()
 b32 main()
 {
         system_call(syscall(setsid));
-        system_call_2(2, (positive) "/dev/console", O_RDWR | O_NOCTTY);
+        system_call_2(2, (positive) "/dev/console", FILE_READ_WRITE | O_NOCTTY);
 
         while (1)
         {

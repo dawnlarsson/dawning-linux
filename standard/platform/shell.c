@@ -19,7 +19,7 @@ fn dawn_shell_cat(writer write, string_address input)
         if (input == null)
                 return write(str("cat: missing operand\n"));
 
-        bipolar file_descriptor = system_call_3(syscall(openat), AT_FDCWD, (positive)input, O_RDONLY);
+        bipolar file_descriptor = system_call_3(syscall(openat), AT_FDCWD, (positive)input, FILE_READ);
 
         if (file_descriptor < 0)
                 return string_format(write, "cat: Cannot open file: %s\n", input);
@@ -76,13 +76,13 @@ fn dawn_shell_cp(writer write, string_address input)
         
         string_address destination = string_cut(input, ' ');
 
-        bipolar source_file = system_call_3(syscall(openat), AT_FDCWD, (positive)input, O_RDONLY);
+        bipolar source_file = system_call_3(syscall(openat), AT_FDCWD, (positive)input, FILE_READ);
 
         if (source_file < 0)
                 return string_format(write, "cp: Cannot open source file: %s\n", input);
         
         bipolar dest_file = system_call_4(syscall(openat), AT_FDCWD, (positive)destination, 
-                                        O_CREAT | O_WRONLY | O_TRUNC, 0666);
+                FILE_CREATE | FILE_WRITE | O_TRUNC, 0666);
         
         if (dest_file < 0) {
                 system_call_1(syscall(close), source_file);
@@ -130,7 +130,7 @@ fn dawn_shell_ls(writer write, string_address input)
         if (input == null)
                 input = ".";
 
-        bipolar file_descriptor = system_call_3(syscall(openat), AT_FDCWD, (positive)input, O_RDONLY | O_DIRECTORY);
+        bipolar file_descriptor = system_call_3(syscall(openat), AT_FDCWD, (positive)input, FILE_READ | O_DIRECTORY);
 
         if (file_descriptor < 0)
                 return string_format(write, "ls: Cannot access '%s': No such file or directory\n", input);
@@ -253,7 +253,7 @@ fn dawn_shell_touch(writer write, string_address input)
         if (input == null)
                 return write(str("touch: missing operand\n"));
 
-        bipolar file_descriptor = system_call_4(syscall(openat), AT_FDCWD, (positive)input, O_CREAT | O_WRONLY | O_TRUNC, 0666);
+        bipolar file_descriptor = system_call_4(syscall(openat), AT_FDCWD, (positive)input, FILE_CREATE | FILE_WRITE | O_TRUNC, 0666);
 
         if (file_descriptor < 0)
                 return string_format(write, "touch: Cannot create file: %s\n", input);
