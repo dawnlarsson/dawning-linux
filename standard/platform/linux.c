@@ -60,7 +60,7 @@ fn exit(b32 code)
 
 fn _start()
 {
-        // TODO: copy arguments from the stack
+        // register_get(stack_pointer, program_stack_base);
 
         b32 result = main();
 

@@ -97,6 +97,7 @@
 #define address_to *
 #define address_of &
 #define address_any void *
+#define address_bad ((address_any) -1)
 
 #undef null
 #define null ((address_any)0)
@@ -649,6 +650,9 @@ typedef typeof(sizeof(0)) sized;
 #define system_invoke ir(ASM(syscall))
 #define call(what) ir("call " ASM(what) ";")
 
+#define register_get(reg, dest) ir(ASM(copy) " %0, " ASM(reg) : "=r" (dest))
+#define register_set(reg, src) ir(ASM(copy) " " ASM(reg) ", %0" : : "r" (src))
+
 // a thread-local storage variable, unique to each thread
 #define local __thread
 
@@ -959,8 +963,6 @@ string_address string_copy(string_address destination, string_address source)
         while string_get(source)
                 string_set(destination++, string_get(source++));
 
-        string_set(destination, end);
-
         return start;
 }
 
@@ -972,8 +974,6 @@ string_address string_copy_max(string_address destination, string_address source
 
         while (length-- && string_get(source))
                 string_set(destination++, string_get(source++));
-
-        string_set(destination, end);
 
         return start;
 }
@@ -1018,10 +1018,16 @@ string_address string_last_of(string_address source, p8 character)
         return last;
 }
 
-// preforms a single cut forwards
-// a cut is a null terminator inserted where the cut is found
-// this returns the address AFTER the cut
-// effectively splitting the string into two parts
+// Performs a single cut forward in a string by inserting a null terminator where the FIRST cut symbol is found. 
+// Returns the address AFTER the cut, effectively splitting the string into two parts.
+// searching starts from the beginning of the string, 
+// linearly steps forward until a cut symbol is found or a string end is reached.
+//
+// # example:
+//      string_address input = "Hello World";
+//      string_address second_part = string_cut(input, ' ');
+//      // input = "Hello"
+//      // second_part = "World"
 string_address string_cut(string_address string, b8 cut_symbol) 
 {
         string_address step = string;
@@ -1088,6 +1094,11 @@ fn string_replace_all(string_address string, b8 cut_symbol, b8 replace_symbol)
 
                 step++;
         }
+}
+
+fn string_get_environment(const b8 address_to name)
+{
+
 }
 
 // performs several cuts depending on number of arguments, each argument
@@ -1478,12 +1489,15 @@ fn_asm(system_call_6, bipolar, positive syscall, positive argument_1, positive a
         system_return;
 }
 
+p8 address_to program_stack_base = 0;
+
 // User required implementations
 b32 main();
 
 // Platform required implementations
 fn exit(b32 code);
 fn sleep(positive seconds, positive nanoseconds);
+
 
 #undef memset
 // for compatibility, makes the linker happy
@@ -1594,8 +1608,342 @@ char address_to strrchr(char address_to source, int character)
 
 #ifndef DAWN_NO_PLATFORM
 
+#define stdin 0
+#define stdout 1
+#define stderr 2
+
+#define SIGTRAP 5
+#define SIGKILL 9
+#define SIGSTOP 20
+#define SIGCHLD 17
+
+#define O_NOCTTY 0400
+#define O_NONBLOCK 0
+#define O_DIRECTORY 0200000
+#define O_CREAT 0100
+#define AT_FDCWD -100
+#define O_TRUNC 01000
+#define O_APPEND 02000
+#define O_CLOEXEC 02000000
+
+#define FILE_READ 00
+#define FILE_WRITE (01 | 0100 | 01000)
+#define FILE_READ_WRITE 02
+#define FILE_EXECUTE 010
+#define FILE_APPEND (01 | 0100 | 02000)
+#define FILE_CREATE 0100
+#define FILE_TRUNCATE 0200
+
+#define FILE_PROTECT_READ 0400
+#define FILE_PROTECT_WRITE 0200
+
+#define FILE_MAP_PRIVATE 01000
+#define FILE_MAP_SHARED 02000
+#define FILE_MAP_ANONYMOUS 04000
+
+#define FILE_SEEK_SET 0
+#define FILE_SEEK_CUR 1
+#define FILE_SEEK_END 2
+
 #include "platform/syscall.c"
 #include "platform/any.c"
+
+typedef struct
+{
+        p32 device;
+        p64 inode;
+        p32 protection;
+        p64 hard_links;
+        p32 owner;
+        p32 group;
+        p32 special_device_id;
+        b64 size;
+        b64 blocksize;
+        b64 blocks;
+        b64 last_access;
+        b64 last_edit;
+        b64 last_update;
+} file_status;
+
+typedef struct
+{
+        positive handle;
+        string_address path;
+        positive flags;
+        address_any data;
+        bool loaded;
+        file_status status;
+} file;
+
+#ifdef WINDOWS
+__declspec(dllimport) HMODULE __stdcall LoadLibraryA(LPCSTR);
+__declspec(dllimport) FARPROC __stdcall GetProcAddress(HMODULE, LPCSTR);
+__declspec(dllimport) int __stdcall FreeLibrary(HMODULE);
+#endif
+
+positive dawn_limit_max_name_length = 256;
+string dawn_library_fallback_system_paths = "/lib:/usr/local/lib:/usr/lib";
+
+file_status file_get_status(file address_to source)
+{
+        file_status result = {0};
+
+#if defined(WINDOWS)
+        BY_HANDLE_FILE_INFORMATION info = {0};
+        if (GetFileInformationByHandle((HANDLE)source->handle, &info))
+        {
+                result.size = info.nFileSizeLow;
+                result.last_access = info.ftLastAccessTime.dwLowDateTime;
+                result.last_edit = info.ftLastWriteTime.dwLowDateTime;
+                result.last_update = info.ftCreationTime.dwLowDateTime;
+        }
+#else
+        system_call_2(syscall(fstat), source->handle, (positive)&result);
+#endif
+
+        return result;
+}
+
+// Lazily-loaded file handle, path relative to the current working directory
+file file_new(string_address path, positive flags)
+{
+        file result = {0};
+        result.path = path;
+        result.flags = flags;
+
+#if defined(WINDOWS)
+        HANDLE h = CreateFileA(path, ((flags & O_RDONLY) ? GENERIC_READ : 0) | ((flags & O_WRONLY) ? GENERIC_WRITE : 0) |
+                                ((flags & O_RDWR) ? (GENERIC_READ | GENERIC_WRITE) : 0),
+                                FILE_SHARE_READ, NULL,
+                                ((flags & O_CREAT) ? ((flags & O_TRUNC) ? CREATE_ALWAYS : OPEN_ALWAYS) : OPEN_EXISTING),
+                                FILE_ATTRIBUTE_NORMAL, NULL);
+
+        result.handle = (h == INVALID_HANDLE_VALUE) ? -1 : (positive)h;
+#else
+        result.handle = system_call_3(syscall(openat), AT_FDCWD, (positive)path, flags);
+#endif
+
+        result.status = file_get_status(address_of result);
+
+        return result;
+}
+
+bool file_valid(file source)
+{
+        return source.handle != -1;
+}
+
+// Load entire file into memory
+address_any file_load(file address_to source)
+{
+        if (!file_valid(address_to source))
+                return null;
+
+
+        if (source->loaded && source->data)
+                return source->data;
+        
+        positive size = source->status.size;
+        
+        if (size == 0)
+                return null;
+                
+        positive page_size = 4096;
+        positive pages = (size + page_size - 1) / page_size;
+        
+#if defined(WINDOWS)
+        source->data = VirtualAlloc(NULL, pages * page_size, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
+        if (!source->data)
+                return null;
+                
+        DWORD bytes_read;
+        SetFilePointer((HANDLE)source->handle, 0, NULL, FILE_BEGIN);
+        if (!ReadFile((HANDLE)source->handle, source->data, (DWORD)size, &bytes_read, NULL) || 
+                bytes_read != size) {
+                VirtualFree(source->data, 0, MEM_RELEASE);
+                source->data = null;
+                return null;
+        }
+#else
+
+        source->data = (address_any) system_call_5(syscall(mmap), 
+                0, pages * page_size,
+                FILE_PROTECT_READ | FILE_PROTECT_WRITE,
+                FILE_MAP_PRIVATE | FILE_MAP_ANONYMOUS 
+                -1, 0
+        );
+        
+        if (source->data == address_bad) {
+                source->data = null;
+                return null;
+        }
+        
+        system_call_3(syscall(lseek), source->handle, 0, FILE_SEEK_SET);
+        
+        positive bytes_read = system_call_3(syscall(read), source->handle, (positive)source->data, size);
+
+        if (bytes_read != size) {
+                system_call_2(syscall(munmap), (positive)source->data, pages * page_size);
+                source->data = null;
+                return null;
+        }
+#endif
+
+        source->loaded = true;
+        return source->data;
+}
+
+positive file_read(file address_to source, address_any buffer, positive size, positive offset)
+{
+        if (!file_valid(address_to source))
+                return -1;
+        
+        if (source->loaded && source->data) {
+                
+                if (offset >= source->status.size)
+                        return 0;
+                
+                positive available = source->status.size - offset;
+                positive to_read = size < available ? size : available;
+                memory_copy(buffer, (p8*)source->data + offset, to_read);
+                return to_read;
+        }
+        
+#if defined(WINDOWS)
+        LARGE_INTEGER li_offset;
+        li_offset.QuadPart = offset;
+        SetFilePointerEx((HANDLE)source->handle, li_offset, NULL, FILE_BEGIN);
+        
+        DWORD bytes_read;
+        if (!ReadFile((HANDLE)source->handle, buffer, (DWORD)size, &bytes_read, NULL))
+                return -1;
+        return bytes_read;
+#else
+        system_call_3(syscall(lseek), source->handle, offset, FILE_SEEK_SET);
+        return system_call_3(syscall(read), source->handle, (positive)buffer, size);
+#endif
+}
+
+
+// Unload file data from memory
+fn file_unload(file address_to source)
+{
+        if (!source->loaded && !source->data) 
+                return;
+
+        positive page_size = 4096;
+        positive pages = (source->status.size + page_size - 1) / page_size;
+        
+#if defined(WINDOWS)
+        VirtualFree(source->data, 0, MEM_RELEASE);
+#else
+        system_call_2(syscall(munmap), (positive)source->data, pages * page_size);
+#endif
+        
+        source->data = null;
+        source->loaded = false;
+}
+
+// Write to file from provided buffer
+positive file_write(file address_to source, address_any buffer, positive size, positive offset)
+{
+        if (!file_valid(address_to source))
+                return -1;
+        
+        bool update_memory = source->loaded && source->data && offset < source->status.size;
+        
+#if defined(WINDOWS)
+        LARGE_INTEGER li_offset;
+        li_offset.QuadPart = offset;
+        SetFilePointerEx((HANDLE)source->handle, li_offset, NULL, FILE_BEGIN);
+        
+        DWORD bytes_written;
+        if (!WriteFile((HANDLE)source->handle, buffer, (DWORD)size, &bytes_written, NULL))
+                return -1;
+                
+        if (update_memory && bytes_written > 0) {
+                positive end_offset = offset + bytes_written;
+                if (end_offset > source->status.size) {
+                        source->status = file_get_status(source);
+                        file_unload(source);
+                } else {
+                        memory_copy((p8*)source->data + offset, buffer, bytes_written);
+                }
+        }
+        
+        return bytes_written;
+#else
+        system_call_3(syscall(lseek), source->handle, offset, FILE_SEEK_SET);
+        positive bytes_written = system_call_3(syscall(write), source->handle, (positive)buffer, size);
+        
+        if (update_memory && bytes_written > 0) {
+
+                positive end_offset = offset + bytes_written;
+
+                if (end_offset > source->status.size) {
+                        source->status = file_get_status(source);
+                        file_unload(source);
+                } else {
+                        memory_copy((p8*)source->data + offset, buffer, bytes_written);
+                }
+        }
+        
+        return bytes_written;
+#endif
+}
+
+// Close file and clean up resources
+fn file_close(file address_to source)
+{
+        if (!file_valid(address_to source))
+                return;
+
+        file_unload(source);
+        
+#if defined(WINDOWS)
+        CloseHandle((HANDLE)source->handle);
+#else
+        system_call_1(syscall(close), source->handle);
+#endif
+        source->handle = -1;
+        source->path = null;
+}
+
+// ### Load library the system
+// Traditional: dlopen
+address_any library_open(string_address library_path) 
+{
+#ifdef WINDOWS
+        return LoadLibraryA(library_path);
+#endif
+
+        string_address is_relative_path = string_first_of(library_path, '/');
+
+        if(!is_relative_path)
+        {
+                file_new(library_path, FILE_READ | FILE_EXECUTE);
+        }
+
+        return null;
+}
+
+// ### Get address of a function/symbol in the library
+// Traditional: dlsym
+address_any library_get(address_any library, string_address name) 
+{
+#ifdef WINDOWS
+        return GetProcAddress(library, name);
+#endif
+}
+
+// ### Free the library
+// Traditional: dlclose
+fn library_close(address_any library) 
+{
+#ifdef WINDOWS
+        FreeLibrary(library);
+#endif
+}
 
 #if defined(LINUX)
 #include "platform/linux.c"

@@ -17,7 +17,10 @@ fn exit(b32 code)
 
 fn start()
 {
+        // register_get(stack_pointer, program_stack_base);
+
         b32 result = main();
+
         exit(result);
 }
 

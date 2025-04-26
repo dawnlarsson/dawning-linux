@@ -1,24 +1,5 @@
 #include "../library.c"
 
-#define stdin 0
-#define stdout 1
-#define stderr 2
-
-#define SIGTRAP 5
-#define SIGKILL 9
-#define SIGSTOP 20
-
-#define O_RDONLY 00
-#define O_WRONLY 01
-#define O_RDWR 02
-#define O_NOCTTY 0400
-#define O_NONBLOCK 0
-#define O_DIRECTORY 0200000
-#define O_CREAT 0100
-#define AT_FDCWD -100
-#define O_TRUNC 01000
-#define O_APPEND 02000
-
 #define MS_NONE 0
 #define MS_RDONLY 1
 #define MS_NOSUID 2
@@ -55,7 +36,6 @@
 
 #define CLONE_CHILD_CLEARTID 0x00200000
 #define CLONE_CHILD_SETTID 0x01000000
-#define SIGCHLD 17
 
 struct timespec
 {

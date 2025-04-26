@@ -3,36 +3,40 @@
 #include "../../platform/shell.c"
 
 #define html_style '<link rel="stylesheet" href="https://dawning.dev/runtime/u&i.css">'
+#define tag(name, data, content) string_format(log, "<%s %s>%s</%s>", name, data, content, name)
+#define tag_empty(name, data) string_format(log, "<%s %s/>", name, data)
 
-fn html_tag_open(writer write, string_address name, string_address data)
+fn html_push(string_address name, string_address data)
 {
-        string_format(write, "<%s %s>", name, data);
+    if (!string_get(data))
+        return string_format(log, "<%s>", name);
+
+    string_format(log, "<%s %s>", name, data);
 }
 
-fn html_tag_close(writer write, string_address name)
+fn html_pop(string_address name)
 {
-        string_format(write, "</%s>\n", name);
+    return string_format(log, "</%s>", name);
 }
 
-fn html_tag(writer write, string_address name, string_address data, string_address content)
-{
-        html_tag_open(write, name, data);
-        write(content, 0);
-        html_tag_close(write, name);
-}
 
 b32 main()
 {
-        p8 cwd[4096];
-        system_call_2(syscall(getcwd), (positive)cwd, 4096);
+    dawn_shell_cd(log, "..");
 
-        string_format(log, TERM_BOLD "Generating docs  %s\n" TERM_RESET, cwd);
+    string_format(log, "<!DOCTYPE html>");
+    html_push("html", "lang=en");
+    html_push("head", "");
+    tag_empty("meta", "charset=utf-8");
+    tag_empty("meta", "name=viewport content=\"width=device-width initial-scale=1.0\"");
+    tag_empty("meta", "name=description content=\"Dawning C Standard Library Documentation\"");
+    html_pop("head");
 
-        dawn_shell_mkdir(log, "docs");
+    html_push("body", "");
 
-        string_format(log, "Generating index.html\n");
-        dawn_shell_touch(log, "docs/index.html");
-        
 
-        log_flush();
+    html_pop("body");
+    html_pop("html");
+
+    log_flush();
 }
