@@ -23,6 +23,38 @@ else
         alias stat_bytes="stat -c %s"
 fi
 
+build_install=""
+
+# Checks if we are linux, or darwin, then sets a propper install command
+build_environment_check() {
+        if [ "$(uname)" = "Darwin" ]; then
+                build_install="brew install"
+                return 0
+        fi
+
+        if [ "$(uname)" = "MINGW64_NT" ]; then
+                build_install="choco install"
+                return 0
+        fi
+
+        if [ -f /etc/debian_version ]; then
+                build_install="sudo apt-get install"
+        elif [ -f /etc/redhat-release ]; then
+                build_install="sudo yum install"
+        elif [ -f /etc/arch-release ]; then
+                build_install="sudo pacman -S"
+        elif [ -f /etc/alpine-release ]; then
+                build_install="sudo apk add"
+        elif [ -f /etc/SuSE-release ]; then
+                build_install="sudo zypper install"
+        elif [ -f /etc/gentoo-release ]; then
+                build_install="sudo emerge"
+        else
+                echo "Unknown distribution, unable to set up build environment."
+                exit 1
+        fi
+}
+
 label() {
         echo $CYAN $BOLD
         echo "    $@"

@@ -20,6 +20,22 @@ label KERNEL CONFIGURATION
 
         make_flags=$(key make_flags)
 
+label BUILD ENVIRONMENT CHECK
+        compiler=$(key compiler)
+
+        if ! command -v $compiler &> /dev/null; then
+                label $YELLOW WARNING !!!
+                echo "$compiler not found. Attempting to install it."
+                echo
+
+                build_environment_check
+
+                $build_install $compiler || echo "ERROR: Unable to install $compiler. Please install it manually."
+        
+        else
+                echo "Using compiler:" $BOLD " $compiler"
+        fi
+
 label KERNEL CONFIG
         line_add_padded "linux/Kconfig" "source \"kernel/dawning/Kconfig\""
         line_add_padded "linux/kernel/Makefile" "obj-y += dawning/"
