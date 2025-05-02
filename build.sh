@@ -33,7 +33,7 @@ label BUILD ENVIRONMENT CHECK
                 $build_install $compiler || echo "ERROR: Unable to install $compiler. Please install it manually."
         
         else
-                echo "Using compiler:" $BOLD " $compiler"
+                echo "Using compiler:" $BOLD"$compiler"
         fi
 
 label KERNEL CONFIG
@@ -68,6 +68,6 @@ label KERNEL BUILD
 
 label POST BUILD
         $(key "post")
-        echo $BOLD "Done Building Kernel"
+        echo $BOLD"Done Building Kernel"$GREEN
         size $(key kernel_export)
         echo $RESET
