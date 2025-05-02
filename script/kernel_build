@@ -18,5 +18,3 @@ make -j$cpu_cores $make_flags KCPPFLAGS="$shared_flags" KAFLAGS="$shared_flags" 
 cd ..
 
 sudo cp $kernel_image $kernel_export
-
-size $kernel_export

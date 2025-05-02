@@ -85,8 +85,7 @@ is_safe() {
 }
 
 key() {
-        local value=$(grep "#> $1" artifacts/.config | sed "s/#> $1 //")
-        echo $value
+        echo $(grep "#> $1" artifacts/.config | sed "s/#> $1 //")
 }
 
 line_has() {
@@ -122,7 +121,6 @@ is_newer() {
 
         return 1
 }
-
 
 is_different_age() {
         local file1=$(stat_bytes "$1")

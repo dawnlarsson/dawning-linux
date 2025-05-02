@@ -54,6 +54,9 @@ label KERNEL CONFIG
                 echo "No changes"
         fi
 
+label PRE BUILD
+        $(key "pre")
+
 label USER SPACE BUILD
         sh standard/build_kernel programs/init fs/init
         sh standard/build_kernel programs/shell fs/shell
@@ -62,3 +65,9 @@ label USER SPACE BUILD
 
 label KERNEL BUILD
         sudo sh script/kernel_build
+
+label POST BUILD
+        $(key "post")
+        echo $BOLD "Done Building Kernel"
+        size $(key kernel_export)
+        echo $RESET

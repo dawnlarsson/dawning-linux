@@ -1673,6 +1673,49 @@ typedef struct
         file_status status;
 } file;
 
+#define log_file(write, source) \
+        string_format(write, \
+                "File: %s\n" \
+                "Handle: %p\n" \
+                "Flags: %p\n" \
+                "Data: %p\n" \
+                "Loaded: %b\n", \
+                source.path, \
+                source.handle, \
+                source.flags, \
+                source.data, \
+                source.loaded)
+        
+#define log_file_status(write, source) \
+        string_format(write, \
+                "Device: %p\n" \
+                "Inode: %b\n" \
+                "Protection: %p\n" \
+                "Hard Links: %p\n" \
+                "Owner: %p\n" \
+                "Group: %p\n" \
+                "Special Device ID: %p\n" \
+                "Size: %b\n" \
+                "Blocksize: %b\n" \
+                "Blocks: %b\n" \
+                "Last Access: %b\n" \
+                "Last Edit: %b\n" \
+                "Last Update: %b\n", \
+                source.status.device, \
+                source.status.inode, \
+                source.status.protection, \
+                source.status.hard_links, \
+                source.status.owner, \
+                source.status.group, \
+                source.status.special_device_id, \
+                source.status.size, \
+                source.status.blocksize, \
+                source.status.blocks, \
+                source.status.last_access, \
+                source.status.last_edit, \
+                source.status.last_update)
+        
+
 #ifdef WINDOWS
 __declspec(dllimport) HMODULE __stdcall LoadLibraryA(LPCSTR);
 __declspec(dllimport) FARPROC __stdcall GetProcAddress(HMODULE, LPCSTR);
@@ -1736,7 +1779,6 @@ address_any file_load(file address_to source)
 {
         if (!file_valid(address_to source))
                 return null;
-
 
         if (source->loaded && source->data)
                 return source->data;

@@ -24,7 +24,7 @@ b32 main()
 {
     dawn_shell_cd(log, "..");
 
-    string_format(log, "<!DOCTYPE html>");
+    html_push("!DOCTYPE", "html");
     html_push("html", "lang=en");
     html_push("head", "");
     tag_empty("meta", "charset=utf-8");
@@ -35,6 +35,10 @@ b32 main()
     html_push("body", "");
 
     file lib = file_new("../library.c", FILE_READ);
+
+    log(str("\n"));
+    log_file(log, lib);
+    log_file_status(log, lib);
     
     if(file_load(address_of lib) == null)
         log_direct(str("Failed to load library.c\n"));
