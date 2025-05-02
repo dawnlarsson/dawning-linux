@@ -1764,6 +1764,9 @@ file file_new(string_address path, positive flags)
         result.handle = system_call_3(syscall(openat), AT_FDCWD, (positive)path, flags);
 #endif
 
+        if (result.handle == -1)
+                return result;
+
         result.status = file_get_status(address_of result);
 
         return result;

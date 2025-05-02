@@ -3,7 +3,7 @@
 compiler="gcc"
 
 flags_base=" -static -s -flto -nostdlib -nostartfiles -ffreestanding -fno-builtin"
-flags_base+=" -Qn -Wl,--build-id=none -Wl,--gc-sections -Wl,--strip-all -Wl,--strip-debug -Wl,-x -Wl,-s"
+flags_base+=" -Qn -Wl,--build-id=none -Wl,--gc-sections -Wl,--strip-all -Wl,--strip-debug -Wl,-x -Wl,-s -Wl,--no-warn-rwx-segments"
 flags_base+=" -Wl,-nmagic"
 
 flags_base+=" -O2"
@@ -26,14 +26,10 @@ mkdir -p bin
 
 $compiler $source_file -o $output_file $flags_base $suppress -Wl,-e,_start
 
-echo "Compiled $source_file to $output_file"
-
 if [ "$(uname)" = "Darwin" ]; then
         alias stat_bytes="stat -f %z"
 else
         alias stat_bytes="stat -c %s"
 fi
-
-size=$(stat_bytes "$output_file") && echo "$size bytes ($(echo "scale=2; $size / 1024" | bc) KB, $(echo "scale=2; $size / 1024 / 1024" | bc) MB)"
 
 chmod +x $output_file
