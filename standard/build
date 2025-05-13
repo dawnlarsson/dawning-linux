@@ -8,8 +8,11 @@ flags_base+=" -Wl,-nmagic"
 
 flags_base+=" -O2"
 
-# more agrresive flags
+# more aggressive flags
 flags_base+=" -fno-asynchronous-unwind-tables -fomit-frame-pointer -fno-stack-protector"
+
+# VERY aggressive flags
+flags_base+=" -fno-semantic-interposition -D_FORTIFY_SOURCE=0 -fno-unwind-tables -fno-plt -fno-PIE -fno-pie -fno-stack-clash-protection"
 
 source_file=$1
 output_file=$2
@@ -33,3 +36,4 @@ else
 fi
 
 chmod +x $output_file
+
