@@ -91,21 +91,21 @@ key() {
 line_has() {
         is_file "$1" || return 1
         [ -z "$2" ] && return 1
-    
+
         grep -F -q "$2" "$1"
         return $?
 }
 
 line_add() {
         line_has "$1" "$2" && return 0
-        echo "$2" >> "$1"
+        echo "$2" >>"$1"
 }
 
 line_add_padded() {
         line_has "$1" "$2" && return 0
-        echo "" >> "$1"
-        echo "$2" >> "$1"
-        echo "" >> "$1"
+        echo "" >>"$1"
+        echo "$2" >>"$1"
+        echo "" >>"$1"
 }
 
 is_newer() {

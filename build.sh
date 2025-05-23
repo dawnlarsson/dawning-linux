@@ -58,6 +58,7 @@ label PRE BUILD
         $(key "pre")
 
 label USER SPACE BUILD
+        sh standard/build_kernel programs/init fs/init
         sh standard/build_kernel programs/shell fs/shell
         sh standard/build_kernel programs/duck fs/duck
         sh standard/build_kernel programs/edit fs/edit
