@@ -1,31 +1,31 @@
 #!/bin/sh
 source script/common
 
-kernel_extract_dir="linux/" 
+kernel_extract_dir="linux/"
 download_artifacts_dir="artifacts/"
 keys_dir=$download_artifacts_dir"keys/"
 trusted_keys="torvalds@kernel.org gregkh@kernel.org"
-kernel_version="6.14.6"
-kernel_download="https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.14.6.tar.xz"
+kernel_version="6.14.8"
+kernel_download="https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.14.8.tar.xz"
 kernel_pgp="
 -----BEGIN PGP SIGNATURE-----
 Comment: This signature is for the .tar version of the archive
-Comment: git archive --format tar --prefix=linux-6.14.6/ v6.14.6
+Comment: git archive --format tar --prefix=linux-6.14.8/ v6.14.8
 Comment: git version 2.49.0
 
-iQIzBAABCAAdFiEEZH8oZUiU471FcZm+ONu9yGCSaT4FAmgdtXQACgkQONu9yGCS
-aT5e0BAAtFWYDwho7NjYUYpChRHI2ZCJERpFSTCCEOJ0Do5rd1IRxz1Yw5F/cTFX
-n9d6f7KdvGG50XsxOBZStXJVzSyDsQ4xu3rL5l+xsz6j5uw6tDo9eJMzQt+PXluP
-+o+zkws3rM5Umn8usLcgiTBX/UBD+dx8kd2jGbkuEGpnN8F/wQ8Lfqj/4IEghOwz
-U2S3Dw3/skktC3zp6NO7gJyBGOdem8CgRh/gwscmvTja0xNnMZZpWo07fKwXy5s2
-2kJl+0MDGCzqV1oRRlg5xl8XtVtXcBlaEBi2chqqtz+kl7vCXUD1WxX2vQ1WBpwy
-xXAfsRALqjWwabXFJndxABn3dTA0L8qEkqOf6QOI6cKlHn1/uRr5L3o0qT8FiEt+
-6eTaHMq5CO4RYA1CHh1fbYbukh4rKAWmc6NbFZ8/sGXFiMnTmkm98yEKlDkpSr0E
-wZNgtsbVcu8C3UEZUDkiURTb4pClOJMmV55cJWSCKT29pb33GOzYfaweMsCR2Pc2
-SJM10Xv0JIo+inoxVpk5g4jyDagAFiKLbzVcuNkZu1KccLW6XzINzr/oJZC2iGjW
-eM/aYgTDlhO8ZwTwGSrX0gdyqLm+R3SEsEQW3FxRmNuIAaulExJDeg8z1U9RobGV
-tVXIop2holHMzzcTzJ548s9gyLjdYQt7zqI734/iZ3JiCR2fnII=
-=aXCk
+iQIzBAABCAAdFiEEZH8oZUiU471FcZm+ONu9yGCSaT4FAmgvGiQACgkQONu9yGCS
+aT6IQBAAkt7T95aE8SQ33KJi33pqszezth4N/7H83+pu9RazHArTAEILczp/S0I1
+hgLgCQ6McoRVHS+PBqEHXJ3+13wDD41bFb5G5su/b/h3xmdvBHjXA0IESjFt23iW
+WXGgd0L71IhNqsRTrSeSZUMAG/VbO9f6+yiGBcJmhUv/1lIExYzYfyQDOC9ND2zB
+nIR39bV9nPruHAr4LlSaF/h+lVuRPoDblhqLiRk0pkY7paZqPFYSEsTSvLhl0xzB
+r2V2X219yM6LcHtIQ0bU+MC2/PFtohNZ3S3Whq2XSejmqV7vhg8diu8caOSeARPx
+qawfJLFivouicsVKOefW4iS/2oaBfikW3pHXVJw6lUIzN+N7+iIcijLISvqqx0/R
++Q5sXj2vP7oo3pKmzaP43HlNkdn4FhAyuN0vB9NIrBTZxicBpgphhtrTo3H3XWJm
+rXtA262k1XPSbpByeftn6t6ePPIwV8gyZOvxaZ8RKcxASgbflPmR85SpmOWLTUMB
+V7HG+8W13Ln1rvMI5ALThvdaD7pzejdQsl/ScHFK+0Ac3BP+C00hAoUHj6m5maPu
+EcGRNG9H9Pj+2taouw5GQaZJs1TL0l+2mBivyKAKJ6XPezSFPqeY3Hg/VZaV5QJb
+XOgeBrP6yZlhYgkeOtBckAmpfUvT9FrcKRjuD/W5q01KY6LQzeU=
+=455m
 -----END PGP SIGNATURE-----
 "
 
@@ -43,7 +43,7 @@ extract_kernel() {
 
     unxz -k $kernel_archive
 
-    echo "$kernel_pgp" > $kernel_tarball".sign"
+    echo "$kernel_pgp" >$kernel_tarball".sign"
 
     gpg --verify $kernel_tarball".sign" $kernel_tarball
 
@@ -54,7 +54,7 @@ extract_kernel() {
     echo $BOLD "Kernel extracted to $kernel_extract_dir" $RESET
 }
 
-is_file $kernel_archive || \
+is_file $kernel_archive ||
     curl -L $kernel_download -o $kernel_archive
 
 mkdir -p $download_artifacts_dir
