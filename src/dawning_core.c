@@ -1,4 +1,6 @@
 #include <linux/namei.h>
+#include <linux/binfmts.h>
+#include <linux/sched/task_stack.h>
 
 // todo: investigate the requirement to manually include this
 int path_mount(const char *dev_name, struct path *path,
@@ -21,6 +23,38 @@ MountPoints mounts[] = {
     {"proc", "/proc", MNT_INTERNAL},
     {"sysfs", "/sys", MNT_INTERNAL},
     {null, null},
+};
+
+//      Dawning Spark
+//      is a simple direct binary executable format,
+//      the very first byte of the file IS the entry point
+//      and is DIRECTLY executed, this means no elf parsing overhead for each invocation!
+//
+//      potential future "spark+" format (this would be separate):
+//      in the file descriptor of the executables, it's expected
+//      to have defined the target architecture in a custom header
+//
+static int execute_spark(struct linux_binprm *bprm)
+{
+        int new_exec = begin_new_exec(bprm);
+
+        if (new_exec)
+                return new_exec;
+
+        setup_new_exec(bprm);
+
+        new_exec = setup_arg_pages(bprm, STACK_TOP, 0);
+        if (new_exec < 0)
+                return new_exec;
+
+        start_thread(task_pt_regs(current), (unsigned long)bprm->file->f_path.dentry, current->mm->start_stack);
+
+        finalize_exec(bprm);
+        return 0;
+}
+
+static struct linux_binfmt spark_format = {
+    .load_binary = execute_spark,
 };
 
 fn dawn_init_mount()
@@ -57,6 +91,8 @@ b32 __init dawn_start()
         log_k("Dawning Eos - Kernel Extentions starting...\n");
 
         dawn_init_mount();
+
+        register_binfmt(&spark_format);
 
         return 0;
 }
