@@ -1,12 +1,8 @@
-#include <linux/init.h>
-#include <linux/kernel.h>
-#include <linux/fs.h>
-#include <linux/mount.h>
 #include <linux/namei.h>
-#include <linux/path.h>
-#include <linux/fs_struct.h>
-#include <linux/mount.h>
-#include <linux/mnt_namespace.h>
+
+// todo: investigate the requirement to manually include this
+int path_mount(const char *dev_name, struct path *path,
+               const char *type_page, unsigned long flags, void *data_page);
 
 #define DAWN_MODERN_C_KERNEL
 #include "../standard/library.c"
@@ -33,39 +29,25 @@ fn dawn_init_mount()
 
         while (mount->filesystem)
         {
-                struct file_system_type address_to fs_type = get_fs_type(mount->filesystem);
+                struct path path;
 
-                if (!fs_type)
+                int ret = kern_path(mount->path, LOOKUP_FOLLOW, &path);
+
+                if (ret)
                 {
+                        log_k("Mounting %s to %s failed with error: %d\n", mount->filesystem, mount->path, ret);
                         mount++;
                         continue;
                 }
 
-                struct vfsmount address_to mnt = vfs_kern_mount(fs_type, 0, mount->filesystem, null);
-                put_filesystem(fs_type);
+                ret = path_mount(mount->filesystem, &path, mount->filesystem, mount->mount_flags, null);
+                path_put(&path);
 
-                if (IS_ERR(mnt))
+                if (!ret)
                 {
-                        log_k("vfs_kern_mount failed\n");
-                        mount++;
-                        continue;
+                        log_k("Mounted %s to %s\n", mount->filesystem, mount->path);
                 }
 
-                mntput(mnt);
-
-                struct path mountpoint_path;
-                int err = kern_path(mount->path, LOOKUP_DIRECTORY, address_of mountpoint_path);
-
-                if (err)
-                {
-                        log_k("kern_path failed\n");
-                        mount++;
-                        continue;
-                }
-
-                // struct vfsmount address_to mnt = do_mount(mnt, &mountpoint_path, mount->filesystem, mount->mount_flags);
-
-                path_put(address_of mountpoint_path);
                 mount++;
         }
 }
