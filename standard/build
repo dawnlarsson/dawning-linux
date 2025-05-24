@@ -29,11 +29,4 @@ mkdir -p bin
 
 $compiler $source_file -o $output_file $flags_base $suppress -Wl,-e,_start
 
-if [ "$(uname)" = "Darwin" ]; then
-        alias stat_bytes="stat -f %z"
-else
-        alias stat_bytes="stat -c %s"
-fi
-
 chmod +x $output_file
-

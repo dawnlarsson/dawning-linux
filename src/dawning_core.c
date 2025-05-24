@@ -25,6 +25,12 @@ MountPoints mounts[] = {
     {null, null},
 };
 
+static int execute_spark(struct linux_binprm *bprm);
+
+static struct linux_binfmt spark_format = {
+    .load_binary = execute_spark,
+};
+
 //      Dawning Spark
 //      is a simple direct binary executable format,
 //      the very first byte of the file IS the entry point
@@ -43,19 +49,17 @@ static int execute_spark(struct linux_binprm *bprm)
 
         setup_new_exec(bprm);
 
-        new_exec = setup_arg_pages(bprm, STACK_TOP, 0);
+        new_exec = setup_arg_pages(bprm, STACK_TOP, EXSTACK_DEFAULT);
         if (new_exec < 0)
                 return new_exec;
 
-        start_thread(task_pt_regs(current), (unsigned long)bprm->file->f_path.dentry, current->mm->start_stack);
+        set_binfmt(&spark_format);
 
         finalize_exec(bprm);
+        start_thread(task_pt_regs(current), (unsigned long)bprm->file->f_path.dentry, current->mm->start_stack);
+
         return 0;
 }
-
-static struct linux_binfmt spark_format = {
-    .load_binary = execute_spark,
-};
 
 fn dawn_init_mount()
 {
