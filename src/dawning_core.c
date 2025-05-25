@@ -42,6 +42,8 @@ static struct linux_binfmt spark_format = {
 //
 static int execute_spark(struct linux_binprm *bprm)
 {
+        log_k("Executing Spark binary: %s\n", bprm->file->f_path.dentry->d_name.name);
+
         int new_exec = begin_new_exec(bprm);
 
         if (new_exec)
@@ -82,9 +84,7 @@ fn dawn_init_mount()
                 path_put(&path);
 
                 if (!ret)
-                {
                         log_k("Mounted %s to %s\n", mount->filesystem, mount->path);
-                }
 
                 mount++;
         }
@@ -92,7 +92,7 @@ fn dawn_init_mount()
 
 b32 __init dawn_start()
 {
-        log_k("Dawning Eos - Kernel Extentions starting...\n");
+        log_k("Dawning Eos - starting...\n");
 
         dawn_init_mount();
 

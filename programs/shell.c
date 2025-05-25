@@ -14,10 +14,8 @@ positive shell_output_file;
 
 fn redirect_writer(address_any data, positive length)
 {
-        if(!shell_output_file) {
-                string_format(shell_output, "Redirection error file not open\n");
-                return;
-        }
+        if (!shell_output_file)
+                return string_format(shell_output, "Redirection error file not open\n");
 
         if (length == 0)
                 length = string_length(data);
@@ -45,16 +43,14 @@ fn shell_execute_command(string_address command, string_address arguments)
 
         if (fork_result == 0)
                 shell_thread_instance(command, arguments);
-        
+
         if (fork_result > 0)
         {
                 positive status = 0;
                 bipolar wait_result = system_call_4(syscall(wait4), fork_result, (positive)address_of status, 0, 0);
-        } else
-        {
-                string_format(shell_output, "failed with error: %b\n", fork_result);
-        
         }
+        else
+                string_format(shell_output, "failed with error: %b\n", fork_result);
 
         log_flush();
 }
@@ -84,19 +80,19 @@ fn process()
 
         string_address redirect = string_find(shell_buffer, " >>");
 
-        if(redirect)
+        if (redirect)
         {
                 memory_fill(redirect, end, 4);
                 redirect += 4;
 
-                if string_is(redirect, end)
+                if string_is (redirect, end)
                         return string_format(shell_output, "Missing file name for redirection\n");
-                
+
                 bipolar file_descriptor = system_call_4(syscall(openat), AT_FDCWD, (positive)redirect, FILE_READ | FILE_APPEND | FILE_CREATE, 0666);
 
                 if (file_descriptor < 0)
                         return string_format(shell_output, "Cannot open file for redirection: %s\n", redirect);
-                
+
                 shell_output = redirect_writer;
                 shell_output_file = file_descriptor;
         }
@@ -105,10 +101,10 @@ fn process()
 
         if (string_is(shell_buffer, '.') || string_is(shell_buffer, '/'))
                 return shell_execute_command(shell_buffer, step);
-        
+
         if (shell_builtin(step))
                 return;
-        
+
         string_format(shell_output, "Command not found: '%s'\n", shell_buffer);
 }
 
@@ -125,7 +121,8 @@ b32 main()
 
                 input_length = system_call_3(syscall(read), 0, (positive)shell_buffer, MAX_INPUT) - 1;
 
-                if(input_length) process();
+                if (input_length)
+                        process();
 
                 log_flush();
 

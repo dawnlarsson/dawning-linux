@@ -1164,6 +1164,33 @@ fn bipolar_to_string(writer write, bipolar number) {
     positive_to_string(write, (positive)abs_number);
 }
 
+positive string_to_positive(string_address input)
+{
+        positive result = 0;
+        positive multiplier = 1;
+        string_address step = input + string_length(input) - 1;
+
+        while (step >= input && string_get(step) >= '0' && string_get(step) <= '9')
+        {
+                result += (string_get(step) - '0') * multiplier;
+                multiplier *= 10;
+                step--;
+        }
+
+        return result;
+}
+
+bipolar string_to_bipolar(string_address input)
+{
+        if(string_get(input) == '-')
+        {
+                input++;
+                return -string_to_positive(input);
+        }
+        
+        return string_to_positive(input);
+}
+
 fn decimal_to_string(writer write, decimal value)
 {
         #ifndef KERNEL_MODE // Temporary

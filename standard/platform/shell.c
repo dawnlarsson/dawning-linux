@@ -73,30 +73,32 @@ fn dawn_shell_cp(writer write, string_address input)
 {
         if (input == null)
                 return write(str("cp: missing operand\n"));
-        
+
         string_address destination = string_cut(input, ' ');
 
         bipolar source_file = system_call_3(syscall(openat), AT_FDCWD, (positive)input, FILE_READ);
 
         if (source_file < 0)
                 return string_format(write, "cp: Cannot open source file: %s\n", input);
-        
-        bipolar dest_file = system_call_4(syscall(openat), AT_FDCWD, (positive)destination, 
-                FILE_CREATE | FILE_WRITE | O_TRUNC, 0666);
-        
-        if (dest_file < 0) {
+
+        bipolar dest_file = system_call_4(syscall(openat), AT_FDCWD, (positive)destination,
+                                          FILE_CREATE | FILE_WRITE | O_TRUNC, 0666);
+
+        if (dest_file < 0)
+        {
                 system_call_1(syscall(close), source_file);
                 return string_format(write, "cp: Cannot create destination file: %s\n", destination);
         }
 
         p8 buffer[page_size];
 
-        while (1) {
+        while (1)
+        {
                 bipolar bytes_read = system_call_3(syscall(read), source_file, (positive)buffer, page_size);
 
                 if (bytes_read <= 0)
                         break;
-                
+
                 system_call_3(syscall(write), dest_file, (positive)buffer, bytes_read);
         }
 
@@ -170,9 +172,9 @@ fn dawn_shell_ls(writer write, string_address input)
                                 else
                                         write(str(TERM_YELLOW));
                         }
-                        
+
                         string_format(write, "%s ", entry->d_name);
-                        
+
                         if (dawn_shell_styles)
                                 write(str(TERM_RESET));
 
@@ -245,7 +247,12 @@ fn dawn_shell_pwd(writer write, string_address input)
 
 fn dawn_shell_exit(writer write, string_address input)
 {
-        exit(0);
+        bipolar exit_code = 0;
+
+        if (input != null)
+                exit_code = string_to_bipolar(input);
+
+        exit(exit_code);
 }
 
 fn dawn_shell_touch(writer write, string_address input)
@@ -272,23 +279,23 @@ typedef struct
 } dawn_shell_command;
 
 dawn_shell_command dawn_shell_commands[] = {
-        {"basename", dawn_shell_basename},
-        {"cat", dawn_shell_cat},
-        {"cd", dawn_shell_cd},
-        {"clear", dawn_shell_clear},
-        {"cp", dawn_shell_cp},
-        {"chmod", dawn_shell_chmod},
-        {"echo", dawn_shell_echo},
-        {"exec", dawn_shell_exec},
-        {"exit", dawn_shell_exit},
-        {"ls", dawn_shell_ls},
-        {"mkdir", dawn_shell_mkdir},
-        {"mv", dawn_shell_mv},
-        {"mount", dawn_shell_mount},
-        {"pwd", dawn_shell_pwd},
-        {"touch", dawn_shell_touch},
-        {"help", dawn_shell_help},
-        {null, null},
+    {"basename", dawn_shell_basename},
+    {"cat", dawn_shell_cat},
+    {"cd", dawn_shell_cd},
+    {"clear", dawn_shell_clear},
+    {"cp", dawn_shell_cp},
+    {"chmod", dawn_shell_chmod},
+    {"echo", dawn_shell_echo},
+    {"exec", dawn_shell_exec},
+    {"exit", dawn_shell_exit},
+    {"ls", dawn_shell_ls},
+    {"mkdir", dawn_shell_mkdir},
+    {"mv", dawn_shell_mv},
+    {"mount", dawn_shell_mount},
+    {"pwd", dawn_shell_pwd},
+    {"touch", dawn_shell_touch},
+    {"help", dawn_shell_help},
+    {null, null},
 };
 
 fn dawn_shell_help(writer write, string_address input)
