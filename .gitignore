@@ -8,8 +8,15 @@
 .vscode/settings.json
 .DS_Store
 
-/src/*.a
-/src/*.o
-/src/*.o.d
-/src/*.cmd
-/src/*.order
+*.log
+*.a
+*.o
+*.o.d
+*.cmd
+*.order
+*/bin
+*.exe
+*.dll
+*.so
+*.dylib
+*.dwo
