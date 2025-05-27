@@ -14,9 +14,10 @@
 *.o.d
 *.cmd
 *.order
-*/bin
 *.exe
 *.dll
 *.so
 *.dylib
 *.dwo
+
+standard/test/bin/

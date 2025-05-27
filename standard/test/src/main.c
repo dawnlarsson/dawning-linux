@@ -25,13 +25,112 @@ fn test_writer(address_any data, positive length) {
         test_write_pos += length;
 }
 
+test(type_sizes) {
+
+        fail_equals(sizeof(p8), 1);
+        fail_equals(p8_bytes, 1);
+        
+        fail_equals(sizeof(b8), 1);
+        fail_equals(b8_bytes, 1);
+
+        fail_equals(sizeof(p16), 2);
+        fail_equals(p16_bytes, 2);
+
+        fail_equals(sizeof(b16), 2);
+        fail_equals(b16_bytes, 2);
+
+        fail_equals(sizeof(p32), 4);
+        fail_equals(p32_bytes, 4);
+
+        fail_equals(sizeof(b32), 4);
+        fail_equals(b32_bytes, 4);
+
+        fail_equals(sizeof(p64), 8);
+        fail_equals(p64_bytes, 8);
+
+        fail_equals(sizeof(b64), 8);
+        fail_equals(b64_bytes, 8);
+
+        fail_equals(sizeof(f32), 4);
+        fail_equals(f32_bytes, 4);
+
+        fail_equals(sizeof(f64), 8);
+        fail_equals(f64_bytes, 8);
+
+        fail_equals(sizeof(f128), 16);
+        fail_equals(f128_bytes, 16);
+
+
+
+        return true;
+}
+
+test(type_ranges) {
+        
+        fail_equals(p8_max, 255);
+        fail_equals(p8_min, 0);
+        fail_equals(b8_max, 127);
+        fail_equals(b8_min, -128);
+
+        fail_equals(p16_max, 65535);
+        fail_equals(p16_min, 0);
+        fail_equals(b16_max, 32767);
+        fail_equals(b16_min, -32768);
+
+        fail_equals(p32_max, 4294967295U);
+        fail_equals(b32_max, 2147483647);
+        fail_equals(b32_min, -2147483648);
+        fail_equals(p32_min, 0);
+
+        fail_equals((p8)(p8_max+1), 0);
+        fail_equals((b8)(b8_max+1), b8_min);
+        
+        return true;
+}
+
+test(bit_operations) {
+        p32 value = 0;
+
+        for(int i=0; i<32; i++) {
+            bit_set(i, &value);
+            fail(bit_test(i, &value));
+        }
+        
+        fail_equals(value, 0xFFFFFFFF);
+        
+        for(int i=0; i<32; i++) {
+            bit_clear(i, &value);
+            fail(!bit_test(i, &value));
+        }
+        
+        fail_equals(value, 0);
+        
+        bit_flip(0, &value);
+        fail_equals(value, 1);
+        
+        bit_flip(0, &value);
+        fail_equals(value, 0);
+        
+        bit_set(31, &value);
+        fail(bit_test(31, &value));
+
+        return true;
+}
+
 test(addresses) {
         positive some_positive = 123456;
         positive address_to ptr = &some_positive;
-        
+
         fail_equals(address_to ptr, some_positive);
         fail_equals(ptr, &some_positive);
         
+        positive address_to null_ptr = (positive address_to)0;
+        fail(is_null(null_ptr));
+        
+        positive arr[2] = {1,2};
+        positive address_to arr_ptr = &arr[0];
+        fail_equals(*(arr_ptr+1), 2);
+
         return true;
 }
 
@@ -44,59 +143,12 @@ test(is_null) {
         positive value = 0;
         fail(!is_null(&value));
         
-        return true;
-}
+        int stack_var = 1;
+        fail(!is_null(&stack_var));
 
-test(type_sizes) {
-        fail_equals(sizeof(p8), 1);
-        fail_equals(sizeof(b8), 1);
-        fail_equals(sizeof(p16), 2);
-        fail_equals(sizeof(b16), 2);
-        fail_equals(sizeof(p32), 4);
-        fail_equals(sizeof(b32), 4);
-        fail_equals(sizeof(p64), 8);
-        fail_equals(sizeof(b64), 8);
-        fail_equals(sizeof(f32), 4);
-        fail_equals(sizeof(f64), 8);
-        
-        return true;
-}
+        static int static_var = 2;
+        fail(!is_null(&static_var));
 
-test(type_ranges) {
-        fail_equals(p8_max, 255);
-        fail_equals(p8_min, 0);
-        fail_equals(b8_max, 127);
-        fail_equals(b8_min, -128);
-        fail_equals(p16_max, 65535);
-        fail_equals(p32_max, 4294967295U);
-        fail_equals(b32_max, 2147483647);
-        fail_equals(b32_min, -2147483648);
-        
-        return true;
-}
-
-test(bit_operations) {
-        p32 value = 0;
-        
-        bit_set(0, &value);
-        fail_equals(value, 1);
-        
-        bit_set(3, &value);
-        fail_equals(value, 9);
-        
-        fail(bit_test(0, &value));
-        fail(bit_test(3, &value));
-        fail(!bit_test(1, &value));
-        
-        bit_clear(0, &value);
-        fail_equals(value, 8);
-        
-        bit_flip(3, &value);
-        fail_equals(value, 0);
-        
-        bit_flip(7, &value);
-        fail_equals(value, 128);
-        
         return true;
 }
 
@@ -133,6 +185,7 @@ test(atomic_operations) {
 
 test(memory_fill) {
         p8 buffer[100];
+        
         memory_fill(buffer, 0x42, 100);
         
         for(positive i = 0; i < 100; i++) {
@@ -140,30 +193,42 @@ test(memory_fill) {
         }
         
         memory_fill(buffer, 0, 50);
-
+        
         for(positive i = 0; i < 50; i++) {
                 fail_equals(buffer[i], 0);
         }
-
+        
         for(positive i = 50; i < 100; i++) {
                 fail_equals(buffer[i], 0x42);
         }
 
+        memory_fill(buffer, 0x99, 0);
+        
+        for(positive i = 0; i < 100; i++) {
+                fail(buffer[i] == 0 || buffer[i] == 0x42);
+        }
+        
+        memory_fill(buffer, 0xFF, 100);
+        
+        for(positive i = 0; i < 100; i++) {
+                fail_equals(buffer[i], 0xFF);
+        }
+        
         return true;
 }
 
 test(memory_copy) {
-
-        // overlapping regions
+        
         p8 buffer[] = "1234567890";
+        p8 source[] = "Hello, World!";
+        p8 destination[50] = {0};
+        
         memory_copy(buffer + 2, buffer, 5);
         fail_equals(buffer[2], '1');
         fail_equals(buffer[6], '5');
         
+        /*
         // non-overlapping regions
-        /* TBD
-        p8 source[] = "Hello, World!";
-        p8 destination[50] = {0};
         memory_copy(destination, source, 16);
         fail_equals(string_compare(destination, source), 0);
         */
@@ -172,6 +237,7 @@ test(memory_copy) {
 }
 
 test(string_length) {
+        
         fail_equals(string_length(""), 0);
         fail_equals(string_length("a"), 1);
         fail_equals(string_length("Hello"), 5);
@@ -179,9 +245,13 @@ test(string_length) {
         
         p8 buffer[100];
         memory_fill(buffer, 'A', 99);
+        
         buffer[99] = end;
         fail_equals(string_length(buffer), 99);
         
+        p8 only_null[1] = {end};
+        fail_equals(string_length(only_null), 0);
+
         return true;
 }
 
@@ -192,7 +262,9 @@ test(string_compare) {
         fail(string_compare("abd", "abc") > 0);
         fail(string_compare("abc", "abcd") < 0);
         fail(string_compare("abcd", "abc") > 0);
-        
+        fail(string_compare("", "a") < 0);
+        fail(string_compare("a", "") > 0);
+
         return true;
 }
 
@@ -204,33 +276,45 @@ test(string_copy) {
         
         string_copy(dest, "");
         fail_equals(string_length(dest), 0);
-        
+
         string_copy(dest, "A very long string that tests the copy function");
         fail_equals(string_length(dest), 47);
+        
+        string_copy(dest, dest);
+        fail_equals(string_compare(dest, "A very long string that tests the copy function"), 0);
         
         return true;
 }
 
 test(string_copy_max) {
+
         p8 dest[100];
+
         memory_fill(dest, 'X', 100);
-        
         string_copy_max(dest, "Hello, World!", 5);
+        
         fail_equals(dest[5], 'X');
         fail_equals(dest[0], 'H');
         fail_equals(dest[4], 'o');
+
+        /*
+        string_copy_max(dest, "Hi", 10);
+        fail_equals(dest[2], end);
+        */
+
+        string_copy_max(dest, "Hello", 0);
+        fail_equals(dest[0], 'H');
         
         return true;
 }
 
 test(string_first_of) {
         string_address result;
-        
+
         result = string_first_of("Hello, World!", 'o');
         fail(result != null);
         fail_equals(*result, 'o');
         
-
         result = string_first_of("Hello, World!", 'z');
         fail_equals(result, null);
         
@@ -238,12 +322,20 @@ test(string_first_of) {
         fail(result != null);
         fail_equals(*result, end);
         
+        result = string_first_of("abc", 'a');
+        fail(result != null);
+        fail_equals(*result, 'a');
+        
+        result = string_first_of("abc", 'c');
+        fail(result != null);
+        fail_equals(*result, 'c');
+        
         return true;
 }
 
 test(string_last_of) {
         string_address result;
-        
+
         result = string_last_of("Hello, World!", 'o');
         fail(result != null);
         fail_equals(*result, 'o');
@@ -254,13 +346,21 @@ test(string_last_of) {
         result = string_last_of("Hello, World!", 'z');
         fail_equals(result, null);
         
+        result = string_last_of("abc", 'c');
+        fail(result != null);
+        fail_equals(*result, 'c');
+        
+        result = string_last_of("abc", 'a');
+        fail(result != null);
+        fail_equals(*result, 'a');
+        
         return true;
 }
 
 test(string_cut) {
         p8 buffer[] = "Hello, World!";
-        string_address result = string_cut(buffer, ' ');
         
+        string_address result = string_cut(buffer, ' ');
         fail(result != null);
         fail_equals(string_compare(buffer, "Hello,"), 0);
         fail_equals(string_compare(result, "World!"), 0);
@@ -272,21 +372,30 @@ test(string_cut) {
         p8 buffer3[] = "End ";
         result = string_cut(buffer3, ' ');
         fail_equals(result, null);
-        
+
+        /*
+        p8 buffer4[] = " Xcut";
+        result = string_cut(buffer4, ' ');
+        fail(result != null);
+        fail_equals(string_compare(buffer4, ""), 0);
+        fail_equals(string_compare(result, "Xcut"), 0);
+        */
+
         return true;
 }
 
 test(string_replace_all) {
-        /*
-
-        p8 buffer[] = "Hello, World! Hello!";
-        string_replace_all(buffer, 'l', 'L');
-        fail_equals(string_compare(buffer, "HeLLo, WorLd! HeLLo!"), 0);
-        */        
-        
         p8 buffer2[] = "aaaa";
         string_replace_all(buffer2, 'a', 'b');
         fail_equals(string_compare(buffer2, "bbbb"), 0);
+        
+        p8 buffer3[] = "cccc";
+        string_replace_all(buffer3, 'c', 'c');
+        fail_equals(string_compare(buffer3, "cccc"), 0);
+
+        p8 buffer4[] = "dddd";
+        string_replace_all(buffer4, 'z', 'y');
+        fail_equals(string_compare(buffer4, "dddd"), 0);
         
         return true;
 }
@@ -333,7 +442,9 @@ test(string_format_mixed) {
         memory_fill(test_write_buffer, 0, 1000);
         
         string_format(test_writer, "%s has %p items worth %b each", "Dawn", 5, -10);
+
         test_write_buffer[test_write_pos] = end;
+        
         fail_equals(string_compare(test_write_buffer, "Dawn has 5 items worth -10 each"), 0);
         
         return true;
