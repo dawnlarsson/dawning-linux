@@ -102,7 +102,7 @@
 #undef null
 #define null ((address_any)0)
 #define null_ADDRESS null
-#define IS_null(address) ((address) == null)
+#define is_null(address) ((address) == null)
 
 // null terminator
 #define end '\0'
@@ -677,10 +677,10 @@ typedef struct
     ((source) == (check) ? ((source) = (value), true) : false)
 
 #undef min
-#define min(value, input) ((value)greater_than(input) ? (value) : (input))
+#define min(value, input) ((value)greater_than(input) ? (input) : (value))
 
 #undef max
-#define max(value, input) ((value)less_than(input) ? (value) : (input))
+#define max(value, input) ((value)less_than(input) ? (input) : (value))
 
 #define square(value) ((value) * (value))
 #define cube(value) ((value) * (value) * (value))
@@ -905,6 +905,27 @@ address_any memory_fill(address_any destination, b8 value, positive size)
 // source: the memory block to copy from
 // traditional: memcpy
 address_any memory_copy(address_any destination, address_any source, positive size)
+{
+        b8 address_to dest = (b8 address_to)destination;
+        b8 address_to src = (b8 address_to)source;
+
+        // overlapping regions
+        if (dest > src && dest < src + size) {
+                dest += size - 1;
+                src += size - 1;
+                while (size--)
+                        address_to dest-- = address_to src--;
+        } else {
+                while (size--)
+                        address_to dest++ = address_to src++;
+        }
+
+        return destination;
+}
+
+// ### Fast memory copy
+// copies a memory block from source to destination but dosn't handle overlapping regions
+address_any memory_copy_fast(address_any destination, address_any source, positive size)
 {
         b8 address_to dest = (b8 address_to)destination;
         b8 address_to src = (b8 address_to)source;
@@ -1773,6 +1794,19 @@ file_status file_get_status(file address_to source)
 }
 
 // Lazily-loaded file handle, path relative to the current working directory
+//
+// flags: FILE_WRITE, FILE_READ, FILE_READ_WRITE, FILE_EXECUTE, FILE_TRUNCATE
+//
+// Examples:
+//      // open or create a file
+//      file file = file_new("vulkan.log", FILE_WRITE | FILE_CREATE | FILE_TRUNCATE);
+//
+//      // open a read only file if it exists
+//      file file = file_new("vulkan.log", FILE_READ);
+//
+//      // open a file for reading and writing, create it if it does not exist
+//      file file = file_new("vulkan.log", FILE_READ_WRITE | FILE_CREATE);
+//
 file file_new(string_address path, positive flags)
 {
         file result = {0};
@@ -1790,11 +1824,6 @@ file file_new(string_address path, positive flags)
 #else
         result.handle = system_call_3(syscall(openat), AT_FDCWD, (positive)path, flags);
 #endif
-
-        if (result.handle == -1)
-                return result;
-
-        result.status = file_get_status(address_of result);
 
         return result;
 }
