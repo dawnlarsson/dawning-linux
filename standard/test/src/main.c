@@ -12,8 +12,15 @@
 #define test(test_name) bool test_##test_name()
 #define case(test_name) {#test_name, test_##test_name}
 #define fail(condition) if(!(condition)) return false
+
 #define fail_equals(a, b) if((a) == (b)) return false
-#define fail_not_equals(a, b) if((a) != (b)) return false
+
+#define fail_not_equals(a, b) \
+    if((a) != (b)) { \
+        string_format(log_direct, "\n [FAIL] expected %p,  got %p\n", \
+                (positive)(b), (positive)(a)); \
+        return false; \
+    }
 
 typedef bool(address_to dawn_test_function)();
 
@@ -705,7 +712,7 @@ b32 main()
                 bool result = test->function();
 
                 if (!result) {
-                        log_direct(str("  XXXXXXXXXXXXXXXXX  FAILED\n"));
+                        log_direct(str(" ----- FAILED\n"));
                         failed++;
                 }
                 else {
