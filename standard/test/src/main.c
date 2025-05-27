@@ -25,68 +25,90 @@ fn test_writer(address_any data, positive length) {
         test_write_pos += length;
 }
 
-test(type_sizes) {
+test(p8_sizeof) { fail_not_equals(sizeof(p8), 1); return true; }
+test(p8_bytes_constant) { fail_not_equals(p8_bytes, 1); return true; }
+test(p8_max) { fail_not_equals(p8_max, 255); return true; }
+test(p8_min) { fail_not_equals(p8_min, 0); return true; }
+test(test_p8_overflow) { fail_not_equals((p8)(p8_max + 1), 0); return true; }
+test(test_p8_underflow) { fail_not_equals((p8)(p8_min - 1), p8_max); return true; }
 
-        fail_not_equals(sizeof(p8), 1);
-        fail_not_equals(p8_bytes, 1);
-        
-        fail_not_equals(sizeof(b8), 1);
-        fail_not_equals(b8_bytes, 1);
+test(b8_sizeof) { fail_not_equals(sizeof(b8), 1); return true; }
+test(b8_bytes_constant) { fail_not_equals(b8_bytes, 1); return true; }
+test(b8_max) { fail_not_equals(b8_max, 127); return true; }
+test(b8_min) { fail_not_equals(b8_min, -128); return true; }
+test(test_b8_overflow) { fail_not_equals((b8)(b8_max + 1), b8_min); return true; }
+test(test_b8_underflow) { fail_not_equals((b8)(b8_min - 1), b8_max); return true; }
 
-        fail_not_equals(sizeof(p16), 2);
-        fail_not_equals(p16_bytes, 2);
+test(p16_sizeof) { fail_not_equals(sizeof(p16), 2); return true; }
+test(p16_bytes_constant) { fail_not_equals(p16_bytes, 2); return true; }
+test(p16_max) { fail_not_equals(p16_max, 65535); return true; }
+test(p16_min) { fail_not_equals(p16_min, 0); return true; }
+test(test_p16_overflow) { fail_not_equals((p16)(p16_max + 1), 0); return true; }
+test(test_p16_underflow) { fail_not_equals((p16)(p16_min - 1), p16_max); return true; }
 
-        fail_not_equals(sizeof(b16), 2);
-        fail_not_equals(b16_bytes, 2);
+test(b16_sizeof) { fail_not_equals(sizeof(b16), 2); return true; }
+test(b16_bytes_constant) { fail_not_equals(b16_bytes, 2); return true; }
+test(b16_max) { fail_not_equals(b16_max, 32767); return true; }
+test(b16_min) { fail_not_equals(b16_min, -32768); return true; }
+test(test_b16_overflow) { fail_not_equals((b16)(b16_max + 1), b16_min); return true; }
+test(test_b16_underflow) { fail_not_equals((b16)(b16_min - 1), b16_max); return true; }
 
-        fail_not_equals(sizeof(p32), 4);
-        fail_not_equals(p32_bytes, 4);
+test(p32_sizeof) { fail_not_equals(sizeof(p32), 4); return true; }
+test(p32_bytes_constant) { fail_not_equals(p32_bytes, 4); return true; }
+test(p32_max) { fail_not_equals(p32_max, 4294967295U); return true; }
+test(p32_min) { fail_not_equals(p32_min, 0); return true; }
+test(test_p32_overflow) { fail_not_equals((p32)(p32_max + 1), 0); return true; }
+test(test_p32_underflow) { fail_not_equals((p32)(p32_min - 1), p32_max); return true; }
 
-        fail_not_equals(sizeof(b32), 4);
-        fail_not_equals(b32_bytes, 4);
+test(b32_sizeof) { fail_not_equals(sizeof(b32), 4); return true; }
+test(b32_bytes_constant) { fail_not_equals(b32_bytes, 4); return true; }
+test(b32_max) { fail_not_equals(b32_max, 2147483647); return true; }
+test(b32_min) { fail_not_equals(b32_min, -2147483648); return true; }
+test(test_b32_overflow) { fail_not_equals((b32)(b32_max + 1), b32_min); return true; }
+test(test_b32_underflow) { fail_not_equals((b32)(b32_min - 1), b32_max); return true; }
 
-        fail_not_equals(sizeof(p64), 8);
-        fail_not_equals(p64_bytes, 8);
+test(p64_sizeof) { fail_not_equals(sizeof(p64), 8); return true; }
+test(p64_bytes_constant) { fail_not_equals(p64_bytes, 8); return true; }
+test(p64_max) { fail_not_equals(p64_max, 18446744073709551615U); return true; }
+test(p64_min) { fail_not_equals(p64_min, 0); return true; }
+test(test_p64_overflow) { fail_not_equals((p64)(p64_max + 1), 0); return true; }
+test(test_p64_underflow) { fail_not_equals((p64)(p64_min - 1), p64_max); return true; }
 
-        fail_not_equals(sizeof(b64), 8);
-        fail_not_equals(b64_bytes, 8);
+test(b64_sizeof) { fail_not_equals(sizeof(b64), 8); return true; }
+test(b64_bytes_constant) { fail_not_equals(b64_bytes, 8); return true; }
+test(b64_max) { fail_not_equals(b64_max, 9223372036854775807); return true; }
+test(b64_min) { fail_not_equals(b64_min, -9223372036854775808); return true; }
+test(test_b64_overflow) { fail_not_equals((b64)(b64_max + 1), b64_min); return true; }
+test(test_b64_underflow) { fail_not_equals((b64)(b64_min - 1), b64_max); return true; }
 
-        fail_not_equals(sizeof(f32), 4);
-        fail_not_equals(f32_bytes, 4);
+test(p128_sizeof) { fail_not_equals(sizeof(p128), 16); return true; }
+test(p128_bytes_constant) { fail_not_equals(p128_bytes, 16); return true; }
+test(p128_max) { fail_not_equals(p128_max, 340282366920938463463374607431768211455U); return true; }
+test(p128_min) { fail_not_equals(p128_min, 0); return true; }
+test(test_p128_overflow) { fail_not_equals((p128)(p128_max + 1), 0); return true; }
+test(test_p128_underflow) { fail_not_equals((p128)(p128_min - 1), p128_max); return true; }
 
-        fail_not_equals(sizeof(f64), 8);
-        fail_not_equals(f64_bytes, 8);
+test(b128_sizeof) { fail_not_equals(sizeof(b128), 16); return true; }
+test(b128_bytes_constant) { fail_not_equals(b128_bytes, 16); return true; }
+test(b128_max) { fail_not_equals(b128_max, 170141183460469231731687303715884105727); return true; }
+test(b128_min) { fail_not_equals(b128_min, -170141183460469231731687303715884105728); return true; }
+test(test_b128_overflow) { fail_not_equals((b128)(b128_max + 1), b128_min); return true; }
+test(test_b128_underflow) { fail_not_equals((b128)(b128_min - 1), b128_max); return true; }
 
-        fail_not_equals(sizeof(f128), 16);
-        fail_not_equals(f128_bytes, 16);
+test(f32_sizeof) { fail_not_equals(sizeof(f32), 4); return true; }
+test(f32_bytes_constant) { fail_not_equals(f32_bytes, 4); return true; }
+test(f32_max) { fail_not_equals(f32_max, 3.402823466e+38f); return true; }
+test(f32_min) { fail_not_equals(f32_min, 1.175494351e-38f); return true; }
 
+test(f64_sizeof) { fail_not_equals(sizeof(f64), 8); return true; }
+test(f64_bytes_constant) { fail_not_equals(f64_bytes, 8); return true; }
+test(f64_max) { fail_not_equals(f64_max, 1.7976931348623157e+308); return true; }
+test(f64_min) { fail_not_equals(f64_min, 2.2250738585072014e-308); return true; }
 
-
-        return true;
-}
-
-test(type_ranges) {
-        
-        fail_not_equals(p8_max, 255);
-        fail_not_equals(p8_min, 0);
-        fail_not_equals(b8_max, 127);
-        fail_not_equals(b8_min, -128);
-
-        fail_not_equals(p16_max, 65535);
-        fail_not_equals(p16_min, 0);
-        fail_not_equals(b16_max, 32767);
-        fail_not_equals(b16_min, -32768);
-
-        fail_not_equals(p32_max, 4294967295U);
-        fail_not_equals(b32_max, 2147483647);
-        fail_not_equals(b32_min, -2147483648);
-        fail_not_equals(p32_min, 0);
-
-        fail_not_equals((p8)(p8_max+1), 0);
-        fail_not_equals((b8)(b8_max+1), b8_min);
-        
-        return true;
-}
+test(f128_sizeof) { fail_not_equals(sizeof(f128), 16); return true; }
+test(f128_bytes_constant) { fail_not_equals(f128_bytes, 16); return true; }
+test(f128_max) { fail_not_equals(f128_max, 1.189731495357231765e+4932L); return true; }
+test(f128_min) { fail_not_equals(f128_min, 3.362103143112093506e-4932L); return true; }
 
 test(bit_operations) {
         p32 value = 0;
@@ -515,8 +537,93 @@ test(writer_pattern) {
 
 
 dawn_test dawn_tests[] = {
-        case(type_sizes),
-        case(type_ranges),
+
+        case(p8_sizeof),
+        case(p8_bytes_constant),
+        case(p8_max),
+        case(p8_min),
+        case(test_p8_overflow),
+        case(test_p8_underflow),
+
+        case(b8_sizeof),
+        case(b8_bytes_constant),
+        case(b8_max),
+        case(b8_min),
+        case(test_b8_overflow),
+        case(test_b8_underflow),
+
+        case(p16_sizeof),
+        case(p16_bytes_constant),
+        case(p16_max),
+        case(p16_min),
+        case(test_p16_overflow),
+        case(test_p16_underflow),
+
+        case(b16_sizeof),
+        case(b16_bytes_constant),
+        case(b16_max),
+        case(b16_min),
+        case(test_b16_overflow),
+        case(test_b16_underflow),
+
+        case(p32_sizeof),
+        case(p32_bytes_constant),
+        case(p32_max),
+        case(p32_min),
+        case(test_p32_overflow),
+        case(test_p32_underflow),
+
+        case(b32_sizeof),
+        case(b32_bytes_constant),
+        case(b32_max),
+        case(b32_min),
+        case(test_b32_overflow),
+        case(test_b32_underflow),
+        
+        case(p64_sizeof),
+        case(p64_bytes_constant),
+        case(p64_max),
+        case(p64_min),
+        case(test_p64_overflow),
+        case(test_p64_underflow),
+
+        case(b64_sizeof),
+        case(b64_bytes_constant),
+        case(b64_max),
+        case(b64_min),
+        case(test_b64_overflow),
+        case(test_b64_underflow),
+
+        case(p128_sizeof),
+        case(p128_bytes_constant),
+        case(p128_max),
+        case(p128_min),
+        case(test_p128_overflow),
+        case(test_p128_underflow),
+        
+        case(b128_sizeof),
+        case(b128_bytes_constant),
+        case(b128_max),
+        case(b128_min),
+        case(test_b128_overflow),
+        case(test_b128_underflow),
+
+        case(f32_sizeof),
+        case(f32_bytes_constant),
+        case(f32_max),
+        case(f32_min),
+
+        case(f64_sizeof),
+        case(f64_bytes_constant),
+        case(f64_max),
+        case(f64_min),
+
+        case(f128_sizeof),
+        case(f128_bytes_constant),
+        case(f128_max),
+        case(f128_min),
+
+        
         case(bit_operations),
         case(addresses),
         case(is_null),
