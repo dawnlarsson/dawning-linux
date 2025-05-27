@@ -1,5 +1,15 @@
 #include "../../library.c"
 
+// ignore warnings for this file
+
+#if defined(__clang__)
+#pragma clang diagnostic ignored "-Woverflow"
+#endif
+
+#if defined(__GNUC__) || defined(__GNUG__)
+#pragma GCC diagnostic ignored "-Woverflow"
+#endif
+
 #define test(test_name) bool test_##test_name()
 #define case(test_name) {#test_name, test_##test_name}
 #define fail(condition) if(!(condition)) return false
