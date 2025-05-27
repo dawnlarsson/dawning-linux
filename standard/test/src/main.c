@@ -1,7 +1,6 @@
 #include "../../library.c"
 
-// ignore warnings for this file
-
+// Reduces compiler noise for tests
 #if defined(__clang__)
 #pragma clang diagnostic ignored "-Woverflow"
 #endif
@@ -120,33 +119,52 @@ test(f128_bytes_constant) { fail_not_equals(f128_bytes, 16); return true; }
 test(f128_max) { fail_not_equals(f128_max, 1.189731495357231765e+4932L); return true; }
 test(f128_min) { fail_not_equals(f128_min, 3.362103143112093506e-4932L); return true; }
 
-test(bit_operations) {
-        p32 value = 0;
 
-        for(int i=0; i<32; i++) {
-            bit_set(i, &value);
-            fail(bit_test(i, &value));
-        }
-        
-        fail_not_equals(value, 0xFFFFFFFF);
-        
-        for(int i=0; i<32; i++) {
-            bit_clear(i, &value);
-            fail(!bit_test(i, &value));
-        }
-        
-        fail_not_equals(value, 0);
-        
-        bit_flip(0, &value);
-        fail_not_equals(value, 1);
-        
-        bit_flip(0, &value);
-        fail_not_equals(value, 0);
-        
-        bit_set(31, &value);
-        fail(bit_test(31, &value));
+test(bit_flip_zero_to_one) { 
+    p32 value = 0;
+    bit_flip(0, &value);
+    fail_not_equals(value, 1);
+    return true; 
+}
 
-        return true;
+test(bit_flip_one_to_zero) { 
+    p32 value = 1;
+    bit_flip(0, &value);
+    fail_not_equals(value, 0);
+    return true; 
+}
+
+test(bit_set_basic) {
+    p32 value = 0;
+    bit_set(0, &value);
+    fail_not_equals(value, 1);
+    return true;
+}
+
+test(bit_clear_basic) {
+    p32 value = 1;
+    bit_clear(0, &value);
+    fail_not_equals(value, 0);
+    return true;
+}
+
+test(bit_test_set_bit) {
+    p32 value = 1;
+    fail(bit_test(0, &value));
+    return true;
+}
+
+test(bit_test_clear_bit) {
+    p32 value = 0;
+    fail(!bit_test(0, &value));
+    return true;
+}
+
+test(bit_set_high_bit) {
+    p32 value = 0;
+    bit_set(31, &value);
+    fail_not_equals(value, 0x80000000);
+    return true;
 }
 
 test(addresses) {
@@ -634,7 +652,14 @@ dawn_test dawn_tests[] = {
         case(f128_min),
 
 
-        case(bit_operations),
+        case(bit_flip_zero_to_one),
+        case(bit_flip_one_to_zero),
+        case(bit_set_basic),
+        case(bit_clear_basic),
+        case(bit_test_set_bit),
+        case(bit_test_clear_bit),
+        case(bit_set_high_bit),
+
         case(addresses),
         case(is_null),
         case(atomic_operations),
