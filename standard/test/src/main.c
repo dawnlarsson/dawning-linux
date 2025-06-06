@@ -28,6 +28,7 @@ typedef struct
 {
         string_address name;
         dawn_test_function function;
+        bool result;
 } dawn_test;
 
 p32 address_to p32_nulled = ((address_any)0);
@@ -574,6 +575,54 @@ dawn_test dawn_tests[] = {
         {null, null},
 };
 
+bipolar report_file = 0;
+
+fn report_writer(address_any data, positive length)
+{
+        if (length == 0)
+                length = string_length(data);
+
+        system_call_3(syscall(write), report_file, (positive)data, length);
+}
+
+fn generate_report(writer write)
+{
+        bipolar report_file = system_call_4(syscall(openat), AT_FDCWD, (positive)"../../docs/index.html", FILE_CREATE | FILE_WRITE | O_TRUNC, 0666);
+
+        if (report_file < 0) {
+                log_direct(str("Failed to open output report file.\n"));
+                return;
+        }
+
+        write(str("<html><head><title>Dawning C Library Tests</title></head>"));
+        write(str("<body><h1>Dawning C Library Tests</h1>"));
+
+        // table
+        write(str("<table border=\"1\"><tr><th>Test</th><th>Result</th></tr>"));
+        
+        dawn_test address_to test = dawn_tests;
+
+        while (test->name)
+        {
+                write(str("<tr><td>"));
+                write(test->name, 0);
+                write(str("</td><td>"));
+
+                if (test->result) {
+                        write(str("Passed"));
+                } else {
+                        write(str("Failed"));
+                }
+
+                write(str("</td></tr>"));
+                test++;
+        }
+        write(str("</table>"));
+        write(str("</body></html>"));
+
+        system_call_1(syscall(close), report_file);
+}
+
 b32 main()
 {
         dawn_test address_to test = dawn_tests;
@@ -587,6 +636,8 @@ b32 main()
                 log_direct(test->name, string_length(test->name));
 
                 bool result = test->function();
+
+                test->result = result;
 
                 if (!result) {
                         log_direct(str(" ----- FAILED\n"));
@@ -602,6 +653,10 @@ b32 main()
         string_format(log, "\n%p passed, %p failed\n", passed, failed);
 
         log_flush();
+
+        #if LINUX
+        generate_report(report_writer);
+        #endif
 
         return failed > 0 ? 1 : 0;
 }
