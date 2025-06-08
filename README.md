@@ -1,12 +1,11 @@
-![Dawning Linux Header (1)](https://github.com/user-attachments/assets/86ff911c-60c1-4af1-930d-910158a55f70)
-
+![Dawning Linux Header (4) (1)](https://github.com/user-attachments/assets/006b25cf-bce8-4ff3-b0e8-2d3eef8ca827)
 
 <div align="center">
-  ``
-Eos
-
+  
+**``
+Eos -
 The goddess and personification of dawn.
-``
+``**
 
   <a href="https://discord.gg/cxRvzUyzG8">Discord<a>
   —
