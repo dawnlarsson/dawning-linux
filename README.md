@@ -13,6 +13,13 @@ The goddess and personification of dawn.
 </div>
 <br>
 
+> [!CAUTION]
+> ## This repo is being deprecated!
+> Dawning EOS is moving into [Dawning Kit](https://github.com/dawnlarsson/dawning-kit) as "Linux Kit" `/linux`
+> 
+> This repo now serves as the history for the initial research stages of EOS
+> 
+
 Dawning Eos is built from the ground up with no external runtime dependencies. The **Dawning Standard C** library provides everything needed in a clean, minimal implementation.
 
 It's a **fundamental reconsideration** of how operating systems and the software that runs on them should be designed, built, and configured. Software has become increasingly complex, dependent on sprawling ecosystems of libraries, and divorced from the hardware it runs on, Dawning Eos takes a different path.
